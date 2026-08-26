@@ -69,7 +69,7 @@ gtag('config', 'G-N30XKZCDCT');
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.26-1960';
+window.MM_BUILD = '2026.08.26-1970';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1218,11 +1218,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.26-1960">
+<footer data-build="2026.08.26-1970">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-1960</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-1970</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -4441,8 +4441,19 @@ el('mdx').onclick=closeModal;
 el('mask').onclick=e=>{if(e.target===el('mask'))closeModal()};
 addEventListener('keydown',e=>{if(e.key==='Escape'&&el('mask').classList.contains('on'))closeModal()});
 document.querySelectorAll('[data-modal]').forEach(a=>a.onclick=e=>{e.preventDefault();openModal(a.dataset.modal)});
-/* #main / #sell ... — პირდაპირი ბმულები */
-(function(){const h=location.hash.replace('#','');if(PAGES[h])openModal(h)})();
+/* #main / #sell ... — პირდაპირი ბმულები.
+   ⚠️ 2026-08-26: George-ის მოთხოვნით — საიტის ძირითადი მიმართულებაა
+   „ვეძებ" (მოთხოვნების შეგროვება), ამიტომ ცარიელი hash-ის შემთხვევაში
+   (პირველი ვიზიტი, უბრალოდ mymamuli.ge) დეფოლტად ვხსნით „ვეძებ" ფორმას
+   მაშინვე, მაგრამ მხოლოდ მაშინ, როცა hash ნამდვილად ცარიელია — თუ
+   იქ სხვა რამეა (მაგ. #/r/req_id გაზიარების ბმული, #sell, #buy და ა.შ.),
+   არაფერს ვცვლით და ძველებურად ვმუშაობთ. Fullscreen ღილაკს, რუკის
+   ვეძებ-ფილტრს და დანარჩენ ყველა ფუნქციას ეს ცვლილება არ ეხება. */
+(function(){
+ const h=location.hash.replace('#','');
+ if(PAGES[h])openModal(h);
+ else if(!h)openModal('want');
+})();
 /* form.html (iframe შიგნით — ბიჯი 4-ის „წესებსა და პირობებს" ბმული) გვთხოვს
    მოდალის გახსნას postMessage-ით, რადგან iframe-ში ცალკე ფანჯარა ვიწროა. */
 addEventListener('message',e=>{

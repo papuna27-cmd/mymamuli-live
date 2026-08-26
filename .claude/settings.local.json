@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx wrangler pages deploy:*)",
+      "Bash(npx wrangler:*)",
+      "Bash(wrangler pages deploy:*)",
+      "Bash(wrangler deploy:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)"
+    ],
+    "deny": [
+      "Bash(wrangler d1 execute:*)",
+      "Bash(wrangler d1 delete:*)",
+      "Bash(rm -rf:*)",
+      "Read(./.env)",
+      "Read(./.dev.vars)"
+    ]
+  }
+}

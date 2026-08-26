@@ -69,7 +69,7 @@ gtag('config', 'G-N30XKZCDCT');
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.26-1980';
+window.MM_BUILD = '2026.08.26-1990';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1218,11 +1218,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.26-1980">
+<footer data-build="2026.08.26-1990">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-1980</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-1990</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -1470,6 +1470,22 @@ const CATN2={land:'მიწის ნაკვეთი',invest:'საინ�
 const DEALN={buy:'იყიდება',rent:'ქირავდება'};
 const catName=t=>CATN2[t]||t;
 const dealName=d=>DEALN[d]||'';
+/* ⚠️ 2026-08-26: George-ის მოთხოვნით — მოთხოვნის (request) ბარათზე
+   "ქირავდება" (რაც განცხადების/listing-ის ტერმინია, ანუ "ეს ქონება
+   გაქირავებულია") აზრობრივად არასწორია, სწორია "ქირით" (ანუ "ეძებს
+   ქირით ასაღებს"). dealName() listing-ის მხარეს უცვლელად რჩება. */
+const dealNameReq=d=>d==='rent'?'ქირით':dealName(d);
+/* ⚠️ 2026-08-26: მოთხოვნის ბარათის სათაურისთვის — "60-მდე მ²" (რიცხვი
+   ბოლოს) გრამატიკულად არასწორად იკითხება ("ვეძებ ბინა — 60-მდე მ²"),
+   სწორია "60მ²-მდე" (ერთეული რიცხვთან ერთად, "-მდე" ბოლოს). ეს
+   არსებულ reqArea()-ს არ ცვლის — ის სხვაგანაც გამოიყენება უცვლელად. */
+function reqAreaTitle(r){
+ const isEn=typeof LANG!=='undefined'&&LANG==='en';
+ if(isEn)return reqArea(r);
+ const a=r.amax>0?r.amax:r.amin;
+ if(!(a>0))return '';
+ return fmt(a)+'მ²-მდე';
+}
 /* stipShow-ის წინადადებისთვის — ბრუნვაში ჩასმული ("ეძებს X-ს"), ხელით
    დაწერილი, რომ ავტომატური ბრუნვის-მინიჭება არ შემცდარიყო. */
 const CATN2_ACC={land:'მიწის ნაკვეთს',invest:'საინვესტიციო მიწას',house:'სახლს',
@@ -3123,13 +3139,13 @@ function openReq(r){
   '<div class="rq-h"><span class="rq-tag">მყიდველის მოთხოვნა</span><span class="rq-ago">'+ago+'</span></div>'+
   '<div class="introw">'+interestHTML(r.id)+'</div>'+
   '<div class="price">'+reqBudget(r)+'</div>'+
-  '<h1 class="ttl">ვეძებ '+catName(r.rc)+' — '+reqArea(r)+'</h1>'+
+  '<h1 class="ttl">ვეძებ '+(CATN2_ACC[r.rc]||catName(r.rc))+' '+reqAreaTitle(r)+'</h1>'+
   (r.place?'<div class="rq-place"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="10" r="2.5" fill="currentColor"/></svg><span>'+r.place+'</span></div>':'')+
-  '<div class="rq-purp">'+dealName(r.deal)+'</div>'+
+  '<div class="rq-purp">'+dealNameReq(r.deal)+'</div>'+
   '<div class="blk">'+
    '<div class="h"><span class="dot" style="background:var(--amber)"></span>მოთხოვნის პარამეტრები</div>'+
    '<div class="r"><span>კატეგორია</span><span>'+catName(r.rc)+'</span></div>'+
-   '<div class="r"><span>გარიგება</span><span>'+dealName(r.deal)+'</span></div>'+
+   '<div class="r"><span>გარიგება</span><span>'+dealNameReq(r.deal)+'</span></div>'+
    '<div class="r"><span>ბიუჯეტი</span><span>'+reqBudget(r)+'</span></div>'+
    '<div class="r"><span>ფართობი</span><span>'+reqArea(r)+'</span></div>'+
    '<div class="r"><span>საძიებო არეალი</span><span>'+reqAreaLabel(r)+'</span></div>'+
@@ -3138,13 +3154,15 @@ function openReq(r){
   '<div class="blk"><div class="h"><span class="dot"></span>საშუალო ფასი</div>'+
    '<div class="r"><span>ფასი მ²-ზე</span><span>'+(reqM2(r)||'—')+'</span></div>'+
    '<div class="r"><span>სულ ბიუჯეტი</span><span>'+reqBudget(r)+'</span></div>'+
-   '<div class="note">თუ შენი განცხადება ამ არეალშია და ფასი ჯდება — შეთავაზება პირდაპირ მყიდველთან მიდის, შუამავლის გარეშე.</div></div>'+
-  /* ⚠️ 2026-08-26: George-ის მოთხოვნით — მაძიებლის თავისუფალი აღწერა
-     (ფორმის „რას ეძებ ზუსტად" ველი, r.note) ახლა აქ ჩანს, CTA
-     ღილაკებამდე — თვითონ ტექსტი ადრეც ინახებოდა ბაზაში, უბრალოდ
-     არსად ჩანდა. escHtml() სავალდებულოა — ეს მომხმარებლის ტექსტია. */
+  '</div>'+
+  /* ⚠️ 2026-08-26: George-ის მოთხოვნით — თანმიმდევრობა შეიცვალა:
+     მაძიებლის თავისუფალი აღწერა („რას ეძებს — მისი სიტყვებით") ახლა
+     დგას პირდაპირ „საშუალო ფასი"-ს შემდეგ, ხოლო შენიშვნის ყუთი
+     („თუ შენი განცხადება...") — ყველაზე ბოლოს, CTA-მდე. escHtml()
+     სავალდებულოა — ეს მომხმარებლის ტექსტია. */
   (r.note?'<div class="blk"><div class="h"><span class="dot"></span>რას ეძებს — მისი სიტყვებით</div>'+
    '<div class="rqnote">'+escHtml(r.note)+'</div></div>':'')+
+  '<div class="note">თუ შენი განცხადება ამ არეალშია და ფასი ჯდება — შეთავაზება პირდაპირ მყიდველთან მიდის, შუამავლის გარეშე.</div>'+
   '<div class="cta">'+
    '<div class="cta-row"><button class="call" id="rq-offer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M14 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>შეთავაზების გაგზავნა</button></div>'+
    '<div class="cta-row"><button class="shb" id="rq-shr"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M12 3 8 7M12 3l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>გაზიარება</button></div>'+

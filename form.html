@@ -539,6 +539,13 @@ const S={terms:false,sub:true,d1:false,d2:false,d3:false,d4:false,cat:'',deal:'b
  cad:'',cadAddr:'',price:'',area:'',
  photos:[],   /* {url, name, up} — [0] ყოველთვის ქავერია; up=true სანამ /api/upload მუშაობს */
  srcReq:''};  /* რომელ მყიდველის მოთხოვნაზე პასუხად ივსება ეს ფორმა — თუ საერთოდ */
+/* ⚠️ 2026-08-26: George-ის მოთხოვნით — თუ მომხმარებელი უკვე შესულია
+   საიტზე (mm_u სესია), ფორმამ არ უნდა სთხოვოს ხელახლა სახელი/ელფოსტა/
+   პაროლი და ბოლოს ელფოსტის კოდიც აღარ სჭირდება — სერვერი (submit.js)
+   ავტომატურად ადასტურებს სესიის cookie-ის მიხედვით. SESSION აქ მხოლოდ
+   პრეფილისთვისაა (UI) — რეალურ იდენტიფიკაციას სერვერი cookie-დან
+   იღებს, ამ ცვლადს არ ენდობა. */
+let SESSION=null;
 /* ⚠️ 2026-08-26: George-ის მოთხოვნით — „ვეძებ" (req) 4 ბიჯიდან 2-მდე
    შემცირდა: [1] რას ეძებ + ფართი/ფასი/აღწერა (ძველი paneCat+paneParams
    გაერთიანდა, დამატებითი ატრიბუტების ჩიფები მოიხსნა — იხ. task #133),
@@ -642,9 +649,10 @@ function paneReqWhere(){
    '<button class="chip'+(S.who==='ind'?' on':'')+'" data-who="ind">ფიზიკური პირი</button>'+
    '<button class="chip'+(S.who==='co'?' on':'')+'" data-who="co">იურიდიული პირი</button>'+
   '</div></div>'+
-  '<div class="row"><div class="f"><label>სახელი, გვარი</label><input id="name" value="'+S.name+'" placeholder="გიორგი ბერიძე"></div>'+
-   '<div class="f" id="femail"><label>ელფოსტა</label><input id="email" type="email" value="'+S.email+'" placeholder="mail@example.com">'+
-     '<div class="hint">დადასტურების კოდს აქ გამოგიგზავნით — მისამართი რეალური უნდა იყოს.</div>'+
+  '<div class="row"><div class="f"><label>სახელი, გვარი</label><input id="name" value="'+S.name+'" placeholder="გიორგი ბერიძე"'+(SESSION?' readonly':'')+'></div>'+
+   '<div class="f" id="femail"><label>ელფოსტა</label><input id="email" type="email" value="'+S.email+'" placeholder="mail@example.com"'+(SESSION?' readonly':'')+'>'+
+     (SESSION?'<div class="hint">შესული ხარ როგორც '+S.email+' — დამატებითი დადასტურება არ დაგჭირდება.</div>'
+             :'<div class="hint">დადასტურების კოდს აქ გამოგიგზავნით — მისამართი რეალური უნდა იყოს.</div>')+
      '<div class="err" id="emailerr">ელფოსტა არასწორია.</div></div>'+
   '</div>'+
   (S.who==='co'?'<div class="row" style="margin-top:12px">'+
@@ -658,12 +666,16 @@ function paneReqWhere(){
     '</select>'+
     '<input id="phone" inputmode="tel" value="'+S.phone+'" placeholder="'+(S.cc==='GE'?'5xx xx xx xx':'ნომერი კოდის გარეშე')+'">'+
    '</div></div>'+
-   '<div class="f" id="fpass"><label>პაროლი</label><input id="pass" type="password" value="'+S.pass+'" placeholder="მინ. 8 სიმბოლო">'+
+   /* ⚠️ 2026-08-26: SESSION-ის შემთხვევაში პაროლის ველი საერთოდ არ
+      ჩანს — მომხმარებელი უკვე შესულია, ხელახლა „შესვლა" (= პაროლის
+      მითითება) აზრს კარგავს. submit.js ასეთ მოთხოვნას პაროლის გარეშეც
+      იღებს, თუ mm_u სესია ვალიდურია. */
+   (SESSION?'':'<div class="f" id="fpass"><label>პაროლი</label><input id="pass" type="password" value="'+S.pass+'" placeholder="მინ. 8 სიმბოლო">'+
     '<div class="hint">თუ უკვე გაქვს ანგარიში ამ მეილით — ჩაწერე შენი არსებული პაროლი.</div>'+
-    '<div class="err" id="passerr">პაროლი მინ. 8 სიმბოლო უნდა იყოს.</div></div>'+
+    '<div class="err" id="passerr">პაროლი მინ. 8 სიმბოლო უნდა იყოს.</div></div>')+
   '</div>'+
   declaration()+
-  '<div class="note ok"><span>ელფოსტაზე დადასტურების კოდს გამოგიგზავნით.</span> <span>მოთხოვნა 30 დღე იქნება აქტიური.</span></div>'+
+  '<div class="note ok"><span>'+(SESSION?'შესული ხარ — დამატებითი დადასტურება არ დაგჭირდება.':'ელფოსტაზე დადასტურების კოდს გამოგიგზავნით.')+'</span> <span>მოთხოვნა 30 დღე იქნება აქტიური.</span></div>'+
  '</div>';
 }
 
@@ -885,9 +897,10 @@ function paneWho(){
    '<button class="chip'+(S.who==='co'?' on':'')+'" data-who="co">იურიდიული პირი</button>'+
   '</div></div>'+
   '<div class="row" style="margin-top:12px">'+
-   '<div class="f"><label>სახელი, გვარი</label><input id="name" value="'+S.name+'" placeholder="გიორგი ბერიძე"></div>'+
-   '<div class="f" id="femail"><label>ელფოსტა</label><input id="email" type="email" value="'+S.email+'" placeholder="mail@example.com">'+
-     '<div class="hint">დადასტურების კოდს აქ გამოგიგზავნით — მისამართი რეალური უნდა იყოს.</div>'+
+   '<div class="f"><label>სახელი, გვარი</label><input id="name" value="'+S.name+'" placeholder="გიორგი ბერიძე"'+(SESSION?' readonly':'')+'></div>'+
+   '<div class="f" id="femail"><label>ელფოსტა</label><input id="email" type="email" value="'+S.email+'" placeholder="mail@example.com"'+(SESSION?' readonly':'')+'>'+
+     (SESSION?'<div class="hint">შესული ხარ როგორც '+S.email+' — დამატებითი დადასტურება არ დაგჭირდება.</div>'
+             :'<div class="hint">დადასტურების კოდს აქ გამოგიგზავნით — მისამართი რეალური უნდა იყოს.</div>')+
      '<div class="err" id="emailerr">ელფოსტა არასწორია.</div></div>'+
   '</div>'+
   (S.who==='co'?'<div class="row" style="margin-top:12px">'+
@@ -905,7 +918,7 @@ function paneWho(){
   /* ⚠️ 2026-08-26: ორ წინადადებას შორის <span>-ები საჭიროა, თორემ ერთ
      ტექსტ-კვანძად ერწყმის და ლექსიკონის ზუსტ დამთხვევას ვერ პოულობს
      (ცალ-ცალკე ორივე ნახევარი უკვე ითარგმნება, გაერთიანებული — არა). */
-  '<div class="note ok"><span>ელფოსტაზე დადასტურების კოდს გამოგიგზავნით.</span> <span>'+
+  '<div class="note ok"><span>'+(SESSION?'შესული ხარ — დამატებითი დადასტურება არ დაგჭირდება.':'ელფოსტაზე დადასტურების კოდს გამოგიგზავნით.')+'</span> <span>'+
    (TAB==='req'?'მოთხოვნა 30 დღე იქნება აქტიური.':'განცხადება 60 დღე იქნება აქტიური.')+'</span></div>'+
   /* ═══ დეკლარაცია — გაგზავნის წინაპირობა ═══
      გამყიდველს სამი ცალკე პუნქტი აქვს, არა ერთი ზოგადი ჩამრთველი:
@@ -1303,10 +1316,17 @@ function validateWho(){
     სწორ/არასწორ პაროლს (თუ მეილი უკვე რეგისტრირებულია) სერვერი ამოწმებს
     გაგზავნისას — აქ მხოლოდ სიგრძეს ვამოწმებთ. */
  if(TAB==='req'){
-  const pf=el('fpass');
-  const passOk=(S.pass||'').length>=8;
-  if(pf)pf.classList.toggle('bad', !!S.pass && !passOk);
-  ok = ok && !!S.phone && passOk;
+  /* ⚠️ 2026-08-26: SESSION-ს (უკვე შესულს) პაროლი აღარ სჭირდება —
+     ველიც არ ჩანს (იხ. paneReqWhere). იხ. SESSION-ის კომენტარი S-ის
+     განსაზღვრებასთან. */
+  if(SESSION){
+   ok = ok && !!S.phone;
+  }else{
+   const pf=el('fpass');
+   const passOk=(S.pass||'').length>=8;
+   if(pf)pf.classList.toggle('bad', !!S.pass && !passOk);
+   ok = ok && !!S.phone && passOk;
+  }
  }
  return ok;
 }
@@ -1554,6 +1574,17 @@ try{
   });
  }
 }catch(e){}
+/* ⚠️ 2026-08-26: სესიის შემოწმება — იხ. SESSION-ის კომენტარი ზემოთ.
+   no-store, რომ ძველი cache-ირებული პასუხი ვინმეს არასწორად შესულად
+   არ დაანახოს. */
+fetch('/api/auth',{cache:'no-store'}).then(r=>r.json()).then(d=>{
+ if(d&&d.ok&&d.user){
+  SESSION=d.user;
+  if(!S.name)S.name=d.user.name||'';
+  if(!S.email)S.email=d.user.email||'';
+  render();
+ }
+}).catch(()=>{});
 render();
 </script>
 </body>

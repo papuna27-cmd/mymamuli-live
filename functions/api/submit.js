@@ -64,6 +64,32 @@ const SESSION_TTL = 30 * 86400e3;
 const setUserCookie = (v, maxAge) =>
   `${COOKIE_U}=${v}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`;
 
+/* ⚠️ 2026-08-26: George-ის მოთხოვნით — თუ ფორმის შემვსებელს უკვე აქვს
+   ვალიდური mm_u სესია (ანუ დალოგინებულია საიტზე), ხელახლა სახელი/
+   ელფოსტა/პაროლი და ბოლოს ელფოსტის კოდი აღარ უნდა მოეთხოვოს. აქ
+   ვამოწმებთ ზუსტად იმ ლოგიკით, რასაც auth.js-ის whoami() იყენებს —
+   cross-import არ გვინდა (იხ. approveToken-ის კომენტარი ქვემოთ),
+   ამიტომ დუბლირებულია. */
+function readSessionCookie(request) {
+  for (const p of (request.headers.get('cookie') || '').split(';')) {
+    const i = p.indexOf('=');
+    if (i > 0 && p.slice(0, i).trim() === COOKIE_U) return p.slice(i + 1).trim();
+  }
+  return '';
+}
+async function loggedInUser(request, env) {
+  const c = readSessionCookie(request);
+  if (!c) return null;
+  const row = await env.DB.prepare(
+    `SELECT t.user_id, t.expires, t.used, u.email, u.name, u.status
+       FROM token t JOIN users u ON u.id = t.user_id
+      WHERE t.id = ?1 AND t.kind = 'user'`
+  ).bind(await sha('u:' + c)).first();
+  if (!row || row.used || row.expires < now()) return null;
+  if (row.status === 'blocked') return null;
+  return { id: row.user_id, email: row.email, name: row.name };
+}
+
 /* წესების მოქმედი ვერსია. თუ პირობებს შეცვლი — ეს ციფრიც შეცვალე,
    მაშინ ცხადი იქნება, ვინ რომელ რედაქციას დაეთანხმა. */
 export const TERMS_V = '2026-08';
@@ -159,11 +185,17 @@ export async function onRequestPost({ request, env }) {
   if (url.searchParams.get('verify')) return verify(env, b, ip, () => kickMail(env));
   if (url.searchParams.get('resend')) return resendCode(env, b, ip, () => kickMail(env));
 
+  /* ⚠️ 2026-08-26: George-ის მოთხოვნით — მომხმარებელს, რომელიც უკვე
+     დალოგინებულია (ვალიდური mm_u სესია), აღარ სჭირდება ხელახლა
+     იდენტიფიკაცია. ამ შემთხვევაში იდენტობა cookie-დან მოდის, არა
+     ფორმიდან — ფორმაში ჩაწერილი ელფოსტა/სახელი/პაროლი აქ იგნორირდება. */
+  const sessUser = await loggedInUser(request, env);
+
   /* ================= ახალი ჩანაწერი ================= */
   const kind = b.kind === 'lst' ? 'lst' : 'req';
-  const email = normEmail(b.email);
+  const email = normEmail(sessUser ? sessUser.email : b.email);
   if (!RE_EMAIL.test(email) || email.length > 190) return J({ error: 'bad-email' }, 400);
-  if (THROWAWAY.includes(email.split('@')[1])) return J({ error: 'throwaway-email' }, 400);
+  if (!sessUser && THROWAWAY.includes(email.split('@')[1])) return J({ error: 'throwaway-email' }, 400);
 
   /* ══ დეკლარაცია — სავალდებულოა ══
      ბრაუზერში ჩამრთველებია, მაგრამ გადაწყვეტილებას სერვერი იღებს:
@@ -218,7 +250,7 @@ export async function onRequestPost({ request, env }) {
        • უკვე არსებული, მაგრამ ჯერ პაროლის-გარეშე ანგარიში (მაგ. ადრე
          მხოლოდ განცხადება/ლიდი დაუტოვებია) → ეს პაროლი ახლა ეყენება. */
   const passRaw = String(b.pass || '');
-  if (kind === 'req' && passRaw.length < 8) return J({ error: 'weak-pass' }, 400);
+  if (!sessUser && kind === 'req' && passRaw.length < 8) return J({ error: 'weak-pass' }, 400);
 
   /* --- მომხმარებელი --- */
   let u = await env.DB.prepare(`SELECT * FROM users WHERE email_norm=?1`).bind(email).first();
@@ -253,8 +285,10 @@ export async function onRequestPost({ request, env }) {
     ).run();
     u = { id, email_ok: 0, comp_ok: 0 };
   } else {
-    /* პაროლი — მხოლოდ „ვეძებ"-ის გაგზავნისას მოწმდება/ეყენება */
-    if (kind === 'req') {
+    /* პაროლი — მხოლოდ „ვეძებ"-ის გაგზავნისას მოწმდება/ეყენება, და
+       მხოლოდ მაშინ, თუ სესია არ არსებობს — დალოგინებულს პაროლი აღარ
+       მოეთხოვება (cookie უკვე ადასტურებს, ვინც არის). */
+    if (!sessUser && kind === 'req') {
       if (!u.pass) {
         const passSalt = randId('', 16);
         const passHash = await hashPass(passRaw, passSalt);
@@ -369,13 +403,51 @@ export async function onRequestPost({ request, env }) {
      დროს (მაგ. საიტის შიგთავსით შევსება) Resend-ის დღიურ ლიმიტსაც
      ზოგავს. 2026-08-25: George-ის მოთხოვნით ჩართული, საიტის
      შიგთავსით შევსების პერიოდისთვის. */
-  if (compOk) {
+  /* ⚠️ 2026-08-26: George-ის მოთხოვნით — ეს იგივე ავტო-დადასტურების
+     გზა ახლა დალოგინებულ (sessUser) ჩვეულებრივ მომხმარებელსაც ეხსნება,
+     comp_ok-ის გარდა. განსხვავებით comp_ok-ისგან: sessUser-ის შემთხვევა
+     რეალური, ახალი განცხადება/მოთხოვნაა (არა ადმინის ნაყოლი) — ამიტომ
+     admin_new შეტყობინება მაინც იგზავნება, უბრალოდ ელფოსტის კოდის
+     მოლოდინის გარეშე, რადგან ავტორი უკვე დადასტურებული ანგარიშიდან
+     წერს (cookie-ით დამტკიცებული). */
+  if (compOk || sessUser) {
     const table = kind === 'req' ? 'req' : 'lst';
-    await env.DB.batch([
+    const stmts = [
       env.DB.prepare(`UPDATE users SET email_ok=1 WHERE id=?1`).bind(u.id),
       env.DB.prepare(`UPDATE ${table} SET status='pending' WHERE id=?1 AND user_id=?2 AND status='draft'`)
         .bind(id, u.id)
-    ]);
+    ];
+    if (sessUser && !compOk) {
+      const row = await env.DB.prepare(
+        table === 'lst'
+          ? `SELECT cat,deal,ttl,loc,reg,price,area FROM lst WHERE id=?1`
+          : `SELECT cat,deal,price_min,price_max,area_min,area_max,radius FROM req WHERE id=?1`
+      ).bind(id).first();
+      if (row) {
+        const summary = table === 'lst'
+          ? [row.ttl, [row.loc, row.reg].filter(Boolean).join(', '),
+             row.price ? '$' + row.price.toLocaleString() : '', row.area ? row.area + ' მ²' : '']
+              .filter(Boolean).join(' · ')
+          : [row.price_max ? '$' + (row.price_min || 0).toLocaleString() + '–$' + row.price_max.toLocaleString() : '',
+             (row.area_min || row.area_max) ? (row.area_min || 0) + '–' + (row.area_max || 0) + ' მ²' : '',
+             row.radius ? (row.radius >= 1000 ? (row.radius / 1000).toFixed(1) + ' კმ' : row.radius + ' მ') + ' რადიუსი' : '']
+              .filter(Boolean).join(' · ');
+        const tok = await approveToken(env, table, id);
+        stmts.push(
+          env.DB.prepare(
+            `INSERT INTO mailq (user_id,to_addr,kind,payload,created) VALUES (?1,?2,'admin_new',?3,?4)`
+          ).bind(u.id, 'info@mymamuli.ge', JSON.stringify({
+            id, kind: table,
+            cat: row.cat, deal: row.deal,
+            summary, userEmail: email,
+            approveUrl: tok ? `https://mymamuli.ge/api/mod?approve=${id}&kind=${table}&t=${tok}` : null,
+            modLink: 'https://mymamuli.ge/mod.html'
+          }), now())
+        );
+      }
+    }
+    await env.DB.batch(stmts);
+    if (sessUser && !compOk) await kickMail(env);
     return J({
       ok: true, id, autoVerified: true,
       cad: o.cad ? { ok: cadOk, addr: cadAddr, why: cadWhy } : undefined

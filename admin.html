@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0E1A16">
+<title>MyMamuli.ge — ანალიტიკა</title>
+<style>
+:root{--ink:#0E1A16;--ink2:#4A5A54;--mute:#93A09B;--line:#E4E8E6;--brand:#0F6B4F;--sand:#F7F5F1;
+ --amber:#C8873A;--up:#0F6B4F;--down:#C0453B;--sh:0 1px 2px rgba(14,26,22,.05),0 8px 24px rgba(14,26,22,.07)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font:400 15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Georgian",sans-serif;
+ color:var(--ink);background:#F4F6F5;-webkit-text-size-adjust:100%}
+button{font:inherit;cursor:pointer}
+
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.hb{max-width:1180px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:7px;font-weight:700;font-size:16px;white-space:nowrap}
+.logo b{color:var(--brand)}
+.tagadm{background:var(--ink);color:#fff;font:700 10px/1 inherit;padding:5px 8px;border-radius:6px;letter-spacing:.5px}
+.sp{flex:1}
+.per{display:flex;gap:5px}
+.per button{height:30px;padding:0 11px;border:1px solid var(--line);background:#fff;border-radius:8px;
+ font-size:12.5px;color:var(--ink2)}
+.per button.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+.views{display:flex;gap:5px;background:var(--sand);padding:3px;border-radius:10px}
+.views button{height:30px;padding:0 13px;border:0;background:transparent;border-radius:8px;
+ font-size:12.5px;font-weight:600;color:var(--ink2)}
+.views button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(14,26,22,.10)}
+.warn{background:#FEF6E7;border-bottom:1px solid #F5E3C0;color:#8A5D14;font-size:12.5px;padding:8px 16px;text-align:center}
+
+main{max-width:1180px;margin:0 auto;padding:18px 16px 40px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 15px;box-shadow:var(--sh)}
+.kpi .l{font-size:11.5px;color:var(--ink2);letter-spacing:.2px}
+.kpi .v{font-size:26px;font-weight:700;letter-spacing:-.7px;margin-top:4px;line-height:1.1}
+.kpi .d{font-size:12px;font-weight:600;margin-top:3px}
+.kpi .d.u{color:var(--up)} .kpi .d.dn{color:var(--down)} .kpi .d.z{color:var(--mute)}
+
+.row{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-bottom:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
+.ch{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.ch h2{font-size:13.5px;font-weight:700;letter-spacing:-.1px}
+.ch span{font-size:11.5px;color:var(--mute)}
+.cb{padding:8px 16px 14px}
+
+.bar{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #F0F3F1}
+.bar:last-child{border-bottom:0}
+.bar .n{width:22px;font-size:11.5px;color:var(--mute);text-align:right;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.bar .t{flex:0 0 132px;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .g{flex:1;height:9px;background:#EEF2F0;border-radius:5px;overflow:hidden;min-width:40px}
+.bar .g i{display:block;height:100%;border-radius:5px;background:var(--brand)}
+.bar.amber .g i{background:var(--amber)}
+.bar .p{flex:0 0 auto;font-size:13px;font-weight:700;width:46px;text-align:right;font-variant-numeric:tabular-nums}
+.bar .c{flex:0 0 auto;font-size:11.5px;font-weight:600;width:52px;text-align:right;font-variant-numeric:tabular-nums}
+.bar .c.u{color:var(--up)} .bar .c.dn{color:var(--down)} .bar .c.z{color:var(--mute)}
+
+.don{display:flex;gap:16px;align-items:center;padding:6px 0 10px}
+.don svg{flex:0 0 auto}
+.leg{flex:1;min-width:0}
+.leg div{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px}
+.leg i{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
+.leg b{margin-left:auto;font-variant-numeric:tabular-nums}
+
+.q{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #F0F3F1;font-size:13.5px}
+.q:last-child{border-bottom:0}
+.q b{color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+.note{padding:12px 16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--mute);line-height:1.55}
+.empty{padding:34px 16px;text-align:center;color:var(--ink2);font-size:13.5px;line-height:1.6}
+
+@media(max-width:900px){
+ .kpis{grid-template-columns:1fr 1fr}
+ .row{grid-template-columns:1fr}
+ .bar .t{flex:0 0 106px;font-size:13px}
+ .bar .c{width:46px}
+ .hb{padding:10px 12px;gap:10px}
+ main{padding:14px 12px 34px}
+ .kpi .v{font-size:22px}
+}
+@media(max-width:420px){
+ .bar .t{flex:0 0 88px;font-size:12.5px}
+ .bar .n{display:none}
+ .don{flex-direction:column;align-items:stretch;gap:6px}
+ .don svg{align-self:center}
+}
+
+.vt{width:100%;border-collapse:collapse;font-size:13px}
+.vt th{text-align:left;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--mute);
+ padding:0 10px 8px;font-weight:700;border-bottom:1px solid var(--line)}
+.vt th:not(:first-child),.vt td:not(:first-child){text-align:right}
+.vt td{padding:9px 10px;border-bottom:1px solid var(--line)}
+.vt tr:last-child td{border-bottom:0}
+.vt td:first-child{font-weight:600;color:var(--ink)}
+.vt .num{font-variant-numeric:tabular-nums}
+.vt .lv{display:inline-flex;align-items:center;gap:5px}
+.vt .lv i{width:3.5px;border-radius:2px;background:var(--line);display:block}
+.vt .lv i:nth-child(1){height:6px}.vt .lv i:nth-child(2){height:9px}.vt .lv i:nth-child(3){height:12px}
+.vt .lv.l1 i:nth-child(-n+2){background:var(--amber)}
+.vt .lv.l2 i{background:var(--down)}
+.vempty{padding:22px 12px;text-align:center;color:var(--mute);font-size:13px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hb">
+    <div class="logo">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M3 19.5V8.2L12 3l9 5.2v11.3" stroke="#0F6B4F" stroke-width="2" stroke-linejoin="round"/><path d="M3 19.5h18" stroke="#0F6B4F" stroke-width="2" stroke-linecap="round"/><path d="M9.5 19.5v-5.3h5v5.3" stroke="#C8873A" stroke-width="2" stroke-linejoin="round"/></svg>
+      My<b>Mamuli</b>
+    </div>
+    <div class="views" id="views">
+      <button data-v="an" class="on">ანალიტიკა</button>
+      <button data-v="mod">მოდერაცია</button>
+    </div>
+    <a href="users.html" title="მომხმარებლები"
+      style="height:30px;display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;padding:0 12px;font:inherit;font-size:12.5px;font-weight:600;color:var(--ink2);text-decoration:none;background:#fff">მომხმარებლები</a>
+    <div class="sp"></div>
+    <button id="akey" title="ადმინის სესია"
+      style="height:30px;border:1px solid var(--line);border-radius:8px;padding:0 12px;font:inherit;font-size:12.5px;margin-right:8px;background:#fff;cursor:pointer">შესვლა</button>
+    <div class="per" id="per">
+      <button data-d="7">7 დღე</button>
+      <button data-d="30" class="on">30 დღე</button>
+      <button data-d="90">90 დღე</button>
+    </div>
+  </div>
+</header>
+
+<div id="viewAn">
+<div class="warn" id="warn" style="display:none"></div>
+
+<main>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="row">
+    <div class="card">
+      <div class="ch"><h2>რეგიონები — სად ეძებენ ყველაზე მეტს</h2><span id="sub-reg"></span></div>
+      <div class="cb" id="regs"></div>
+      <div class="note">ითვლება რუკის დათვალიერება, ბარათის გახსნა და ნომრის ჩვენება. პროცენტი — წილი მთლიან აქტივობაში, ისარი — ცვლილება წინა პერიოდთან.</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h2>ქონების ტიპი</h2><span id="sub-typ"></span></div>
+      <div class="cb"><div class="don" id="types"></div></div>
+      <div class="note">რომელ კატეგორიაზეა ყველაზე მეტი ინტერესი — მიწა, სახლი, კომერციული თუ საინვესტიციო.</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <div class="ch"><h2>ქალაქები და სოფლები</h2><span id="sub-city"></span></div>
+      <div class="cb" id="cities"></div>
+      <div class="note">კონკრეტული დასახლებები, სადაც მოთხოვნა იზრდება. აქ ჩანს, სად ღირს განცხადებების მოზიდვა.</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h2>ქცევა</h2><span id="sub-beh"></span></div>
+      <div class="cb" id="beh"></div>
+      <div class="note">კონვერსია: რამდენი დამთვალიერებელი აღწევს ნომრის ჩვენებამდე.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="ch"><h2>ინტერფეისის მოვლენები</h2><span id="sub-ev"></span></div>
+    <div class="cb" id="evb"></div>
+    <div class="note">რეალური მოვლენები <code>/api/track</code>-იდან. აქ ჩანს, მაგალითად, რამდენად ხშირად კეცავენ ფუტერს
+    (<code>ფუტერის ჩაკეცვა</code> / <code>გაშლა</code>) — თუ ჩაკეცვა ბევრად ჭარბობს, ღირს ნაგულისხმევის შეცვლა.</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="ch"><h2>ტოპ 100 — ყველაზე ნანახი განცხადება</h2><span id="sub-views"></span></div>
+    <div class="cb" id="vtbl"></div>
+    <div class="note">ითვლება ბარათის გახსნა. „დღეს" თბილისის დროით ნულდება შუაღამეს.
+    საიტზე მყიდველს მხოლოდ დონე უჩანს (დაბალი / საშუალო / მაღალი) — ზუსტი ციფრი მხოლოდ აქ არის.</div>
+  </div>
+</main>
+</div>
+
+<div id="viewMod" style="display:none">
+  <iframe id="modFrame" title="მოდერაცია" style="width:100%;display:block;border:0"></iframe>
+</div>
+
+<div id="lsheet" style="display:none;position:fixed;inset:0;z-index:90;background:rgba(14,26,22,.42);align-items:center;justify-content:center;padding:16px">
+  <form id="lform" autocomplete="on" style="background:#fff;border-radius:16px;padding:22px;width:min(340px,100%);box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:14px">ადმინის სესია</h3>
+    <input type="text" name="username" autocomplete="username" value="admin" style="position:absolute;left:-9999px;top:auto" tabindex="-1" aria-hidden="true">
+    <label style="font-size:12.5px;color:var(--ink2);display:block;margin-bottom:6px">ADMIN_KEY</label>
+    <input type="password" id="lpass" name="password" autocomplete="current-password" placeholder="ADMIN_KEY"
+      style="width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;font:inherit;font-size:14px;margin-bottom:8px;box-sizing:border-box">
+    <div id="lerr" style="color:var(--down,#C0453B);font-size:12.5px;min-height:16px;margin-bottom:8px"></div>
+    <div style="display:flex;gap:8px">
+      <button type="button" id="lcancel" style="flex:1;height:42px;border-radius:10px;background:var(--sand);font:inherit;font-weight:600;border:0;cursor:pointer">გაუქმება</button>
+      <button type="submit" style="flex:1;height:42px;border-radius:10px;background:var(--brand);color:#fff;font:inherit;font-weight:600;border:0;cursor:pointer">შესვლა</button>
+    </div>
+  </form>
+</div>
+
+<script>
+const el=id=>document.getElementById(id);
+const fmt=n=>new Intl.NumberFormat('ka-GE').format(Math.round(n));
+const TN={land:'მიწის ნაკვეთი',house:'სახლი / ბინა',comm:'კომერციული',invest:'საინვესტიციო'};
+const COL={land:'#0F6B4F',house:'#3E8E6F',comm:'#C8873A',invest:'#7A6BA8'};
+let days=30, DEMO=false;
+
+/* ---------- დემო-მონაცემი: მხოლოდ მაშინ, თუ /api/stats ჯერ არ არსებობს ---------- */
+const SAMPLE={
+ range:{days:30},
+ kpi:{visitors:0,views:0,cards:0,phones:0},
+ regions:[],cities:[],types:[],
+ demo:{
+  kpi:{visitors:2840,views:11920,cards:1640,phones:214},
+  prev:{visitors:2190,views:9010,cards:1180,phones:141},
+  regions:[['მცხეთა-მთიანეთი',24.1,31],['თბილისი',19.4,8],['კახეთი',15.8,44],['აჭარა',11.2,-6],
+           ['სამცხე-ჯავახეთი',9.7,18],['ქვემო ქართლი',7.3,3],['იმერეთი',6.1,-2],['სამეგრელო',6.4,12]],
+  cities:[['მჭადიჯვარი',9.8,52],['ბაკურიანი',8.4,27],['წავკისი',7.1,14],['ყვარელი',6.6,38],
+          ['გუდაური',5.9,61],['მცხეთა',5.2,9],['ანაკლია',4.8,22],['სიონი',3.9,17],
+          ['ქობულეთი',3.6,-4],['ლაგოდეხი',3.1,6]],
+  types:[['land',58.2],['house',21.6],['comm',11.4],['invest',8.8]],
+  beh:[['რუკის დათვალიერება',11920],['ბარათის გახსნა',1640],['ნომრის ჩვენება',214],['ფილტრის გამოყენება',892],['„ვეძებ" ტაბი',430]]
+ }
+};
+
+function chg(v){
+ if(v==null)return '<span class="c z">—</span>';
+ const c=v>0?'u':(v<0?'dn':'z');
+ return '<span class="c '+c+'">'+(v>0?'▲':(v<0?'▼':''))+Math.abs(v)+'%</span>';
+}
+function kpi(l,v,prev){
+ let d='<div class="d z">—</div>';
+ if(prev){const p=Math.round((v-prev)/prev*100);
+  d='<div class="d '+(p>0?'u':(p<0?'dn':'z'))+'">'+(p>0?'▲ +':(p<0?'▼ ':''))+Math.abs(p)+'% წინა პერიოდთან</div>';}
+ return '<div class="kpi"><div class="l">'+l+'</div><div class="v">'+fmt(v)+'</div>'+d+'</div>';
+}
+function bars(rows,amber){
+ if(!rows.length)return '<div class="empty">ჯერ არაფერია.</div>';
+ const max=Math.max(...rows.map(r=>r[1]));
+ return rows.map((r,i)=>
+  '<div class="bar'+(amber?' amber':'')+'"><span class="n">'+(i+1)+'</span>'+
+  '<span class="t">'+r[0]+'</span>'+
+  '<span class="g"><i style="width:'+(r[1]/max*100).toFixed(1)+'%"></i></span>'+
+  '<span class="p">'+r[1].toFixed(1)+'%</span>'+chg(r[2])+'</div>').join('');
+}
+function donut(rows){
+ if(!rows.length)return '<div class="empty">ჯერ არაფერია.</div>';
+ const R=52,C=2*Math.PI*R; let off=0;
+ const segs=rows.map(([k,v])=>{
+  const len=C*v/100, s='<circle cx="64" cy="64" r="'+R+'" fill="none" stroke="'+(COL[k]||'#999')+
+   '" stroke-width="21" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+
+   '" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 64 64)"/>';
+  off+=len; return s;}).join('');
+ const leg=rows.map(([k,v])=>'<div><i style="background:'+(COL[k]||'#999')+'"></i>'+(TN[k]||k)+'<b>'+v.toFixed(1)+'%</b></div>').join('');
+ return '<svg width="128" height="128" viewBox="0 0 128 128">'+segs+'</svg><div class="leg">'+leg+'</div>';
+}
+
+/* ═══════ ადმინის სესია ═══════
+   გასაღები აღარ ინახება localStorage-ში და აღარ მიდის URL-ში.
+   ერთხელ იგზავნება POST-ის სხეულში; სანაცვლოდ HttpOnly cookie გაიცემა,
+   რომელსაც JavaScript ვერ კითხულობს. fetch მას თავისით ატარებს. */
+let AUTHED=false;
+async function chkAuth(){
+ try{const r=await fetch('/api/admin',{cache:'no-store'});AUTHED=r.ok&&(await r.json()).ok}
+ catch(e){AUTHED=false}
+ return AUTHED;
+}
+function openLogin(){
+ el('lerr').textContent=''; el('lpass').value=''; el('lsheet').style.display='flex';
+ setTimeout(()=>el('lpass').focus(),30);
+}
+function closeLogin(){ el('lsheet').style.display='none'; }
+el('lcancel').onclick=closeLogin;
+el('lsheet').onclick=e=>{ if(e.target===el('lsheet'))closeLogin(); };
+el('lform').onsubmit=async e=>{
+ e.preventDefault();
+ const k=el('lpass').value.trim();
+ if(!k)return;
+ const btn=el('lform').querySelector('button[type=submit]');
+ btn.disabled=true;
+ let r;
+ try{r=await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({key:k})})}catch(err){el('lerr').textContent='კავშირი ვერ დამყარდა.';btn.disabled=false;return}
+ AUTHED=r.ok;
+ btn.disabled=false;
+ if(!AUTHED){el('lerr').textContent=r.status===429?'ძალიან ბევრი მცდელობა — სცადე ერთ საათში.':'გასაღები არ ემთხვევა.';return}
+ /* ფორმის ნამდვილი submit-ი (fetch-ით ჩაჭერამდე) ბრაუზერს პაროლის მენეჯერს აჩვენებინებს —
+    „შენახვა?" შეთავაზება ავტომატურად გამოჩნდება წარმატებული შესვლის შემდეგ. */
+ closeLogin(); paintAuth(); load();
+};
+async function logout(){
+ try{await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({out:1})})}catch(e){}
+ AUTHED=false;
+}
+function paintAuth(){
+ const b=el('akey'); if(!b)return;
+ b.textContent=AUTHED?'✓ შესული':'შესვლა';
+ b.style.color=AUTHED?'var(--brand)':'';
+ b.style.borderColor=AUTHED?'var(--brand)':'var(--line)';
+}
+el('akey').onclick=async()=>{
+ if(AUTHED){await logout(); paintAuth(); load();} else {openLogin();}
+};
+const INT_HI=25,INT_MID=8;
+function lvl(n){return n>=INT_HI?2:(n>=INT_MID?1:0)}
+async function loadViews(){
+ const box=el('vtbl');
+ if(!AUTHED){box.innerHTML='<div class="vempty">დააჭირე „შესვლა" ზემოთ. გასაღები Cloudflare-ში <code>ADMIN_KEY</code> ცვლადადაა.</div>';return}
+ let d=null;
+ try{const r=await fetch('/api/views?days='+days,{cache:'no-store'});
+   if(r.ok)d=await r.json();
+   else if(r.status===401){AUTHED=false;paintAuth();box.innerHTML='<div class="vempty">სესია დასრულდა — შედი ხელახლა.</div>';return}
+ }catch(e){}
+ if(!d){box.innerHTML='<div class="vempty"><code>/api/views</code> ჯერ არ მუშაობს.<br>ატვირთე <code>functions/</code> და მიაბი D1 ბაზა.</div>';return}
+ const rows=d.totals||[];
+ el('sub-views').textContent='ტოპ '+rows.length+' · '+(d.range?d.range.days+' დღე':'');
+ if(!rows.length){box.innerHTML='<div class="vempty">ნახვები ჯერ არ დაფიქსირებულა.</div>';return}
+ box.innerHTML='<table class="vt"><thead><tr><th>#</th><th>განცხადება</th><th>დღეს</th><th>7 დღე</th><th>30 დღე</th><th>სულ</th><th>ინტერესი</th></tr></thead><tbody>'+
+  rows.map((r,i)=>{const L=lvl(r.today||0);
+   return '<tr><td class="num" style="color:var(--mute)">'+(i+1)+'</td>'+
+    '<td><a href="/g/'+r.id+'/" target="_blank" rel="noopener" style="color:var(--brand);text-decoration:none">'+r.id+'</a></td>'+
+    '<td class="num">'+(r.today||0)+'</td><td class="num">'+(r.week||0)+
+    '</td><td class="num">'+(r.month||0)+'</td><td class="num"><b>'+(r.total||0)+'</b></td>'+
+    '<td><span class="lv l'+L+'"><i></i><i></i><i></i></span></td></tr>';
+  }).join('')+'</tbody></table>';
+}
+
+/* ---------- ინტერფეისის მოვლენები ---------- */
+const EVN={
+ foot_min:'ფუტერის ჩაკეცვა', foot_max:'ფუტერის გაშლა',
+ gallery:'გალერეის გახსნა',  phone:'ნომრის ჩვენება',
+ card:'ბარათის გახსნა',      seek:'„ვეძებ" ტაბი',
+ filter:'ფილტრის გამოყენება',compare:'შედარება',
+ share:'გაზიარება',          lang:'ენის გადართვა',
+ area:'ამ არეალში ძებნა',    measure:'გაზომვა'
+};
+async function loadEvents(){
+ const box=el('evb');
+ if(!AUTHED){box.innerHTML='<div class="vempty">დააჭირე „შესვლა" ზემოთ.</div>';return}
+ let d=null;
+ try{const r=await fetch('/api/track?days='+days,{cache:'no-store'});
+  if(r.ok)d=await r.json();
+  else if(r.status===401){AUTHED=false;paintAuth();box.innerHTML='<div class="vempty">სესია დასრულდა — შედი ხელახლა.</div>';return}
+ }catch(e){}
+ if(!d){box.innerHTML='<div class="vempty"><code>/api/track</code> ჯერ არ მუშაობს.<br>ატვირთე <code>functions/</code> და მიაბი D1 ბაზა.</div>';return}
+ const rows=(d.events||[]).filter(r=>r.name&&r.name!=='x');
+ el('sub-ev').textContent=days+' დღე';
+ if(!rows.length){box.innerHTML='<div class="vempty">მოვლენები ჯერ არ დაფიქსირებულა.</div>';return}
+ const max=Math.max(...rows.map(r=>r.n))||1;
+ box.innerHTML=rows.map(r=>
+  '<div class="q"><span>'+(EVN[r.name]||r.name)+'</span><b>'+fmt(r.n)+'</b></div>'+
+  '<div style="height:3px;border-radius:2px;background:var(--line);margin:-4px 0 8px">'+
+   '<div style="height:3px;border-radius:2px;background:var(--brand);width:'+(r.n/max*100).toFixed(1)+'%"></div></div>'
+ ).join('');
+ /* ჩაკეცვის თანაფარდობა — ერთი ციფრი, რომელიც პასუხს იძლევა */
+ const mn=rows.find(r=>r.name==='foot_min'), mx=rows.find(r=>r.name==='foot_max');
+ if(mn){
+  const tot=(mn.n||0)+(mx?mx.n:0);
+  box.innerHTML+='<div class="q" style="border-top:1px solid var(--line);margin-top:6px;padding-top:10px">'+
+   '<span><b style="color:var(--ink)">ფუტერს კეცავს</b></span><b style="color:var(--brand)">'+
+   (mn.n/tot*100).toFixed(0)+'%</b></div>';
+ }
+}
+
+async function load(){
+ if(!AUTHED){
+  el('warn').style.display='none';
+  el('kpis').innerHTML='<div class="empty" style="grid-column:1/-1;padding:40px 16px">🔒 ეს გვერდი მხოლოდ ადმინისთვისაა. დააჭირე ზემოთ „შესვლა"-ს.</div>';
+  el('regs').innerHTML='';el('cities').innerHTML='';el('types').innerHTML='';el('beh').innerHTML='';el('evb').innerHTML='';
+  ['sub-reg','sub-typ','sub-city','sub-beh','sub-ev'].forEach(i=>el(i).textContent='');
+  loadViews();loadEvents();
+  return;
+ }
+ loadViews();
+ loadEvents();
+ let d=null;
+ try{
+  const r=await fetch('/api/stats?days='+days,{cache:'no-store'});
+  if(r.ok)d=await r.json();
+ }catch(e){}
+ DEMO=!d||!d.kpi||!d.kpi.views;
+ if(DEMO){
+  d={...SAMPLE.demo};
+  el('warn').style.display='block';
+  el('warn').innerHTML='⚠️ <b>დემონსტრაციული მონაცემი.</b> რეალური სტატისტიკა გამოჩნდება, როცა <code>/api/track</code> და <code>/api/stats</code> ამუშავდება და ვიზიტორები დაგროვდება.';
+ }else{
+  el('warn').style.display='none';
+ }
+
+ el('kpis').innerHTML=
+  kpi('ვიზიტორი',d.kpi.visitors,d.prev&&d.prev.visitors)+
+  kpi('რუკის დათვალიერება',d.kpi.views,d.prev&&d.prev.views)+
+  kpi('გახსნილი განცხადება',d.kpi.cards,d.prev&&d.prev.cards)+
+  kpi('ნომრის ჩვენება',d.kpi.phones,d.prev&&d.prev.phones);
+
+ el('regs').innerHTML=bars(d.regions||[]);
+ el('cities').innerHTML=bars(d.cities||[],true);
+ el('types').innerHTML=donut(d.types||[]);
+
+ const b=d.beh||[];
+ el('beh').innerHTML=b.length
+  ? b.map(x=>'<div class="q"><span>'+x[0]+'</span><b>'+fmt(x[1])+'</b></div>').join('')+
+    (d.kpi.views?'<div class="q" style="border-top:1px solid var(--line);margin-top:6px;padding-top:10px"><span><b style="color:var(--ink)">ნომრამდე მისვლა</b></span><b style="color:var(--brand)">'+
+      (d.kpi.phones/d.kpi.views*100).toFixed(1)+'%</b></div>':'')
+  : '<div class="empty">ჯერ არაფერია.</div>';
+
+ const t=days+' დღე'+(DEMO?' · დემო':'');
+ ['sub-reg','sub-typ','sub-city','sub-beh'].forEach(i=>el(i).textContent=t);
+}
+
+el('per').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+ el('per').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on'); days=+b.dataset.d; load();
+});
+
+/* ---------- ანალიტიკა ⇄ მოდერაცია — ერთი ადმინკა, ორი ხედი ---------- */
+function sizeModFrame(){
+ const h=document.querySelector('header').offsetHeight;
+ el('modFrame').style.height=(window.innerHeight-h)+'px';
+}
+el('views').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+ el('views').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');
+ const isMod=b.dataset.v==='mod';
+ el('viewAn').style.display=isMod?'none':'';
+ el('viewMod').style.display=isMod?'':'none';
+ el('akey').style.display=isMod?'none':'';
+ el('per').style.display=isMod?'none':'';
+ if(isMod){
+  const f=el('modFrame');
+  if(!f.src||f.src==='about:blank')f.src='mod.html';
+  sizeModFrame();
+ }
+});
+addEventListener('resize',()=>{ if(el('viewMod').style.display!=='none')sizeModFrame() });
+
+/* სესიას ჯერ ვამოწმებთ — თუ ცოცხალია, გასაღები აღარ იკითხება */
+(async()=>{ await chkAuth(); paintAuth(); load() })();
+</script>
+</body>
+</html>

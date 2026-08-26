@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>MyMamuli.ge — ფორმები</title>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" integrity="sha384-MinO0mNliZ3vwppuPOUnGa+iq619pfMhLVUXfC4LHwSCvF9H+6P/KO4Q7qBOYV5V" crossorigin="anonymous">
+<style>
+:root{--ink:#0E1A16;--ink2:#4A5A54;--mute:#93A09B;--line:#E4E8E6;--brand:#0F6B4F;--sand:#F7F5F1;
+ --amber:#C8873A;--down:#C0453B;--sh:0 1px 2px rgba(14,26,22,.05),0 10px 34px rgba(14,26,22,.09)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font:400 15.5px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Georgian",sans-serif;
+ color:var(--ink);background:#EDF1EF;padding:26px 16px;display:grid;place-items:start center;min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+
+/* ============ ფანჯარა — ლეპტოპზე უფრო ფართო ============ */
+.mdl{background:#fff;border-radius:22px;width:100%;max-width:1080px;box-shadow:var(--sh);overflow:hidden}
+.mdh{display:flex;align-items:center;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line)}
+.fl{font-weight:700;font-size:16px;letter-spacing:-.2px}
+.fl b{color:var(--brand)}
+.mdx{margin-left:auto;width:32px;height:32px;border:0;background:var(--sand);border-radius:9px;cursor:pointer;color:var(--ink2)}
+.mdt{display:flex;gap:2px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.mdt button{border:0;background:none;padding:10px 18px;border-radius:12px;font-size:14.5px;color:var(--ink2);
+ cursor:pointer;font-weight:600;letter-spacing:-.2px;transition:background .16s,color .16s}
+.mdt button:hover{background:var(--sand)}
+.mdt button.on{background:var(--brand);color:#fff}
+.mdb{padding:30px 34px 30px}
+
+/* ============ ბიჯები ============ */
+.steps{display:flex;gap:5px;margin-bottom:26px}
+.steps i{flex:1;height:4px;border-radius:3px;background:var(--line);
+ transition:background .35s cubic-bezier(.22,1,.36,1)}
+.steps i.on{background:var(--brand)}
+.stitle{font-size:11.5px;font-weight:600;letter-spacing:.4px;color:var(--mute);margin-bottom:10px}
+.sh{font-size:26px;font-weight:700;letter-spacing:-.6px;line-height:1.2;margin-bottom:6px}
+.ssub{font-size:14.5px;color:var(--ink2);margin-bottom:26px;line-height:1.5;max-width:600px}
+.pane{display:none} .pane.on{display:block}
+
+/* ============ ელემენტები ============ */
+.grp{margin-bottom:22px}
+.grp>label{display:block;font-size:12.5px;font-weight:600;letter-spacing:-.1px;color:var(--mute);margin-bottom:9px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:0;background:var(--sand);border-radius:14px;padding:11px 17px;font-size:14.5px;font-weight:500;
+ color:var(--ink);cursor:pointer;transition:transform .16s cubic-bezier(.22,1,.36,1),background .16s,box-shadow .16s}
+.chip:hover{background:#EFEDE8}
+.chip:active{transform:scale(.97)}
+.chip.on{background:var(--brand);color:#fff;font-weight:600;box-shadow:0 4px 14px rgba(15,107,79,.24)}
+.chip.on small{color:rgba(255,255,255,.75)}
+.chip small{display:block;font-size:10.5px;color:var(--mute)}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.f{display:block}
+.f label{display:block;font-size:12.5px;font-weight:600;color:var(--mute);margin-bottom:7px;letter-spacing:-.1px}
+.f input,.f select{width:100%;height:50px;border:0;border-radius:14px;padding:0 15px;background:var(--sand);
+ outline:0;font-size:16px;transition:background .16s,box-shadow .16s}
+.f input::placeholder{color:#B3BCB8}
+.f input:focus,.f select:focus{background:#fff;box-shadow:0 0 0 2px var(--brand),0 4px 16px rgba(15,107,79,.1)}
+.f .hint{font-size:12.5px;color:var(--mute);margin-top:6px;line-height:1.45}
+.f .err{font-size:12.5px;color:var(--down);margin-top:6px;display:none}
+.f.bad input{box-shadow:0 0 0 2px var(--down)}
+.f.bad .err{display:block}
+.f .ok{font-size:12.5px;color:var(--brand);margin-top:6px;font-weight:600;display:none;line-height:1.45}
+.f.good .ok{display:block}
+.f.good input{box-shadow:0 0 0 2px var(--brand)}
+.f textarea{width:100%;height:auto;min-height:92px;border:0;border-radius:14px;padding:13px 15px;
+ background:var(--sand);outline:0;font:inherit;font-size:16px;line-height:1.5;resize:vertical;
+ transition:background .16s,box-shadow .16s}
+.f textarea::placeholder{color:#B3BCB8}
+.f textarea:focus{background:#fff;box-shadow:0 0 0 2px var(--brand),0 4px 16px rgba(15,107,79,.1)}
+
+/* ============ „ვეძებ" — ინტრო ახსნა ბიჯი-1-ის თავზე ============
+   2026-08-26: George-ის მოთხოვნით — index.html→PAGES.seek-ის იგივე
+   ახსნა, ფორმის სტილში, კატეგორიის არჩევამდე (ჯერ ინფორმაცია, შემდეგ
+   ქმედება). იხ. task #134. */
+.intro{background:var(--sand);border-radius:16px;padding:20px 22px;margin-bottom:26px}
+.intro h3{font-size:17px;letter-spacing:-.2px;margin-bottom:8px}
+.intro .lead{font-size:14px;color:var(--ink2);line-height:1.55}
+.intro h4{font-size:12.5px;font-weight:700;color:var(--ink);margin:16px 0 12px}
+.stp .s{display:flex;gap:11px;margin-bottom:11px}
+.stp .s:last-child{margin-bottom:0}
+.stp .sn{flex:0 0 auto;width:23px;height:23px;border-radius:50%;background:var(--brand);color:#fff;
+ font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.stp .st{font-size:13.5px;line-height:1.5}
+.stp .st b{display:block;margin-bottom:2px;font-size:14px}
+.stp .st span{color:var(--ink2)}
+
+/* ============ ქალაქის ძებნა (რუკის თავზე) ============ */
+.citysearch{position:relative;margin-bottom:10px}
+.citysearch input{width:100%;height:46px;border:1.5px solid var(--line);border-radius:12px;
+ padding:0 14px;font:inherit;font-size:15px;box-sizing:border-box;background:#fff}
+.citysearch input:focus{border-color:var(--brand);outline:0}
+.cityres{position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border-radius:12px;
+ box-shadow:0 6px 24px rgba(14,26,22,.16);overflow:hidden;z-index:20;display:none;max-height:260px;overflow-y:auto}
+.cityres.on{display:block}
+.cityopt{padding:11px 14px;font-size:14px;cursor:pointer}
+.cityopt:hover{background:var(--sand)}
+.cityopt.cityempty{color:var(--mute);cursor:default}
+.cityopt.cityempty:hover{background:none}
+
+/* ============ რუკა ============ */
+.mapwrap{position:relative;border:0;border-radius:18px;overflow:hidden;height:460px;
+ box-shadow:0 1px 3px rgba(14,26,22,.07),0 12px 32px rgba(14,26,22,.09)}
+#map,#map2{width:100%;height:100%}
+.zgate{position:absolute;inset:0;background:rgba(14,26,22,.55);display:grid;place-items:center;
+ color:#fff;font-size:14px;font-weight:600;text-align:center;padding:20px;z-index:5;pointer-events:none;transition:.25s}
+.zgate.off{opacity:0;visibility:hidden}
+.zgate span{display:block;font-size:12px;font-weight:400;opacity:.85;margin-top:5px}
+.pinbtn{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:6;
+ background:var(--brand);color:#fff;border:0;border-radius:999px;height:46px;padding:0 24px;
+ font-weight:600;font-size:14.5px;letter-spacing:-.2px;cursor:pointer;
+ box-shadow:0 6px 22px rgba(0,0,0,.32);transition:transform .16s cubic-bezier(.22,1,.36,1),background .16s}
+.pinbtn:active{transform:translateX(-50%) scale(.97)}
+.pinbtn[disabled]{background:rgba(255,255,255,.9);color:#6C7A75;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.xhair{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;pointer-events:none;
+ width:26px;height:26px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.35);display:none}
+.xhair.on{display:block}
+.xhair:after{content:'';position:absolute;left:50%;top:50%;width:4px;height:4px;background:#fff;border-radius:50%;transform:translate(-50%,-50%)}
+
+.radbox{margin-top:12px;background:var(--sand);border-radius:12px;padding:13px 15px}
+.radtop{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
+.radtop b{font-size:17px;font-variant-numeric:tabular-nums}
+.radtop span{font-size:12px;color:var(--ink2)}
+.radtop .cnt{margin-left:auto;font-size:12.5px;font-weight:700}
+.radtop .cnt.zero{color:var(--amber)}
+.radtop .cnt.some{color:var(--brand)}
+input[type=range]{width:100%;accent-color:var(--brand)}
+.radlbl{display:flex;justify-content:space-between;font-size:11px;color:var(--mute);margin-top:2px}
+
+.note{display:flex;gap:10px;background:#FDF6EA;border:0;border-radius:15px;
+ padding:15px 17px;font-size:13.5px;color:#7A5411;line-height:1.55;margin-top:18px}
+.note.ok{background:#EDF5F1;color:#175E46}
+
+.nav{display:flex;gap:10px;margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
+.btn{height:52px;padding:0 26px;border-radius:15px;border:0;font-weight:600;font-size:15.5px;cursor:pointer;
+ letter-spacing:-.2px;transition:transform .16s cubic-bezier(.22,1,.36,1),background .16s,box-shadow .16s,opacity .16s}
+.btn:active{transform:scale(.975)}
+.btn.pri{background:var(--brand);color:#fff;box-shadow:0 4px 16px rgba(15,107,79,.26)}
+.btn.pri:hover{background:#0C5A42}
+.btn.pri[disabled]{background:var(--sand);color:#AEB8B4;cursor:not-allowed;box-shadow:none;transform:none}
+.btn.gh{background:var(--sand);color:var(--ink2)}
+.btn.gh:hover{background:#EFEDE8;color:var(--ink)}
+.nav .sp{flex:1}
+
+.sum{background:var(--sand);border-radius:18px;padding:20px 22px;font-size:14.5px;line-height:2.1}
+.sum div{display:flex;gap:14px}
+.sum div span{color:var(--mute);min-width:132px;font-size:13px}
+.sum div b{font-weight:600}
+
+/* ⚠️ 2026-08-26, George-ის მოთხოვნით: დადასტურების ეკრანს (done()) ვიზუალი
+   არ ჰქონდა და, რადგან postH() მანამდე ამ ეკრანზე არასდროს გამოიძახებოდა,
+   მშობელი (index.html-ის .mdb) სქროლს წინა (გრძელი) ბიჯის სიმაღლეზე
+   ინარჩუნებდა — მომხმარებელი ბოლომდე ჩამოსქროლილი რჩებოდა და ხედავდა
+   მხოლოდ ცარიელ თეთრ არეს ახალი, მოკლე შიგთავსის ქვემოთ. იხ. done()-ისა
+   და paneVerify()-ის ბოლოს postH()+{mm:'top'} გამოძახება. */
+.donewrap{display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 0 8px}
+.doneic{width:60px;height:60px;border-radius:50%;background:var(--brand);color:#fff;
+ display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:16px;
+ animation:donepop .45s cubic-bezier(.22,1.4,.36,1)}
+@keyframes donepop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.donewrap .sh{margin-bottom:8px}
+.donewrap .ssub{max-width:460px;margin:0 auto 26px}
+
+/* bare — როცა საიტის მთავარ ფანჯარაშია ჩაშენებული */
+body.bare{padding:0;background:transparent;display:block;min-height:0}
+body.bare .mdl{max-width:none;border-radius:0;box-shadow:none}
+body.bare .mdh,body.bare .mdt{display:none}
+body.bare .mdb{padding:2px 2px 8px}
+@media(max-width:760px){
+ body{padding:0}
+ .mdl{border-radius:0;min-height:100vh}
+ .mdb{padding:22px 18px 26px}
+ .row,.row3{grid-template-columns:1fr;gap:14px}
+ .mapwrap{height:320px;border-radius:16px}
+ .sh{font-size:23px}
+ .ssub{font-size:14px;margin-bottom:22px}
+ .chip{padding:12px 16px;font-size:15px}      /* თითისთვის კომფორტული */
+ .f input,.f select{height:52px;font-size:16px}
+ .btn{height:52px;flex:1;justify-content:center;display:flex;align-items:center}
+ .nav{gap:9px}
+}
+
+/* კონფიდენციალურობის ბლოკი — მშვიდი, არა გამაფრთხილებელი */
+.pnote{margin:14px 0 2px;padding:13px 15px;border-radius:12px;
+ background:#F1F7F4;border:1px solid #D8E8E1}
+.pnh{font-weight:700;font-size:14px;color:var(--brand);margin-bottom:7px}
+.pnl{margin:0;padding-left:17px;list-style:disc}
+.pnl li{font-size:13px;line-height:1.55;color:var(--ink2);margin:4px 0}
+.pnl b{color:var(--ink);font-weight:600}
+
+/* წესების ჩამრთველი */
+.tbox{display:flex;gap:10px;align-items:flex-start;margin:16px 0 2px;padding:12px 14px;
+ border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:border-color .15s}
+.tbox.bad{border-color:var(--down);background:#FEF5F4}
+.tbox input{width:18px;height:18px;flex:0 0 auto;margin-top:1px;accent-color:var(--brand);cursor:pointer}
+.tbox span{font-size:13px;line-height:1.55;color:var(--ink2)}
+.tbox a{color:var(--brand);font-weight:600}
+
+/* გამყიდველის დეკლარაცია */
+.dbox{margin:16px 0 2px;padding:13px 15px;border:1px solid var(--line);border-radius:12px}
+.dbox.bad{border-color:var(--down);background:#FEF5F4}
+.dh{font-weight:700;font-size:13px;color:var(--ink);margin-bottom:9px}
+.drow{display:flex;gap:10px;align-items:flex-start;padding:7px 0;cursor:pointer}
+.drow+.drow{border-top:1px solid var(--line)}
+.drow input{width:18px;height:18px;flex:0 0 auto;margin-top:2px;accent-color:var(--brand);cursor:pointer}
+.drow b{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}
+.drow i{display:block;font-style:normal;font-size:12.5px;line-height:1.5;color:var(--ink2);margin-top:2px}
+.drow a{color:var(--brand)}
+
+/* გამოწერის ჩამრთველი — რბილი, არა სავალდებულო */
+.sbox{background:var(--sand);border-color:transparent}
+.sbox b{color:var(--ink);font-weight:600}
+
+/* ფოტოს ატვირთვა — ყველა კატეგორიისთვის, მაქს. 10, პირველი = ქავერი */
+.phw{margin-top:18px}
+.phw>label{display:block;font-size:12.5px;font-weight:600;color:var(--mute);margin-bottom:9px;letter-spacing:-.1px}
+.phdrop{border:1.5px dashed var(--line);border-radius:14px;padding:20px;text-align:center;cursor:pointer;
+ transition:border-color .15s,background .15s}
+.phdrop:hover,.phdrop.drag{border-color:var(--brand);background:#F1F7F4}
+.phdrop.bad{border-color:var(--down);background:#FEF5F4}
+.phdrop b{display:block;font-size:14px;font-weight:600;color:var(--ink)}
+.phdrop span{display:block;font-size:12.5px;color:var(--mute);margin-top:4px}
+.phbusy{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);padding:10px 2px}
+.spin{width:15px;height:15px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--brand);
+ animation:sp .7s linear infinite;flex:0 0 auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.phgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:9px;margin-top:12px}
+.phi{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--sand)}
+.phi img{width:100%;height:100%;object-fit:cover;display:block}
+.phi .cvtag{position:absolute;left:5px;top:5px;background:var(--brand);color:#fff;font-size:10px;font-weight:700;
+ padding:2px 7px;border-radius:999px;letter-spacing:.2px}
+.phi .rm{position:absolute;right:5px;top:5px;width:22px;height:22px;border-radius:50%;border:0;
+ background:rgba(14,26,22,.62);color:#fff;font-size:13px;line-height:1;cursor:pointer;display:flex;
+ align-items:center;justify-content:center}
+.phi .cb{position:absolute;left:0;right:0;bottom:0;border:0;background:rgba(14,26,22,.62);color:#fff;
+ font-size:10.5px;font-weight:600;padding:5px 0;cursor:pointer;opacity:0;transition:opacity .15s}
+.phi:hover .cb{opacity:1}
+.phi.up{opacity:.55}
+.phi .upspin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.phnote{font-size:12px;color:var(--mute);margin-top:9px}
+.phnote.bad{color:var(--down)}
+</style>
+</head>
+<body>
+
+<div class="mdl">
+ <div class="mdh">
+  <div class="fl">My<b>Mamuli</b>.ge</div>
+  <button class="mdx">✕</button>
+ </div>
+ <div class="mdt" id="tabs">
+  <button data-t="req" class="on">◎ ვეძებ — მოთხოვნა</button>
+  <button data-t="lst">+ ვყიდი — განცხადება</button>
+ </div>
+ <div class="mdb">
+  <div class="steps" id="steps"></div>
+  <div id="body"></div>
+  <div class="nav">
+   <button class="btn gh" id="back">← უკან</button>
+   <div class="sp"></div>
+   <button class="btn pri" id="next">გაგრძელება →</button>
+  </div>
+ </div>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" integrity="sha384-SYKAG6cglRMN0RVvhNeBY0r3FYKNOJtznwA0v7B5Vp9tr31xAHsZC0DqkQ/pZDmj" crossorigin="anonymous"></script>
+<script src="i18n.js"></script>
+<script>
+const el=id=>document.getElementById(id);
+const fmt=n=>new Intl.NumberFormat('ka-GE').format(Math.round(n));
+
+/* =================================================================
+   კატეგორიები — რადიუსი მეტრებში.
+   ქალაქური ტიპები ფეხით სავალ მანძილშია; კილომეტრები მხოლოდ მიწას.
+   ================================================================= */
+const CATS=[
+ {k:'flat',  n:'ბინა',              g:'საცხოვრებელი', d:100, min:50, max:400},
+ {k:'house', n:'სახლი / აგარაკი',   g:'საცხოვრებელი', d:300, min:100,max:1000},
+ {k:'cottage',n:'კოტეჯი',           g:'საცხოვრებელი', d:300, min:100,max:1000},
+ {k:'office',n:'საოფისე ფართი',     g:'კომერციული',   d:200, min:50, max:500},
+ {k:'comm',  n:'კომერციული ფართი',  g:'კომერციული',   d:200, min:50, max:500},
+ {k:'hotel', n:'სასტუმრო',          g:'კომერციული',   d:300, min:100,max:1000},
+ {k:'resto', n:'რესტორანი / ბარი',  g:'კომერციული',   d:300, min:100,max:800},
+ {k:'base',  n:'სარდაფი',           g:'კომერციული',   d:150, min:50, max:300},
+ {k:'land',  n:'მიწა',              g:'მიწა',         d:500, min:200,max:3000},
+ {k:'invest',n:'საინვესტიციო მიწა', g:'მიწა',         d:1000,min:300,max:5000, buyOnly:true},
+ {k:'garage',n:'ავტოფარეხი',        g:'სხვა',         d:100, min:50, max:300}
+];
+const GROUPS=['საცხოვრებელი','კომერციული','მიწა','სხვა'];
+const catOf=k=>CATS.find(c=>c.k===k);
+
+/* =================================================================
+   ქალაქების სია — რუკის ძებნისთვის (იხ. citySearch ქვემოთ).
+   ⚠️ მხოლოდ ეს სია იძებნება — ქუჩა/ჩიხი/გამზირი აქ განზრახ არ არის,
+   საძიებოს გარეშე გეოკოდერი არ გვიხმია. ასლი index.html-ის CITIES-ის
+   (იგივე კოორდინატები). ინგლისური სახელები i18n.js-ის ლექსიკონშია —
+   T() უკვე თარგმნის. */
+const CITIES=[
+ ['თბილისი',41.693722,44.801298,1],   ['ბათუმი',41.6500,41.6367,1],
+ ['ქუთაისი',42.2679,42.7050,1],   ['სოხუმი',43.0033,41.0153,1],
+ ['გაგრა',43.2833,40.2667,1],     ['ზუგდიდი',42.5088,41.8709,1],
+ ['ფოთი',42.1500,41.6725,1],      ['გორი',41.9847,44.1092,1],
+ ['თელავი',41.9167,45.4733,1],    ['მცხეთა',41.8458,44.7208,1],
+ ['ყაზბეგი',42.657371,44.642678,1],   ['ბორჯომი',41.8392,43.3789,1],
+ ['ბაკურიანი',41.7500,43.5333,1], ['გუდაური',42.47478,44.481017,1],
+ ['ახალციხე',41.640735,42.983391,1],  ['ონი',42.5817,43.4472,1],
+ ['ლენტეხი',42.7889,42.7247,1],   ['მესტია',43.0433,42.7275,1],
+ ['დმანისი',41.3272,44.2058,1],   ['საგარეჯო',41.7353,45.3311,1],
+ ['მარნეული',41.48728,44.798434,1],  ['ლაგოდეხი',41.823325,46.271405,1],
+ ['სიღნაღი',41.6178,45.9214,1],   ['ზესტაფონი',42.1114,43.0508,1],
+ ['რუსთავი',41.543177,45.011227,2],   ['ამბროლაური',42.5211,43.1553,2],
+ ['ოზურგეთი',41.9247,42.0048,2],  ['ყვარელი',41.9511,45.8152,2],
+ ['გურჯაანი',41.7437,45.8009,2],  ['ბოლნისი',41.4472,44.5382,2],
+ ['ხაშური',41.9938,43.6009,2],    ['სამტრედია',42.1573,42.3357,2],
+ ['სენაკი',42.2708,42.0672,2],    ['ჩხოროწყუ',42.52222,42.12917,2],
+ ['მარტვილი',42.4142,42.3790,2],  ['წყალტუბო',42.32639,42.60056,2],
+ ['ჭიათურა',42.2940,43.2881,2],   ['საჩხერე',42.3428,43.4092,2],
+ ['ლანჩხუთი',42.0900,42.0328,2],  ['ქობულეთი',41.81111,41.77528,2],  ['შეკვეთილი',41.92778,41.76806,2],
+ ['ურეკი',41.99694,41.77806,2],   ['ჩაქვი',41.71889,41.73333,2],
+ ['დუშეთი',42.0855,44.6957,2],    ['თიანეთი',42.1128,44.9680,2],
+ ['ახმეტა',42.0320,45.2080,2],    ['გარდაბანი',41.4630,45.0959,2],
+ ['კასპი',41.9262,44.4251,2],     ['ხობი',42.3160,41.8990,2],
+ ['აბაშა',42.2040,42.2010,2],     ['ვანი',42.0839,42.5180,2],
+ ['ბაღდათი',42.06778,42.82472,2], ['თერჯოლა',42.18333,42.97722,2],
+ ['ტყიბული',42.3510,42.9950,2],   ['ხარაგაული',42.0190,43.1960,2],
+ ['ჩოხატაური',42.01889,42.23944,2],['დედოფლისწყარო',41.4640,46.1040,2],
+ ['თეთრიწყარო',41.5450,44.4570,2],['წალკა',41.58333,44.08333,2],
+ ['ახალქალაქი',41.4040,43.4860,2],['ნინოწმინდა',41.26444,43.59083,2],
+ ['ადიგენი',41.67500,42.70333,2], ['ასპინძა',41.57333,43.25000,2],
+ ['ცაგერი',42.6470,42.7620,2],    ['წალენჯიხა',42.61167,42.07056,2],
+ ['ხელვაჩაური',41.58556,41.66889,2],['გონიო',41.55972,41.57222,2],['ქედა',41.5990,41.9400,2],
+ ['შუახევი',41.6300,42.1900,2],   ['ხულო',41.6460,42.3090,2],
+ ['ვალე',41.61667,42.87778,2],
+ ['ანაკლია',42.39361,41.56917,3], ['გრიგოლეთი',42.03694,41.73917,3],
+ ['სიონი',42.0500,44.7000,3],
+ ['წავკისი',41.67111,44.73583,3],['მჭადიჯვარი',42.01778,44.59833,3],
+ ['ყულევი',42.27167,41.67472,3], ['ბახმარო',41.85167,42.32556,3],
+ ['აბასთუმანი',41.75250,42.83194,3],['შოვი',42.70375,43.67648,3],
+ ['უწერა',42.63120,43.53972,3]
+];
+/* ქართული ტექსტის მარტივი ნორმალიზება — ლათინური არ სჭირდება,
+   უბრალოდ სივრცეები/ვირგულები ჩამოვშალოთ შედარებისთვის. */
+const cityNorm=s=>String(s||'').trim().toLowerCase();
+
+/* =================================================================
+   ქვეყნის კოდები. ნაგულისხმევი ავტომატურად ისაზღვრება სასაათო
+   სარტყლით, შემდეგ ბრაუზერის ენით. ლაივზე Cloudflare უფრო ზუსტად
+   გვეტყვის (request.cf.country) და სერვერიდან გადმოგვცემს.
+   ================================================================= */
+const COUNTRIES=[
+ ['GE','საქართველო','995','Georgia'],['AM','სომხეთი','374','Armenia'],['AZ','აზერბაიჯანი','994','Azerbaijan'],
+ ['TR','თურქეთი','90','Turkey'],['RU','რუსეთი','7','Russia'],['UA','უკრაინა','380','Ukraine'],['BY','ბელარუსი','375','Belarus'],
+ ['KZ','ყაზახეთი','7','Kazakhstan'],['IL','ისრაელი','972','Israel'],['AE','არაბთა საამიროები','971','United Arab Emirates'],
+ ['SA','საუდის არაბეთი','966','Saudi Arabia'],['QA','კატარი','974','Qatar'],['KW','ქუვეითი','965','Kuwait'],['IR','ირანი','98','Iran'],
+ ['US','აშშ','1','United States'],['CA','კანადა','1','Canada'],['GB','დიდი ბრიტანეთი','44','United Kingdom'],['IE','ირლანდია','353','Ireland'],
+ ['DE','გერმანია','49','Germany'],['FR','საფრანგეთი','33','France'],['IT','იტალია','39','Italy'],['ES','ესპანეთი','34','Spain'],
+ ['PT','პორტუგალია','351','Portugal'],['NL','ნიდერლანდები','31','Netherlands'],['BE','ბელგია','32','Belgium'],['AT','ავსტრია','43','Austria'],
+ ['CH','შვეიცარია','41','Switzerland'],['SE','შვედეთი','46','Sweden'],['NO','ნორვეგია','47','Norway'],['DK','დანია','45','Denmark'],
+ ['FI','ფინეთი','358','Finland'],['PL','პოლონეთი','48','Poland'],['CZ','ჩეხეთი','420','Czechia'],['SK','სლოვაკეთი','421','Slovakia'],
+ ['HU','უნგრეთი','36','Hungary'],['RO','რუმინეთი','40','Romania'],['BG','ბულგარეთი','359','Bulgaria'],['GR','საბერძნეთი','30','Greece'],
+ ['CY','კვიპროსი','357','Cyprus'],['HR','ხორვატია','385','Croatia'],['RS','სერბეთი','381','Serbia'],['SI','სლოვენია','386','Slovenia'],
+ ['LT','ლიეტუვა','370','Lithuania'],['LV','ლატვია','371','Latvia'],['EE','ესტონეთი','372','Estonia'],['MD','მოლდოვა','373','Moldova'],
+ ['CN','ჩინეთი','86','China'],['IN','ინდოეთი','91','India'],['JP','იაპონია','81','Japan'],['KR','სამხრეთ კორეა','82','South Korea'],
+ ['AU','ავსტრალია','61','Australia'],['NZ','ახალი ზელანდია','64','New Zealand'],['BR','ბრაზილია','55','Brazil'],['AR','არგენტინა','54','Argentina'],
+ ['ZA','სამხრეთ აფრიკა','27','South Africa'],['EG','ეგვიპტე','20','Egypt'],['UZ','უზბეკეთი','998','Uzbekistan'],['TJ','ტაჯიკეთი','992','Tajikistan'],
+ ['TM','თურქმენეთი','993','Turkmenistan'],['KG','ყირგიზეთი','996','Kyrgyzstan'],['MN','მონღოლეთი','976','Mongolia'],['TH','ტაილანდი','66','Thailand']
+];
+const TZ2C={'Asia/Tbilisi':'GE','Asia/Yerevan':'AM','Asia/Baku':'AZ','Europe/Istanbul':'TR',
+ 'Europe/Moscow':'RU','Europe/Kyiv':'UA','Europe/Kiev':'UA','Europe/Minsk':'BY','Asia/Almaty':'KZ',
+ 'Asia/Jerusalem':'IL','Asia/Dubai':'AE','Asia/Riyadh':'SA','Asia/Qatar':'QA','Asia/Kuwait':'KW',
+ 'Asia/Tehran':'IR','Europe/London':'GB','Europe/Dublin':'IE','Europe/Berlin':'DE','Europe/Paris':'FR',
+ 'Europe/Rome':'IT','Europe/Madrid':'ES','Europe/Lisbon':'PT','Europe/Amsterdam':'NL','Europe/Brussels':'BE',
+ 'Europe/Vienna':'AT','Europe/Zurich':'CH','Europe/Stockholm':'SE','Europe/Oslo':'NO','Europe/Copenhagen':'DK',
+ 'Europe/Helsinki':'FI','Europe/Warsaw':'PL','Europe/Prague':'CZ','Europe/Bratislava':'SK','Europe/Budapest':'HU',
+ 'Europe/Bucharest':'RO','Europe/Sofia':'BG','Europe/Athens':'GR','Asia/Nicosia':'CY','Europe/Zagreb':'HR',
+ 'Europe/Belgrade':'RS','Europe/Ljubljana':'SI','Europe/Vilnius':'LT','Europe/Riga':'LV','Europe/Tallinn':'EE',
+ 'Europe/Chisinau':'MD','Asia/Shanghai':'CN','Asia/Kolkata':'IN','Asia/Calcutta':'IN','Asia/Tokyo':'JP',
+ 'Asia/Seoul':'KR','Australia/Sydney':'AU','Pacific/Auckland':'NZ','Asia/Tashkent':'UZ','Asia/Dushanbe':'TJ',
+ 'Asia/Ashgabat':'TM','Asia/Bishkek':'KG','Asia/Bangkok':'TH','Africa/Cairo':'EG','Africa/Johannesburg':'ZA'};
+
+function detectCountry(){
+ try{
+  const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
+  if(TZ2C[tz])return TZ2C[tz];
+  if(/^America\//.test(tz))return 'US';
+ }catch(e){}
+ try{
+  const m=(navigator.language||'').match(/[-_]([A-Za-z]{2})$/);
+  if(m){const cc=m[1].toUpperCase(); if(COUNTRIES.some(c=>c[0]===cc))return cc}
+ }catch(e){}
+ return 'GE';
+}
+const dialOf=c=>{const x=COUNTRIES.find(k=>k[0]===c);return x?x[2]:'995'};
+
+/* დემო-განცხადებები — ცოცხალი მთვლელისთვის */
+/* ⚠️ ლაივზე გასვლისას გასუფთავდა — ადრე აქ იყო სადემონსტრაციო წერტილები
+   „ამ ადგილას X აქტიური განცხადებაა" მთვლელისთვის. */
+const STOCK=[];
+
+const M_PER_DEG=111320;
+function distM(a,b,c,d){const x=(c-a)*M_PER_DEG, y=(d-b)*M_PER_DEG*Math.cos(a*Math.PI/180);return Math.hypot(x,y)}
+function circle(lng,lat,r){const p=[],R=r/6378137*(180/Math.PI);
+ for(let i=0;i<=72;i++){const a=i/72*2*Math.PI;
+  p.push([lng+R*Math.cos(a)/Math.cos(lat*Math.PI/180),lat+R*Math.sin(a)])}
+ return {type:'Feature',geometry:{type:'Polygon',coordinates:[p]}}}
+
+
+/* =================================================================
+   ატრიბუტები კატეგორიის მიხედვით.
+   ss.ge-ს სია განგებ შევკვეცეთ — იქ 40+ ველია და ხალხი ვერ ავსებს.
+   აქ დარჩა ის, რაც ძებნაზე რეალურად მოქმედებს.
+     t:'one'  — ერთი არჩევანი
+     t:'many' — რამდენიმე
+     t:'num2' — ორი რიცხვითი ველი
+   req:true — გამყიდველისთვის სავალდებულო (მაძიებელს ყოველთვის არჩევითი)
+   ================================================================= */
+const ATTRS={
+ flat:[
+  {k:'state',n:'მდგომარეობა',t:'one',req:true,v:['მშენებარე','ახალი აშენებული','მეორადი']},
+  {k:'cond', n:'რემონტი',t:'one',v:['ახალი რემონტით','ძველი რემონტით','მიმდინარე რემონტი','სარემონტო','თეთრი კარკასი','შავი კარკასი']},
+  {k:'rooms',n:'ოთახები',t:'many',v:['1','2','3','4','5+']},
+  {k:'fl',   n:'სართული',t:'num2',a:'სართული',b:'სულ სართული'},
+  {k:'proj', n:'პროექტი',t:'one',v:['ახალი აშენებული','ძველი აშენებული','ხრუშჩოვი','ლენინგრადის','ქალაქური','სხვა']},
+  {k:'extra',n:'დამატებით',t:'many',v:['აივანი','ლიფტი','ავეჯი','ცენტრალური გათბობა','ავტოფარეხი','საკუჭნაო']}
+ ],
+ house:[
+  {k:'state',n:'მდგომარეობა',t:'one',req:true,v:['მშენებარე','დასრულებული']},
+  {k:'cond', n:'რემონტი',t:'one',v:['ახალი რემონტით','ძველი რემონტით','მიმდინარე რემონტი','სარემონტო','კარკასი']},
+  {k:'rooms',n:'ოთახები',t:'many',v:['1','2','3','4','5','6+']},
+  {k:'fl',   n:'სართულები',t:'num2',a:'სართული',b:'ეზოს ფართი, მ²'},
+  {k:'extra',n:'დამატებით',t:'many',v:['ავეჯი','გარაჟი','სარდაფი','აუზი','ცენტრალური გათბობა','ჭა / წყალი']}
+ ],
+ land:[
+  {k:'purp', n:'დანიშნულება',t:'one',req:true,v:['სასოფლო-სამეურნეო','არასასოფლო-სამეურნეო']},
+  {k:'stat', n:'სტატუსი',t:'one',v:['საცხოვრებელი','კომერციული','სპეციალური','საინვესტიციო','ფერმა']},
+  {k:'util', n:'კომუნიკაციები',t:'many',v:['დენი','წყალი','გაზი','კანალიზაცია','გზა']},
+  {k:'terr', n:'რელიეფი',t:'one',v:['ბრტყელი','ოდნავ დახრილი','დახრილი']}
+ ],
+ comm:[
+  {k:'state',n:'მდგომარეობა',t:'one',req:true,v:['მშენებარე','დასრულებული']},
+  {k:'ctype',n:'ტიპი',t:'one',v:['სავაჭრო','საწყობი','წარმოება','მომსახურება']},
+  {k:'cond', n:'რემონტი',t:'one',v:['ახალი რემონტით','ძველი რემონტით','სარემონტო','კარკასი']},
+  {k:'extra',n:'დამატებით',t:'many',v:['პირველი ხაზი','ცალკე შესასვლელი','ვიტრინა','პარკინგი','ცენტ. გათბობა']}
+ ],
+ office:[
+  {k:'state',n:'მდგომარეობა',t:'one',req:true,v:['მშენებარე','დასრულებული']},
+  {k:'cond', n:'რემონტი',t:'one',v:['ახალი რემონტით','ძველი რემონტით','სარემონტო','კარკასი']},
+  {k:'fl',   n:'სართული',t:'num2',a:'სართული',b:'ოთახები'},
+  {k:'extra',n:'დამატებით',t:'many',v:['ღია სივრცე','სამზარეულო','პარკინგი','ლიფტი','კონდიციონერი']}
+ ],
+ hotel:[
+  {k:'state',n:'მდგომარეობა',t:'one',req:true,v:['მშენებარე','მოქმედი','დახურული']},
+  {k:'fl',   n:'პარამეტრები',t:'num2',a:'ნომრები',b:'სართულები'},
+  {k:'extra',n:'დამატებით',t:'many',v:['რესტორანი','აუზი','პარკინგი','ავეჯით','მოქმედი ლიცენზია']}
+ ],
+ resto:[
+  {k:'state',n:'მდგომარეობა',t:'one',req:true,v:['მოქმედი','დახურული','სარემონტო']},
+  {k:'fl',   n:'პარამეტრები',t:'num2',a:'ადგილები',b:'დარბაზები'},
+  {k:'extra',n:'დამატებით',t:'many',v:['სამზარეულოს აღჭურვილობა','ტერასა','პირველი ხაზი','ალკოჰოლის ლიცენზია']}
+ ],
+ garage:[
+  {k:'gtype',n:'ტიპი',t:'one',req:true,v:['კაპიტალური','რკინის','მიწისქვეშა','ღია პარკინგი']},
+  {k:'extra',n:'დამატებით',t:'many',v:['ორმო','დენი','სარდაფი','ავტომატური კარი']}
+ ],
+ base:[
+  {k:'state',n:'მდგომარეობა',t:'one',req:true,v:['სარემონტო','დასრულებული']},
+  {k:'extra',n:'დამატებით',t:'many',v:['ცალკე შესასვლელი','დენი','წყალი','ვენტილაცია']}
+ ],
+ cottage:null,   /* იგივე რაც სახლი */
+ invest:null     /* იგივე რაც მიწა */
+};
+ATTRS.cottage=ATTRS.house;
+ATTRS.invest=ATTRS.land;
+
+/* არჩეული ატრიბუტები */
+const A={};
+function attrHTML(){
+ const list=ATTRS[S.cat]; if(!list)return '';
+ const seeker=TAB==='req';
+ return list.map(f=>{
+  if(f.t==='num2'){
+   return '<div class="grp"><label>'+f.n+'</label><div class="row">'+
+    '<div class="f"><input id="a_'+f.k+'a" type="number" placeholder="'+f.a+'" value="'+(A[f.k+'a']||'')+'"></div>'+
+    '<div class="f"><input id="a_'+f.k+'b" type="number" placeholder="'+f.b+'" value="'+(A[f.k+'b']||'')+'"></div>'+
+   '</div></div>';
+  }
+  const cur=A[f.k];
+  return '<div class="grp"><label>'+f.n+
+   (seeker?' <span style="text-transform:none;font-weight:400;color:var(--mute)">— არჩევითი</span>':
+    (f.req?' <b style="color:var(--down)">*</b>':''))+'</label><div class="chips">'+
+   f.v.map(v=>{
+    const on=f.t==='many'?(Array.isArray(cur)&&cur.includes(v)):cur===v;
+    return '<button class="chip'+(on?' on':'')+'" data-a="'+f.k+'" data-t="'+f.t+'" data-v="'+v+'">'+v+'</button>';
+   }).join('')+'</div></div>';
+ }).join('');
+}
+function bindAttrs(){
+ document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{
+  const k=b.dataset.a, v=b.dataset.v;
+  if(b.dataset.t==='many'){
+   const cur=Array.isArray(A[k])?A[k]:[];
+   A[k]=cur.includes(v)?cur.filter(x=>x!==v):cur.concat([v]);
+  }else A[k]=A[k]===v?'':v;
+  render();
+ });
+ const list=ATTRS[S.cat]||[];
+ list.filter(f=>f.t==='num2').forEach(f=>{
+  ['a','b'].forEach(x=>{const n=el('a_'+f.k+x); if(n)n.oninput=()=>{A[f.k+x]=n.value}});
+ });
+}
+function attrsOK(){
+ if(TAB==='req')return true;                       /* მაძიებელს არაფერი ევალება */
+ return (ATTRS[S.cat]||[]).filter(f=>f.req).every(f=>!!A[f.k]);
+}
+function attrSummary(){
+ const list=ATTRS[S.cat]||[]; const out=[];
+ list.forEach(f=>{
+  if(f.t==='num2'){const a=A[f.k+'a'],b=A[f.k+'b']; if(a||b)out.push(f.n+': '+(a||'—')+' / '+(b||'—'))}
+  else{const c=A[f.k]; if(c&&c.length)out.push(f.n+': '+(Array.isArray(c)?c.join(', '):c))}
+ });
+ return out;
+}
+
+/* ================= მდგომარეობა ================= */
+let TAB='req', step=0, map=null;
+/* ⚠️ 2026-08-26: George-ის მოთხოვნით — ბიჯის შეცვლისას (მაგ. „რას ეძებ"-დან
+   „სად ეძებ?"-ზე) მშობლის (index.html) .mdb სქროლი წინა ბიჯის პოზიციაზე
+   რჩებოდა, ახალი ბიჯი კი სულ სხვა სიმაღლისაა — შედეგად ახალი ბიჯი
+   თავიდან კი არა, შუიდან/ბოლოდან ჩანდა (ხშირად პირდაპირ „ვინ ხარ?"-ის
+   ველების ან ქვედა შენიშვნის მონაკვეთი). ეს ცვლადები ადევნებენ თვალს,
+   მართლა შეიცვალა თუ არა ბიჯი/ტაბი (და არა უბრალოდ იგივე ბიჯის შიგნით
+   ხელახალი render, მაგ. კატეგორიის არჩევისას) — მხოლოდ ნამდვილ
+   გადასვლაზე ვაგზავნით სქროლის თავში დაბრუნების მოთხოვნას. */
+let __rStep=null, __rTab=null;
+const S={terms:false,sub:true,d1:false,d2:false,d3:false,d4:false,cat:'',deal:'buy',period:'month',lat:null,lng:null,radius:0,
+ amin:'',amax:'',pmax:'',pmin:'',rooms:'',note:'',pass:'',
+ who:'ind',name:'',email:'',phone:'',cc:'',comp:'',cid:'',
+ cad:'',cadAddr:'',price:'',area:'',
+ photos:[],   /* {url, name, up} — [0] ყოველთვის ქავერია; up=true სანამ /api/upload მუშაობს */
+ srcReq:''};  /* რომელ მყიდველის მოთხოვნაზე პასუხად ივსება ეს ფორმა — თუ საერთოდ */
+/* ⚠️ 2026-08-26: George-ის მოთხოვნით — „ვეძებ" (req) 4 ბიჯიდან 2-მდე
+   შემცირდა: [1] რას ეძებ + ფართი/ფასი/აღწერა (ძველი paneCat+paneParams
+   გაერთიანდა, დამატებითი ატრიბუტების ჩიფები მოიხსნა — იხ. task #133),
+   [2] რუკა + რეგისტრაცია (ძველი paneMap+paneWho გაერთიანდა, დაემატა
+   ტელეფონი+პაროლი). lst (გამყიდველის) 4-ბიჯიანი ნაკადი უცვლელია. */
+const STEPS={req:['რას ეძებ','სად და ვინ ხარ'],
+ /* ⚠️ 2026-08-25: „მდებარეობა" (paneMap, ნიშნულის დასმა) წინ გადავიდა
+    „ობიექტს" (paneObj, საკადასტრო კოდი) — მანამდე საკადასტრო კოდი
+    მოწმდებოდა ჯერ, ნიშნულის დასმამდე, ანუ S.lat/S.lng ჯერ არ იყო
+    დაყენებული — გეომეტრიული დადასტურება (cad_ok=2, ავტომატური ✓)
+    პრაქტიკულად ვერასდროს ხდებოდა, რადგან შედარებისთვის ნამდვილი
+    ნიშნული არ არსებობდა. ახლა, როცა მომხმარებელი ჯერ სვამს ნიშნულს და
+    მხოლოდ მერე შეჰყავს კოდი, checkCad() ნამდვილ S.lat/S.lng-თან ადარებს
+    ნაკვეთის საზღვარს — თუ ნიშნული მართლა ნაკვეთშია, დადასტურება
+    მყისიერი და ავტომატურია, მოდერატორის გარეშე (George-ის მოთხოვნა). */
+ lst:['რას ყიდი','მდებარეობა','ობიექტი','ვინ ხარ']};
+function lastStep(){return TAB==='req'?1:3}
+
+/* ================= ბიჯების ზოლი ================= */
+function drawSteps(){
+ el('steps').innerHTML=STEPS[TAB].map((_,i)=>'<i class="'+(i<=step?'on':'')+'"></i>').join('');
+}
+
+/* ================= ბიჯი 1 — კატეგორია ================= */
+function paneCat(){
+ const c=catOf(S.cat);
+ const rentOff=c&&c.buyOnly;
+ return '<div class="pane on">'+
+  '<div class="stitle">ბიჯი 1 / 4</div>'+
+  '<div class="sh">'+(TAB==='req'?'რას ეძებ?':'რას ყიდი ან აქირავებ?')+'</div>'+
+  '<div class="ssub">'+(TAB==='req'
+    ?'აირჩიე ტიპი — შემდეგ ბიჯზე რუკაზე მიუთითებ ადგილს.'
+    :'აირჩიე ობიექტის ტიპი და გარიგების სახე.')+'</div>'+
+  (S.srcReq?'<div class="note ok" style="margin-bottom:18px">პასუხობ კონკრეტულ მყიდველის მოთხოვნას — განცხადების დადასტურების შემდეგ ის ავტომატურად შეატყობინებთ, თუ პარამეტრები ემთხვევა.</div>':'')+
+  GROUPS.map(g=>'<div class="grp"><label>'+g+'</label><div class="chips">'+
+    CATS.filter(x=>x.g===g).map(x=>'<button class="chip'+(S.cat===x.k?' on':'')+'" data-cat="'+x.k+'">'+
+     x.n+'</button>').join('')+
+   '</div></div>').join('')+
+  (S.cat?'<div class="grp" style="margin-top:16px"><label>გარიგება</label><div class="chips">'+
+    '<button class="chip'+(S.deal==='buy'?' on':'')+'" data-deal="buy">ყიდვა</button>'+
+    (rentOff?'':'<button class="chip'+(S.deal==='rent'?' on':'')+'" data-deal="rent">ქირა</button>')+
+   '</div></div>':'')+
+  (S.deal==='rent'&&!rentOff?'<div class="grp"><label>პერიოდი</label><div class="chips">'+
+    '<button class="chip'+(S.period==='month'?' on':'')+'" data-per="month">თვე</button>'+
+    '<button class="chip'+(S.period==='year'?' on':'')+'" data-per="year">წელი</button>'+
+   '</div></div>':'')+
+ '</div>';
+}
+
+/* ================= ბიჯი 2 — რუკა (მოთხოვნა) ================= */
+function paneMap(){
+ const c=catOf(S.cat), sell=TAB==='lst';
+ S.radius=c.d;                       /* რადიუსი ფიქსირებულია კატეგორიაზე */
+ return '<div class="pane on">'+
+  '<div class="stitle">ბიჯი '+(step+1)+' / 4</div>'+
+  '<div class="sh">'+(sell?'სად მდებარეობს?':'სად ეძებ?')+'</div>'+
+  '<div class="ssub">'+(sell
+    ?'მიუახლოვდი და დასვი ნიშნული ზუსტად შენს ობიექტზე.'
+    :'მიუახლოვდი რუკას და დასვი ნიშნული ზუსტად იმ ადგილას, სადაც გინდა.')+
+    (S.lat?' ადგილის შესაცვლელად გადაათრიე ნიშნული ან დააჭირე ღილაკს ხელახლა.':'')+'</div>'+
+  '<div class="citysearch">'+
+   '<input id="citybox" type="text" autocomplete="off" placeholder="'+T('ჩაწერე ქალაქი — მაგ. თბილისი, ბათუმი…')+'">'+
+   '<div class="cityres" id="cityres"></div>'+
+  '</div>'+
+  '<div class="mapwrap"><div id="map"></div>'+
+   '<div class="xhair" id="xh"></div>'+
+   '<div class="zgate" id="zg">მიუახლოვდი, რომ ზუსტად დასვა<span>რამდენიმე მეტრსაც აქვს მნიშვნელობა</span></div>'+
+   '<button class="pinbtn" id="pin" disabled>◎ აქ დავსვათ ნიშნული</button>'+
+  '</div>'+
+  '<div class="note" id="rnote" style="display:none"></div>'+
+ '</div>';
+}
+
+/* ================= ბიჯი 2 — რუკა + რეგისტრაცია (მოთხოვნა) =================
+   2026-08-26: George-ის მოთხოვნით გაერთიანდა ძველი paneMap + paneWho.
+   მაძიებელი აქვე ხდება ნამდვილი, პაროლიანი მომხმარებელი — submit.js
+   თვითონ არეგისტრირებს ან, თუ მეილი უკვე დაფიქსირებულია, ამოწმებს
+   პაროლს (= შესვლა ამ ფორმის საშუალებით). იხ. task #134. */
+function paneReqWhere(){
+ const c=catOf(S.cat);
+ S.radius=c.d;
+ return '<div class="pane on">'+
+  '<div class="stitle">ბიჯი 2 / 2</div>'+
+  '<div class="sh">სად ეძებ?</div>'+
+  '<div class="ssub">მიუახლოვდი რუკას და დასვი ნიშნული ზუსტად იმ ადგილას, სადაც გინდა.'+
+    (S.lat?' ადგილის შესაცვლელად გადაათრიე ნიშნული ან დააჭირე ღილაკს ხელახლა.':'')+'</div>'+
+  '<div class="citysearch">'+
+   '<input id="citybox" type="text" autocomplete="off" placeholder="'+T('ჩაწერე ქალაქი — მაგ. თბილისი, ბათუმი…')+'">'+
+   '<div class="cityres" id="cityres"></div>'+
+  '</div>'+
+  '<div class="mapwrap"><div id="map"></div>'+
+   '<div class="xhair" id="xh"></div>'+
+   '<div class="zgate" id="zg">მიუახლოვდი, რომ ზუსტად დასვა<span>რამდენიმე მეტრსაც აქვს მნიშვნელობა</span></div>'+
+   '<button class="pinbtn" id="pin" disabled>◎ აქ დავსვათ ნიშნული</button>'+
+  '</div>'+
+  '<div class="note" id="rnote" style="display:none"></div>'+
+  '<div class="sh" style="font-size:19px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)">ვინ ხარ?</div>'+
+  '<div class="ssub">ეს ინფორმაცია მხოლოდ შენი ანგარიშისთვისაა — მოთხოვნის ბარათზე არ გამოჩნდება.</div>'+
+  privacyNote()+
+  '<div class="grp" style="margin-top:18px"><label>სტატუსი</label><div class="chips">'+
+   '<button class="chip'+(S.who==='ind'?' on':'')+'" data-who="ind">ფიზიკური პირი</button>'+
+   '<button class="chip'+(S.who==='co'?' on':'')+'" data-who="co">იურიდიული პირი</button>'+
+  '</div></div>'+
+  '<div class="row"><div class="f"><label>სახელი, გვარი</label><input id="name" value="'+S.name+'" placeholder="გიორგი ბერიძე"></div>'+
+   '<div class="f" id="femail"><label>ელფოსტა</label><input id="email" type="email" value="'+S.email+'" placeholder="mail@example.com">'+
+     '<div class="hint">დადასტურების კოდს აქ გამოგიგზავნით — მისამართი რეალური უნდა იყოს.</div>'+
+     '<div class="err" id="emailerr">ელფოსტა არასწორია.</div></div>'+
+  '</div>'+
+  (S.who==='co'?'<div class="row" style="margin-top:12px">'+
+   '<div class="f"><label>კომპანიის დასახელება</label><input id="comp" value="'+S.comp+'" placeholder="შპს ..."></div>'+
+   '<div class="f"><label>საიდენტიფიკაციო ნომერი</label><input id="cid" value="'+S.cid+'" placeholder="404123456"></div>'+
+  '</div>':'')+
+  '<div class="row" style="margin-top:12px">'+
+   '<div class="f"><label>ტელეფონი</label><div style="display:flex;gap:8px">'+
+    '<select id="cc" data-noi18n style="width:auto;min-width:150px;flex:0 0 auto">'+
+     COUNTRIES.map(cc=>'<option value="'+cc[0]+'"'+(S.cc===cc[0]?' selected':'')+'>'+((typeof LANG!=='undefined'&&LANG==='en')?cc[3]:cc[1])+'  +'+cc[2]+'</option>').join('')+
+    '</select>'+
+    '<input id="phone" inputmode="tel" value="'+S.phone+'" placeholder="'+(S.cc==='GE'?'5xx xx xx xx':'ნომერი კოდის გარეშე')+'">'+
+   '</div></div>'+
+   '<div class="f" id="fpass"><label>პაროლი</label><input id="pass" type="password" value="'+S.pass+'" placeholder="მინ. 8 სიმბოლო">'+
+    '<div class="hint">თუ უკვე გაქვს ანგარიში ამ მეილით — ჩაწერე შენი არსებული პაროლი.</div>'+
+    '<div class="err" id="passerr">პაროლი მინ. 8 სიმბოლო უნდა იყოს.</div></div>'+
+  '</div>'+
+  declaration()+
+  '<div class="note ok"><span>ელფოსტაზე დადასტურების კოდს გამოგიგზავნით.</span> <span>მოთხოვნა 30 დღე იქნება აქტიური.</span></div>'+
+ '</div>';
+}
+
+/* ================= ბიჯი 2 — ობიექტი (განცხადება) ================= */
+function paneObj(){
+ return '<div class="pane on">'+
+  '<div class="stitle">ბიჯი '+(step+1)+' / 4</div>'+
+  '<div class="sh">ობიექტი</div>'+
+  '<div class="ssub">საკადასტრო კოდით რეესტრიდან ავტომატურად ჩამოვწერთ მისამართს.</div>'+
+  '<div class="f'+(S.cadAddr?' good':'')+'" id="fcad"><label>საკადასტრო კოდი'+
+    (S.deal==='rent'?' <span style="text-transform:none;font-weight:400;color:var(--mute)">— ქირაზე არჩევითია</span>':'')+'</label>'+
+   '<div style="display:flex;gap:8px"><input id="cad" placeholder="01.10.06.010.030.01.01.1006" value="'+S.cad+'">'+
+    '<button class="btn pri" id="chk" style="height:42px;white-space:nowrap">შემოწმება</button></div>'+
+   '<div class="hint">ბინაზე სრული კოდი ჩაწერე — ჩვენ ავტომატურად ვამოკლებთ კორპუსამდე.</div>'+
+   '<div class="err" id="caderr">კოდი რეესტრში ვერ მოიძებნა.</div>'+
+   '<div class="ok" id="cadok"></div></div>'+
+  '<div class="row" style="margin-top:12px">'+
+   '<div class="f"><label>ფართობი, მ²</label><input id="area" type="number" value="'+S.area+'" placeholder="75"></div>'+
+   '<div class="f"><label>ფასი, $'+(S.deal==='rent'?' / '+(S.period==='month'?'თვე':'წელი'):'')+'</label>'+
+     '<input id="price" type="number" value="'+S.price+'" placeholder="'+(S.deal==='rent'?'850':'95000')+'"></div>'+
+  '</div>'+
+  (S.deal==='rent'?'<div class="note">ქირაზე საკადასტრო კოდი სავალდებულო არ არის — ბევრ მესაკუთრეს არ სურს ქონების საჯარო იდენტიფიცირება. ამ შემთხვევაში განცხადებას რეესტრის ნიშანი არ ექნება.</div>':'')+
+  '<div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">'+attrHTML()+'</div>'+
+  photoHTML()+
+ '</div>';
+}
+
+/* ================= ფოტოები — ყველა კატეგორია, მაქს. 10, ქავერის არჩევით ================= */
+const PH_MAX=10, PH_EDGE=1600, PH_Q=0.82, PH_TARGET=520*1024;
+
+function photoHTML(){
+ return '<div class="phw" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)" id="fph">'+
+  '<label for="lf-ph">ფოტოები <i>*</i></label>'+
+  '<div class="phdrop" id="lf-drop">'+
+   '<b>ფოტოს არჩევა ან გადმოთრევა</b>'+
+   '<span>'+PH_MAX+'-მდე სურათი · ავტომატურად შეიკუმშება საიტისთვის ოპტიმალურ ზომაზე</span>'+
+  '</div>'+
+  '<input id="lf-ph" type="file" accept="image/jpeg,image/png,image/webp,image/heic" multiple hidden>'+
+  '<div class="phgrid" id="lf-grid"></div>'+
+  '<div class="phnote" id="lf-phnote"></div>'+
+ '</div>';
+}
+
+function paintPhotos(){
+ const g=el('lf-grid'), n=el('lf-phnote'); if(!g)return;
+ g.innerHTML=S.photos.map((p,i)=>
+  '<div class="phi'+(p.up?' up':'')+'">'+
+   (p.url?'<img src="'+p.url+'">':'')+
+   (p.up?'<div class="upspin"><span class="spin"></span></div>':'')+
+   (i===0?'<span class="cvtag">ქავერი</span>':'')+
+   '<button type="button" class="rm" data-rm="'+i+'" aria-label="წაშლა">✕</button>'+
+   (i===0||p.up?'':'<button type="button" class="cb" data-cov="'+i+'">ქავერად დაყენება</button>')+
+  '</div>').join('');
+ n.textContent=S.photos.length
+  ? S.photos.length+'/'+PH_MAX+' · პირველი სურათი ქავერია'
+  : '';
+ n.classList.remove('bad');
+ g.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{
+  const i=+b.dataset.rm; S.photos.splice(i,1); paintPhotos(); validate();
+ });
+ g.querySelectorAll('[data-cov]').forEach(b=>b.onclick=()=>{
+  const i=+b.dataset.cov; S.photos.unshift(S.photos.splice(i,1)[0]); paintPhotos();
+ });
+ const drop=el('lf-drop'); if(drop)drop.classList.remove('bad');
+}
+
+/* კომპრესია — canvas-ზე, გრძელი წიბო PH_EDGE-მდე, JPEG PH_Q ხარისხით.
+   შედეგი მაშინვე იტვირთება /api/upload-ზე — მე-4 ბიჯამდე URL უკვე მზადაა. */
+function compress(file){
+ return new Promise((res,rej)=>{
+  const img=new Image(), url=URL.createObjectURL(file);
+  img.onload=()=>{
+   URL.revokeObjectURL(url);
+   let w=img.width,h=img.height;
+   const edge=Math.max(w,h);
+   if(edge>PH_EDGE){const k=PH_EDGE/edge;w=Math.round(w*k);h=Math.round(h*k)}
+   const c=document.createElement('canvas'); c.width=w;c.height=h;
+   const ctx=c.getContext('2d'); ctx.drawImage(img,0,0,w,h);
+   const tryQ=q=>c.toBlob(b=>{
+    if(!b){rej(new Error('canvas'));return}
+    if(b.size>PH_TARGET&&q>0.5)tryQ(q-0.1); else res(b);
+   },'image/jpeg',q);
+   tryQ(PH_Q);
+  };
+  img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('decode'))};
+  img.src=url;
+ });
+}
+async function uploadOne(file){
+ const slot={url:null,name:file.name,up:true};
+ S.photos.push(slot); paintPhotos();
+ try{
+  const blob=await compress(file);
+  const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'image/jpeg'},body:blob});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.url)throw new Error(j.error||'upload-failed');
+  slot.url=j.url; slot.up=false;
+ }catch(e){
+  const i=S.photos.indexOf(slot); if(i>-1)S.photos.splice(i,1);
+  const n=el('lf-phnote');
+  if(n){n.textContent='ატვირთვა ვერ მოხერხდა — სცადე ხელახლა.'; n.classList.add('bad')}
+ }
+ paintPhotos(); validate();
+}
+function pickPhotos(files){
+ const room=PH_MAX-S.photos.length;
+ [...files].slice(0,room).forEach(f=>{
+  if(!/^image\//.test(f.type)&&!/\.heic$/i.test(f.name))return;
+  uploadOne(f);
+ });
+}
+function bindPhotos(){
+ const drop=el('lf-drop'), inp=el('lf-ph'); if(!drop||!inp)return;
+ paintPhotos();
+ drop.onclick=()=>inp.click();
+ inp.onchange=()=>{pickPhotos(inp.files); inp.value=''};
+ drop.ondragover=e=>{e.preventDefault(); drop.classList.add('drag')};
+ drop.ondragleave=()=>drop.classList.remove('drag');
+ drop.ondrop=e=>{e.preventDefault(); drop.classList.remove('drag'); pickPhotos(e.dataTransfer.files)};
+}
+
+/* ================= ბიჯი 1 — რას ეძებ + პარამეტრები (მოთხოვნა) =================
+   2026-08-26: George-ის მოთხოვნით გაერთიანდა ძველი paneCat + paneParams
+   ერთ ბიჯად — ჯერ ინფორმაცია (როგორ მუშაობს „ვეძებ"), შემდეგ ქმედება
+   (კატეგორია → ფართი/ფასი → თავისუფალი აღწერა). სტრუქტურირებული
+   დამატებითი ატრიბუტები (ოთახები/მდგომარეობა/რემონტი — attrHTML())
+   მოიხსნა და შეიცვალა ერთი თავისუფალი ტექსტის ველით, რომელიც ახლა
+   რეალურად ჩანს გამყიდველისთვის მოთხოვნის ბარათზე (იხ. task #133,
+   index.html→openReq() და functions/api/geo.js). */
+function paneReqWhat(){
+ const c=catOf(S.cat), rent=S.deal==='rent';
+ return '<div class="pane on">'+
+  '<div class="stitle">ბიჯი 1 / 2</div>'+
+  /* ⚠️ 2026-08-26: ეს ტექსტი სიტყვასიტყვით იმეორებს index.html-ის
+     PAGES.seek.h()-ს (ინფო-მოდალი „ვეძებ") — განზრახ, რომ i18n.js-ის
+     უკვე არსებული, გადამოწმებული თარგმანები ავტომატურად იმუშაოს აქაც
+     (ხელახლა თარგმნა/ახალი ჩანაწერები არ სჭირდება). იხ. task #134. */
+  '<div class="intro">'+
+   '<h3>„ვეძებ" — ბაზრის მეორე მხარე</h3>'+
+   '<p class="lead">ჩვეულებრივ მყიდველი დაეძებს გამყიდველს. აქ პირიქითაცაა:'+
+   ' რუკაზე მონიშნულია არეალი, სადაც ნაკვეთის ყიდვა უნდათ — და გამყიდველს'+
+   ' <b>თავად მიდის</b> ეს მოთხოვნა.</p>'+
+   '<h4>ყველაზე მთავარი: ხელით არაფრის გაგზავნა არ გჭირდება</h4>'+
+   '<div class="stp">'+
+    '<div class="s"><span class="sn">1</span><span class="st"><b>მყიდველი ნიშნავს არეალს</b>'+
+     '<span>რუკაზე ხაზავს ადგილს, სადაც მიწა აინტერესებს, და უთითებს სასურველ'+
+     ' ფასს კვადრატულ მეტრზე, ფართობსა და დანიშნულებას.</span></span></div>'+
+    '<div class="s"><span class="sn">2</span><span class="st"><b>გამყიდველი ათავსებს განცხადებას</b>'+
+     '<span>ჩვეულებრივად, ისე როგორც ყოველთვის. მოთხოვნების ძებნა, შედარება'+
+     ' და მიწერა — არაფერი ამათგანი საჭირო არ არის.</span></span></div>'+
+    '<div class="s"><span class="sn">3</span><span class="st"><b>სისტემა თვითონ აწყვილებს</b>'+
+     '<span>თუ ნაკვეთი მონიშნულ არეალში მოხვდა <b>და</b> ფასიც მოთხოვნას შეესაბამება,'+
+     ' განცხადება მყიდველს <b>ავტომატურად</b> მიდის. გამყიდველს დამატებით არაფერი'+
+     ' სჭირდება — არც ღილაკი, არც წერილი.</span></span></div>'+
+   '</div>'+
+   '<div class="note"><i>◈</i><span>ანუ „ვეძებ" გამყიდველისთვის დამატებითი სამუშაო არ არის.'+
+   ' ის უბრალოდ ზრდის შანსს, რომ განცხადება სწორ ადამიანთან მოხვდეს —'+
+   ' მაშინაც კი, როცა ის შენს განცხადებას ჯერ არ ეძებდა.</span></div>'+
+  '</div>'+
+  '<div class="sh">რას ეძებ?</div>'+
+  '<div class="ssub">აირჩიე ტიპი — შემდეგ ბიჯზე რუკაზე მიუთითებ ადგილს.</div>'+
+  GROUPS.map(g=>'<div class="grp"><label>'+g+'</label><div class="chips">'+
+    CATS.filter(x=>x.g===g).map(x=>'<button class="chip'+(S.cat===x.k?' on':'')+'" data-cat="'+x.k+'">'+
+     x.n+'</button>').join('')+
+   '</div></div>').join('')+
+  (S.cat?'<div class="grp" style="margin-top:16px"><label>გარიგება</label><div class="chips">'+
+    '<button class="chip'+(S.deal==='buy'?' on':'')+'" data-deal="buy">ყიდვა</button>'+
+    (c&&c.buyOnly?'':'<button class="chip'+(S.deal==='rent'?' on':'')+'" data-deal="rent">ქირა</button>')+
+   '</div></div>':'')+
+  (S.deal==='rent'&&!(c&&c.buyOnly)?'<div class="grp"><label>პერიოდი</label><div class="chips">'+
+    '<button class="chip'+(S.period==='month'?' on':'')+'" data-per="month">თვე</button>'+
+    '<button class="chip'+(S.period==='year'?' on':'')+'" data-per="year">წელი</button>'+
+   '</div></div>':'')+
+  /* ⚠️ მაძიებელს ფართობის მინიმუმი აღარ ეთხოვება არცერთი კატეგორიისთვის —
+     ისევე, როგორც ბიუჯეტს, მხოლოდ მაქსიმალურ ზომას აზუსტებს (r.amin
+     ფონურად ცარიელი რჩება; ჩვენებისას reqArea() ამას თვითონ ითვალისწინებს). */
+  '<div class="f"><label>მაქსიმალური ფართობი, მ²</label>'+
+   '<input id="amax" type="number" value="'+S.amax+'" placeholder="'+(S.cat==='land'?'1000':'90')+'"></div>'+
+  '<div class="f" id="fpmax" style="margin-top:12px"><label>ბიუჯეტი — მაქსიმუმ $'+(rent?' / '+(S.period==='month'?'თვე':'წელი'):'')+'</label>'+
+    '<input id="pmax" type="number" value="'+S.pmax+'" placeholder="'+(rent?'1000':'100000')+'">'+
+    '<div class="hint" id="phint">მინიმუმი ავტომატურად დაითვლება</div>'+
+    '<div class="err" id="pmaxerr">ბიუჯეტი აუცილებელია.</div></div>'+
+  '<div class="f" style="margin-top:14px"><label>რას ეძებ ზუსტად — არჩევითი</label>'+
+   '<textarea id="note" rows="3" placeholder="მაგ.: ვეძებ 2 ოთახიან ბინას, სასურველია გარემონტებული, ავეჯით, ლამაზი ხედით">'+S.note+'</textarea>'+
+   '<div class="hint">ეს ტექსტი ჩანს გამყიდველისთვის შენი მოთხოვნის ბარათზე — რაც მეტს მიუთითებ, მით ზუსტი შეთავაზება მოგივა.</div></div>'+
+ '</div>';
+}
+
+/* ================= კონფიდენციალურობა — მაძიებლისთვის =================
+   ყველაზე ხშირი შიში: „განცხადებას თუ დავდებ, ნომერზე დამირეკავენ".
+   სამი მოკლე წინადადება, მარტივი ენით. დაპირება არაფერია — მხოლოდ
+   იმის აღწერა, რაც სისტემა მართლა აკეთებს. */
+function privacyNote(){
+ return '<div class="pnote">'+
+  '<div class="pnh">🔒 შენი კონტაქტი დაფარულია</div>'+
+  '<ul class="pnl">'+
+   '<li>რუკაზე ჩანს მხოლოდ სასურველი ადგილი, ბიუჯეტი და ფართობი — '+
+     '<b>სახელი, ნომერი და ელფოსტა არავის უჩანს.</b></li>'+
+   '<li>მესაკუთრეები შენ პირდაპირ ვერ დაგიკავშირდებიან. მათი შეთავაზებები '+
+     'ელფოსტაზე მოგივა.</li>'+
+   '<li><b>შენ თვითონ წყვეტ, ვის დაურეკო</b> — და ვის არა. მოთხოვნის წაშლა '+
+     'ნებისმიერ დროს შეგიძლია.</li>'+
+  '</ul></div>';
+}
+
+/* ================= ბიჯი 4 — ვინ ხარ ================= */
+function paneWho(){
+ return '<div class="pane on">'+
+  '<div class="stitle">ბიჯი 4 / 4</div>'+
+  '<div class="sh">ვინ ხარ?</div>'+
+  '<div class="ssub">'+(TAB==='req'
+   ?'ტელეფონს არ ვითხოვთ და არსად ვაქვეყნებთ — შეთავაზებები ელფოსტაზე მოვა.'
+   :'კონტაქტი განცხადებაზე გამოჩნდება, რომ მყიდველმა პირდაპირ დაგიკავშირდეს.')+'</div>'+
+  /* მაძიებელს მთავარი კითხვა აწუხებს: „ჩემს ნომერს ხომ არ დაინახავენ?"
+     პასუხი ბოლო ბიჯზე უნდა ეწეროს — სწორედ იქ, სადაც ელფოსტას ტოვებს. */
+  (TAB==='req'?privacyNote():'')+
+  '<div class="grp"><label>სტატუსი</label><div class="chips">'+
+   '<button class="chip'+(S.who==='ind'?' on':'')+'" data-who="ind">ფიზიკური პირი</button>'+
+   '<button class="chip'+(S.who==='co'?' on':'')+'" data-who="co">იურიდიული პირი</button>'+
+  '</div></div>'+
+  '<div class="row" style="margin-top:12px">'+
+   '<div class="f"><label>სახელი, გვარი</label><input id="name" value="'+S.name+'" placeholder="გიორგი ბერიძე"></div>'+
+   '<div class="f" id="femail"><label>ელფოსტა</label><input id="email" type="email" value="'+S.email+'" placeholder="mail@example.com">'+
+     '<div class="hint">დადასტურების კოდს აქ გამოგიგზავნით — მისამართი რეალური უნდა იყოს.</div>'+
+     '<div class="err" id="emailerr">ელფოსტა არასწორია.</div></div>'+
+  '</div>'+
+  (S.who==='co'?'<div class="row" style="margin-top:12px">'+
+   '<div class="f"><label>კომპანიის დასახელება</label><input id="comp" value="'+S.comp+'" placeholder="შპს ..."></div>'+
+   '<div class="f"><label>საიდენტიფიკაციო ნომერი</label><input id="cid" value="'+S.cid+'" placeholder="404123456"></div>'+
+  '</div><div class="note">კომპანიას რეესტრში გადავამოწმებთ. დადასტურების შემდეგ განცხადებებზე ავტომატურად გამოჩნდება ნიშანი <b>„✓ დეველოპერი"</b> და ლიმიტი მოგეხსნება.</div>':'')+
+  (TAB==='lst'?'<div class="f" style="margin-top:12px"><label>ტელეფონი</label>'+
+    '<div style="display:flex;gap:8px">'+
+     '<select id="cc" data-noi18n style="width:auto;min-width:200px;flex:0 0 auto">'+
+      COUNTRIES.map(c=>'<option value="'+c[0]+'"'+(S.cc===c[0]?' selected':'')+'>'+((typeof LANG!=='undefined'&&LANG==='en')?c[3]:c[1])+'  +'+c[2]+'</option>').join('')+
+     '</select>'+
+     '<input id="phone" inputmode="tel" value="'+S.phone+'" placeholder="'+(S.cc==='GE'?'5xx xx xx xx':'ნომერი კოდის გარეშე')+'">'+
+    '</div>'+
+    '<div class="hint">ქვეყანა ავტომატურად შეირჩა — შეგიძლია შეცვალო.</div></div>':'')+
+  /* ⚠️ 2026-08-26: ორ წინადადებას შორის <span>-ები საჭიროა, თორემ ერთ
+     ტექსტ-კვანძად ერწყმის და ლექსიკონის ზუსტ დამთხვევას ვერ პოულობს
+     (ცალ-ცალკე ორივე ნახევარი უკვე ითარგმნება, გაერთიანებული — არა). */
+  '<div class="note ok"><span>ელფოსტაზე დადასტურების კოდს გამოგიგზავნით.</span> <span>'+
+   (TAB==='req'?'მოთხოვნა 30 დღე იქნება აქტიური.':'განცხადება 60 დღე იქნება აქტიური.')+'</span></div>'+
+  /* ═══ დეკლარაცია — გაგზავნის წინაპირობა ═══
+     გამყიდველს სამი ცალკე პუნქტი აქვს, არა ერთი ზოგადი ჩამრთველი:
+     ცალკე მონიშნული პასუხისმგებლობა უფრო რეალურად აღიქმება და
+     დავის შემთხვევაშიც ცხადია, კონკრეტულად რას დაეთანხმა.
+     მაძიებელს ერთი პუნქტი ჰყოფნის — ის ხომ ვალდებულებას არ იღებს. */
+  declaration()+subscribeBox()+
+ '</div>';
+}
+
+
+/* ================= დეკლარაცია ================= */
+function declaration(){
+ if(TAB==='req'){
+  return '<label class="tbox" id="ftrm">'+
+   '<input type="checkbox" id="terms"'+(S.terms?' checked':'')+'>'+
+   '<span>ვეთანხმები <a href="#" id="tlink">წესებსა და პირობებს</a></span></label>';
+ }
+ /* გამყიდველი — სამი ცალკე დათქმა */
+ const D=[
+  ['d1','მონაცემები ზუსტია','ფასი, ფართობი, საკადასტრო კოდი და აღწერა სინამდვილეს შეესაბამება.'],
+  ['d2','განთავსების უფლება მაქვს','ვარ მესაკუთრე ან მაქვს მესაკუთრის ნებართვა ამ ობიექტის გასაყიდად/გასაქირავებლად.'],
+  ['d3','ფოტოები ამ ობიექტისაა','სურათები რეალურია და სხვისი ობიექტიდან აღებული არ არის.']
+ ];
+ return '<div class="dbox" id="ftrm">'+
+  '<div class="dh">ვადასტურებ:</div>'+
+  D.map(([k,t,sub])=>
+   '<label class="drow">'+
+    '<input type="checkbox" class="dchk" data-d="'+k+'"'+(S[k]?' checked':'')+'>'+
+    '<span><b>'+t+'</b><i>'+sub+'</i></span>'+
+   '</label>').join('')+
+  '<label class="drow">'+
+   '<input type="checkbox" class="dchk" data-d="d4"'+(S.d4?' checked':'')+'>'+
+   '<span><b>ვეთანხმები <a href="#" id="tlink">წესებსა და პირობებს</a></b>'+
+   '<i>ცრუ ინფორმაციის შემთხვევაში განცხადება იშლება და ანგარიში იბლოკება.</i></span>'+
+  '</label>'+
+ '</div>';
+}
+
+
+/* ================= არხის გამოწერა =================
+   ორივეს ვთავაზობთ, მაგრამ სხვადასხვა მიზეზით:
+   • მაძიებელს — მისი არეალის ახალი განცხადებები
+   • გამყიდველს — რა ხდება მის რაიონში (ფასები, კონკურენცია)
+   მთავარი სარგებელი კი ჩუმ ლოკაციებზეა: სადაც მოთხოვნა არ არის,
+   იქ განცხადება ისე დაიკარგებოდა. გამომწერების სია ამას შველის. */
+function subscribeBox(){
+ /* ⚠️ მაძიებლისთვის (TAB==='req') აქ აღარაფერი ჩანს — ცალკე გამოსაწერი
+    ველი აღარ არსებობს. მაძიებელი მხოლოდ ზუსტ დამთხვევებს იღებს (რადიუსი +
+    ფასი + ფართობი ერთდროულად ემთხვევა), ეს უკვე გარანტირებულია და
+    ხელახლა არჩევა/ჩართვა არ სჭირდება — არასდროს იგზავნება არშესაბამისი
+    განცხადება, თუნდაც არეალში მოხვდეს. */
+ if(TAB==='req')return '';
+ return '<label class="tbox sbox" id="fsub">'+
+  '<input type="checkbox" id="sub"'+(S.sub?' checked':'')+'>'+
+  '<span><b>მინდა სიახლეები ჩემი არეალიდან</b><br>'+
+  'რა ხდება შენს რაიონში: ახალი განცხადებები და მოთხოვნები. გამოწერის გაუქმება ერთი დაწკაპუნებაა.'+
+  '</span></label>';
+}
+
+/* ================= რენდერი ================= */
+function postH(){
+ if(!BARE)return;
+ try{parent.postMessage({mm:'h',h:document.body.scrollHeight},'*')}catch(e){}
+}
+function render(){
+ const stepChanged = (step!==__rStep || TAB!==__rTab);
+ __rStep=step; __rTab=TAB;
+ drawSteps();
+ const b=el('body');
+ if(TAB==='req') b.innerHTML=[paneReqWhat,paneReqWhere][step]();
+ else            b.innerHTML=[paneCat,paneMap,paneObj,paneWho][step]();
+ el('back').style.visibility=step?'visible':'hidden';
+ el('next').textContent=step===lastStep()?'გაგზავნა':'გაგრძელება →';
+ bind();
+ if(b.querySelector('#map'))initMap();
+ if(b.querySelector('#citybox'))initCitySearch();
+ validate();
+ /* ⚠️ ეს ტექსტები ქართულადვე იწერება ზემოთ (მარტივია ასე წაკითხვა) და
+    MutationObserver-ს უნდა დაეყრდნო, რომ ინგლისურ რეჟიმში თარგმნოს —
+    მაგრამ ის ასინქრონულია და ხანდახან აგვიანებს (ტაბები/ღილაკები
+    ერთხანს ქართულად ჩანდა). ამიტომ აქვე, პირდაპირ, სინქრონულად
+    ვთარგმნით — დაყოვნების გარეშე. */
+ if(typeof LANG!=='undefined'&&LANG==='en'&&typeof trNode==='function'){
+  trNode(document.body);
+ }
+ setTimeout(postH,60);
+ /* ⚠️ 2026-08-26: ნამდვილ ბიჯის/ტაბის გადასვლაზე (და არა უბრალოდ
+    იმავე ბიჯში ხელახალ render-ზე) მშობელს ვთხოვთ .mdb-ს სქროლი
+    თავში დააბრუნოს — ახალი ბიჯი ყოველთვის თავიდან უნდა ჩანდეს. */
+ if(stepChanged&&BARE){ try{parent.postMessage({mm:'top'},'*')}catch(e){} }
+}
+
+/* ================= მოვლენები ================= */
+function bind(){
+ document.querySelectorAll('[data-cat]').forEach(x=>x.onclick=()=>{
+  S.cat=x.dataset.cat; const c=catOf(S.cat);
+  S.radius=c.d; if(c.buyOnly)S.deal='buy'; render()});
+ document.querySelectorAll('[data-deal]').forEach(x=>x.onclick=()=>{S.deal=x.dataset.deal;render()});
+ document.querySelectorAll('[data-per]').forEach(x=>x.onclick=()=>{S.period=x.dataset.per;render()});
+ document.querySelectorAll('[data-rooms]').forEach(x=>x.onclick=()=>{S.rooms=S.rooms===x.dataset.rooms?'':x.dataset.rooms;render()});
+ document.querySelectorAll('[data-who]').forEach(x=>x.onclick=()=>{S.who=x.dataset.who;render()});
+ ['amin','amax','pmax','pmin','note','name','email','phone','comp','cid','cad','area','price','pass']
+  .forEach(k=>{const n=el(k); if(n)n.oninput=()=>{S[k]=n.value;validate()}});
+ const chk=el('chk'); if(chk)chk.onclick=checkCad;
+ const tb=el('terms');
+ const sb=el('sub'); if(sb)sb.onchange=()=>{S.sub=sb.checked};
+ document.querySelectorAll('.dchk').forEach(c=>{
+  c.onchange=()=>{S[c.dataset.d]=c.checked;
+   const f=el('ftrm'); if(f)f.classList.remove('bad'); validate()};
+ });
+ if(tb){
+  tb.onchange=()=>{S.terms=tb.checked; el('ftrm').classList.remove('bad'); validate()};
+ }
+ {
+  const tl=el('tlink');
+  if(tl)tl.onclick=e=>{e.preventDefault();
+   /* მშობელს ვთხოვთ წესების გვერდის გახსნას — iframe-ში ვიწროა.
+      თუ ცალკე გვერდზეა (არა iframe), პირდაპირ ვხსნით index.html-ს hash-ით. */
+   if(window.parent&&window.parent!==window){
+    try{parent.postMessage({mm:'open',page:'terms'},'*')}catch(_){}
+   }else{
+    window.open('index.html#terms','_blank','noopener');
+   }
+  };
+ }
+ bindAttrs();
+ bindPhotos();
+ const cc=el('cc'); if(cc)cc.onchange=()=>{S.cc=cc.value;render()};
+}
+
+/* ================= რუკა ================= */
+function initMap(){
+ const box=el('map'); box.innerHTML='';
+ map=new maplibregl.Map({container:box,attributionControl:false,
+  style:{version:8,sources:{sat:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:18}},
+   layers:[{id:'sat',type:'raster',source:'sat'}]},
+  center:S.lng?[S.lng,S.lat]:[44.7590,41.7092], zoom:S.lng?17.4:15});
+ map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
+ map.on('load',()=>{ if(S.lat)placePin(S.lat,S.lng); gate(); });
+ map.on('zoom',gate); map.on('move',gate);
+ el('pin').onclick=()=>{const c=map.getCenter();placePin(c.lat,c.lng)};
+}
+/* ================= ქალაქის ძებნა რუკის თავზე =================
+   ⚠️ მხოლოდ ჩვენი 81 ქალაქის სია იძებნება (CITIES) — არავითარი
+   ქუჩა/ჩიხი/გამზირი, გარე გეოკოდერი არ გვიხმია. არჩევისას რუკა
+   მთელ ქალაქზე გადაფრინდება (ზუმი 12 — ისე, რომ არა ზუსტი წერტილი,
+   არამედ მთელი ქალაქი ჩანდეს), ნიშნულს კი მომხმარებელი თვითონ სვამს,
+   თავად დაზუმებული. */
+function initCitySearch(){
+ const box=el('citybox'), res=el('cityres');
+ if(!box||!res)return;
+ const isEn=()=>typeof LANG!=='undefined'&&LANG==='en';
+ const label=c=>isEn()?T(c[0]):c[0];
+ const close=()=>{res.innerHTML='';res.classList.remove('on')};
+ const search=()=>{
+  const q=cityNorm(box.value);
+  if(!q){close();return}
+  const matches=CITIES.filter(c=>cityNorm(label(c)).includes(q)).sort((a,b)=>a[3]-b[3]||a[0].localeCompare(b[0])).slice(0,8);
+  if(!matches.length){
+   res.innerHTML='<div class="cityopt cityempty">'+T('ქალაქი ვერ მოიძებნა')+'</div>';
+   res.classList.add('on');
+   return;
+  }
+  res.innerHTML=matches.map((c,i)=>'<div class="cityopt" data-i="'+i+'">'+label(c)+'</div>').join('');
+  res.classList.add('on');
+  res.querySelectorAll('.cityopt:not(.cityempty)').forEach((elx,i)=>elx.onclick=()=>{
+   const c=matches[i];
+   box.value=label(c);
+   close();
+   if(map)map.flyTo({center:[c[2],c[1]],zoom:12,duration:700});
+  });
+ };
+ box.oninput=search;
+ box.onfocus=()=>{ if(box.value)search() };
+ box.onblur=()=>setTimeout(close,150);   /* დაგვიანება — click-მა rem-ს დაასწროს */
+}
+/* ⚠️ ადრე: ნიშნულის დასმის შემდეგ თუ მომხმარებელი ზუმით გამოეცილებოდა
+   (17-ზე დაბლა), ღილაკი ჩაითიშებოდა და ტექსტიც "მიუახლოვდი (ზუმი X)"-ზე
+   იცვლებოდა — თითქოს საერთოდ ვეღარ შეცვლიდა ადგილს, ერთადერთი გამოსავალი
+   "უკან" დაბრუნება იყო. ახლა: თუ ნიშნული უკვე დასმულია, ღილაკი ყოველთვის
+   აქტიურია და რუკის ცენტრში გადააქვს ნიშნულს — ზუმის მიუხედავად;
+   დამატებით კვლავ შეიძლება პირდაპირ გადათრევაც (marker draggable). */
+function gate(){
+ const z=map.getZoom(), ok=z>=17, has=!!S.lat;
+ const g=el('zg'), p=el('pin'), x=el('xh');
+ if(!g)return;
+ g.classList.toggle('off', ok||has);
+ if(has){
+  p.disabled=false;
+  p.textContent='◎ ნიშნულის გადატანა აქ';
+  x.classList.toggle('on', ok);
+ }else{
+  p.disabled=!ok;
+  p.textContent=ok?'◎ აქ დავსვათ ნიშნული':'მიუახლოვდი (ზუმი '+z.toFixed(1)+')';
+  x.classList.toggle('on', ok);
+ }
+}
+let marker=null;
+function placePin(lat,lng){
+ S.lat=lat; S.lng=lng;
+ if(marker)marker.remove();
+ const d=document.createElement('div');
+ d.style.cssText='width:20px;height:20px;border-radius:50%;background:#0F6B4F;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.45);cursor:grab';
+ marker=new maplibregl.Marker({element:d,draggable:true}).setLngLat([lng,lat]).addTo(map);
+ marker.on('dragend',()=>{const p=marker.getLngLat();S.lat=p.lat;S.lng=p.lng;drawCircle();countStock();validate()});
+ gate();
+ drawCircle(); countStock(); validate();
+}
+function drawCircle(){
+ if(!map||!S.lat||TAB!=='req')return;
+ const gj=circle(S.lng,S.lat,S.radius);
+ if(map.getSource('c'))map.getSource('c').setData(gj);
+ else{
+  map.addSource('c',{type:'geojson',data:gj});
+  map.addLayer({id:'cf',type:'fill',source:'c',paint:{'fill-color':'#0F6B4F','fill-opacity':.16}});
+  map.addLayer({id:'cl',type:'line',source:'c',paint:{'line-color':'#0F6B4F','line-width':2}});
+ }
+ const b=new maplibregl.LngLatBounds();
+ gj.geometry.coordinates[0].forEach(p=>b.extend(p));
+ map.fitBounds(b,{padding:46,duration:420,maxZoom:19});
+}
+/* ცოცხალი მთვლელი — მაძიებელი ხედავს, აქვს თუ არა აზრი ამ რადიუსს */
+function countStock(){
+ const nt=el('rnote'); if(!nt||!S.lat)return;
+ /* ⚠️ 2026-08-26, George-ის მოთხოვნით: ეს ბლოკი ნიშნულის დასმამდე
+    display:none-ია და აქ პირველად ჩნდება — გვერდის სიმაღლე იზრდება,
+    მაგრამ render()-ს გვერდს ვუვლით, ამიტომ postH() აქამდე არ
+    გამოიძახებოდა. შედეგად მშობლის (index.html) iframe-ის სიმაღლე
+    ძველი, პატარა მნიშვნელობით რჩებოდა და "უკან/გაგრძელება" ღილაკები,
+    რომლებიც ამის ქვემოთ დგას, პრაქტიკულად მიუწვდომელი ხდებოდა. */
+ nt.style.display='';
+ if(TAB==='lst'){
+  nt.className='note ok';
+  nt.innerHTML='<span>ნიშნული დასმულია'+(S.cadAddr
+    ?' — რეესტრის მისამართია <b>'+S.cadAddr+'</b>. შევამოწმებთ, ემთხვევა თუ არა ადგილს.':'.')+'</span>';
+  setTimeout(postH,60);
+  return;
+ }
+ /* რადიუსი ავტომატურია — მაძიებელი მას არ ცვლის, მხოლოდ შედეგს ხედავს */
+ const r=S.radius>=1000?(S.radius/1000).toFixed(1)+' კმ':S.radius+' მ';
+ const n=STOCK.filter(([la,ln,k])=>k===S.cat&&distM(S.lat,S.lng,la,ln)<=S.radius).length;
+ if(n){
+  nt.className='note ok';
+  nt.innerHTML='<span>ამ ადგილას <b>'+r+'-იან რადიუსში</b> ამჟამად <b>'+n+'</b> აქტიური განცხადებაა. '+
+   'მოთხოვნის გამოქვეყნებისთანავე ჩამონათვალს მიიღებ ელფოსტაზე.</span>';
+ }else{
+  nt.className='note';
+  nt.innerHTML='<span>ამ ადგილას <b>'+r+'-იან რადიუსში</b> ჯერ აქტიური განცხადება არ არის — '+
+   'მაგრამ ახალი განცხადებები ყოველდღე ემატება. როგორც კი შესაფერისი ობიექტი გამოჩნდება, '+
+   '<b>პირველი შენ შეიტყობ</b> ელფოსტაზე.</span>';
+ }
+ setTimeout(postH,60);
+}
+
+/* ================= საკადასტრო კოდის შემოწმება ================= */
+/* შემოწმებას სერვერი აკეთებს — /api/cad. ბრაუზერს რეესტრთან პირდაპირი
+   კავშირი აღარ აქვს და შედეგიც აქ არაფერს წყვეტს:
+   ბაზაში მნიშვნელობა /api/submit-ის საკუთარი შემოწმებიდან ჩაიწერება.
+   ე.ი. ამ პასუხის გაყალბება არაფერს იძლევა.
+
+   ⚠️ რეესტრის ხაფანგი (სერვერზეა დაცული): არასწორ კოდზე „ვერ ვიპოვე"
+   არ ბრუნდება — ფილტრი იგნორირდება და მილიონობით ჩანაწერი მოდის. */
+
+let cadBusy = false;
+
+async function checkCad(){
+ const f=el('fcad'), v=(el('cad').value||'').trim(), out=el('cadok'), err=el('caderr');
+ f.classList.remove('bad','good');
+ /* ⚠️ 2026-08-25: #cadok (out) CSS-ით მხოლოდ .f.good მდგომარეობაში ჩანდა
+    (.f.good .ok{display:block}) — ანუ ნებისმიერ არა-„სრულად წარმატებულ"
+    შემთხვევაში (ქსელის შეცდომა, ok:false, ან cad_ok===0) ის, რასაც აქ
+    ვწერთ (d.why-ის კონკრეტული მიზეზი), მომხმარებელს საერთოდ არ უჩანდა —
+    ჩანდა მხოლოდ სტატიკური, ზოგადი „კოდი რეესტრში ვერ მოიძებნა" (#caderr)
+    .bad კლასის მეშვეობით, მიუხედავად იმისა, რომ API-მ რეალურად სპეციფიკური
+    და ხშირად სულ სხვა მიზეზი დააბრუნა (მაგ. „მისამართი ვერ ამოვიცანით —
+    მოდერატორი შეამოწმებს", რაც ნიშნავს რომ კოდი ნაპოვნია, უბრალოდ
+    ავტომატურად ვერ დადასტურდა — ეს არ არის „კოდი არ არსებობს"). აქედან
+    ქვემოთ ხილვადობას ხელით ვმართავთ (inline style, class-ზე მაღალი
+    სპეციფიკურობით), რომ კონკრეტული შეტყობინება ყოველთვის გამოჩნდეს და
+    გენერიულმა ტექსტმა ის არ გადაფაროს. */
+ out.style.display='none'; err.style.display='none';
+ S.cadAddr=''; S.cadOk=0; S.cadPoly=null;
+ if(!v){out.innerHTML='';validate();return}
+
+ if(cadBusy)return; cadBusy=true;
+ out.innerHTML='<span style="color:var(--mute)">მოწმდება რეესტრში…</span>';
+
+ let d=null;
+ try{
+  const q='/api/cad?code='+encodeURIComponent(v)+
+    (S.lat?'&lat='+S.lat+'&lng='+S.lng:'');
+  const r=await fetch(q,{cache:'no-store'});
+  d=await r.json().catch(()=>null);
+ }catch(e){}
+ cadBusy=false;
+
+ if(!d){
+  /* რეესტრი მიუწვდომელია — ამას პირდაპირ ვამბობთ, არ ვიგონებთ შედეგს */
+  out.style.display='block';
+  out.innerHTML='<span style="color:var(--mute)">რეესტრი ამჟამად არ პასუხობს. '+
+    'კოდი შენახულია — მოდერატორი შეამოწმებს.</span>';
+  S.cad=v; validate(); return;
+ }
+
+ if(!d.ok){
+  f.classList.add('bad');
+  err.style.display='none';
+  out.style.display='block';
+  out.innerHTML='<span style="color:var(--bad)">'+(d.why||'რეესტრში ვერ მოიძებნა')+'</span>';
+  validate(); return;
+ }
+
+ S.cad=v; S.cadAddr=d.addr||''; S.cadOk=d.cad_ok||0; S.cadPoly=d.poly||null;
+
+ /* ⚠️ 2026-08-25: George-ის მოთხოვნით — რეესტრში დაფიქსირებული ფართობი
+    და (მხოლოდ მიწისთვის) დანიშნულება ავტომატურად ვსვამთ ველებში, თუ
+    კოდი საერთოდ ნაპოვნია (d.ok) — მიწის დანიშნულების/ფართობის სისწორე
+    არ არის დამოკიდებული cad_ok დონეზე (პინის დამთხვევაზე), ამიტომ ეს
+    ვსვამთ ყველა cad_ok დონეზე, არა მხოლოდ 2/1-ზე. მომხმარებელს კვლავ
+    შეუძლია ხელით შეასწოროს — ეს მოსახერხებელი საწყისი მნიშვნელობაა,
+    არა დაბლოკილი ველი. კოტეჯებისთვის რეესტრი ხშირად მხოლოდ მიწის
+    ფართს აბრუნებს (ცალკე შენობა ხშირად არ ირეგისტრირდება) — ეს
+    ცნობილი, მისაღები შეზღუდვაა (George-ის დაზუსტებით). */
+ if(d.area){S.area=String(d.area); const ai=el('area'); if(ai)ai.value=S.area}
+ if(d.landType&&(S.cat==='land'||S.cat==='invest')){
+  const nType=/არასასოფლო/.test(d.landType)?'არასასოფლო-სამეურნეო'
+    :/სასოფლო/.test(d.landType)?'სასოფლო-სამეურნეო':'';
+  /* ⚠️ სრული render()-ის ნაცვლად პირდაპირ ვცვლით ჩიფის კლასს — render()
+     თავიდან ააგებდა paneObj()-ს და ცარიელი #cadok-ით დაგვიბრუნებდა,
+     რითაც ზემოთ ჩაწერილი კონკრეტული შეტყობინება წაიშლებოდა. */
+  if(nType){
+   A.purp=nType;
+   document.querySelectorAll('[data-a="purp"]').forEach(b=>{
+    b.classList.toggle('on', b.dataset.v===nType);
+   });
+  }
+ }
+
+ const parcel=v.split('.').slice(0,5).join('.');
+ const short=(parcel!==v)
+   ? ' <span style="color:var(--mute);font-weight:400">(ნაკვეთი: '+parcel+')</span>' : '';
+
+ if(d.cad_ok===2){
+  f.classList.add('good');
+  out.style.display='block';
+  out.innerHTML='✓ '+d.addr+short+
+   '<div style="color:var(--mute);font-weight:400;font-size:12px;margin-top:2px">'+
+   'საზღვარი დადასტურდა — ნიშნული ნაკვეთშია'+(d.area?' · '+d.area.toLocaleString('en-US')+' მ²':'')+'</div>';
+ }else if(d.cad_ok===1){
+  f.classList.add('good');
+  out.style.display='block';
+  out.innerHTML='✓ '+d.addr+short+
+   '<div style="color:var(--mute);font-weight:400;font-size:12px;margin-top:2px">'+
+   'მისამართი ადგილს ეთანხმება. საზღვარს მოდერატორი გადაამოწმებს.</div>';
+ }else{
+  f.classList.add('bad');
+  err.style.display='none';
+  out.style.display='block';
+  out.innerHTML='<span style="color:var(--bad)">'+(d.why||'ადგილი არ ემთხვევა')+'</span>'+
+   '<div style="color:var(--mute);font-weight:400;font-size:12px;margin-top:2px">'+
+   'კოდი ნაპოვნია რეესტრში — მისამართი ავტომატურად ვერ დადასტურდა, '+
+   'მოდერატორი ხელით გადაამოწმებს.</div>';
+ }
+ validate();
+}
+
+/* ================= ვალიდაცია ================= */
+/* ================= ვალიდაცია — „ვინ ხარ" ბლოკი (გაზიარებული) =================
+   2026-08-26: George-ის რესტრუქტურიზაციამდე ეს მხოლოდ step===3-ში
+   (lst-ისთვისაც, req-ისთვისაც) ცალკე გამოძახებული იყო. ახლა req-ს
+   რეგისტრაცია სხვა ბიჯზეა (step===1, paneReqWhere), ამიტომ ლოგიკა
+   ცალკე ფუნქციად გამოვყავით — ორივე ადგილიდან გამოსაძახებლად. */
+function validateWho(){
+ const fe=el('femail'), ee=el('emailerr');
+ const e=(S.email||'').trim();
+ let emsg='';
+ if(e){
+  /* მხოლოდ ლათინური — „გმაილ.ცომ" ვერ გაივლის */
+  if(!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(e))emsg='ელფოსტა არასწორია — მხოლოდ ლათინური ასოები.';
+  else{
+   const d=e.split('@')[1].toLowerCase();
+   const typo={'gmail.co':'gmail.com','gmial.com':'gmail.com','gmai.com':'gmail.com',
+               'yahoo.co':'yahoo.com','hotmial.com':'hotmail.com','mial.ru':'mail.ru'}[d];
+   if(typo)emsg='იქნებ '+e.split('@')[0]+'@'+typo+' გინდოდა?';
+  }
+ }
+ if(fe)fe.classList.toggle('bad',!!emsg);
+ if(ee&&emsg)ee.textContent=emsg;
+ /* წესებზე თანხმობის გარეშე გაგზავნა არ ხდება */
+ /* გამყიდველმა ოთხივე პუნქტი უნდა მონიშნოს, მაძიებელმა — ერთი */
+ const decl = TAB==='req' ? !!S.terms : (S.d1&&S.d2&&S.d3&&S.d4);
+ let ok=!!S.name&&!!e&&!emsg&&!!decl&&(S.who!=='co'||(!!S.comp&&!!S.cid));
+ /* მაძიებელს დამატებით ტელეფონი და პაროლიც ეთხოვება — ანგარიშისთვის.
+    სწორ/არასწორ პაროლს (თუ მეილი უკვე რეგისტრირებულია) სერვერი ამოწმებს
+    გაგზავნისას — აქ მხოლოდ სიგრძეს ვამოწმებთ. */
+ if(TAB==='req'){
+  const pf=el('fpass');
+  const passOk=(S.pass||'').length>=8;
+  if(pf)pf.classList.toggle('bad', !!S.pass && !passOk);
+  ok = ok && !!S.phone && passOk;
+ }
+ return ok;
+}
+
+function validate(){
+ let ok=true;
+ if(TAB==='req'){
+  if(step===0){
+   const pmax=+S.pmax||0;
+   const fp=el('fpmax');
+   if(fp)fp.classList.toggle('bad',!pmax&&S.pmax!=='');
+   /* მინიმუმი აღარ ითხოვება მაძიებლისგან — ავტომატურად, ჩუმად ითვლება
+      მაქსიმუმის 70%-ად, ისე რომ დანარჩენმა სისტემამ (ბიუჯეტის დიაპაზონის
+      ჩვენებამ ბარათებზე, მოდერაციაში, წერილებში) იმუშაოს უცვლელად. */
+   const h=el('phint');
+   if(h&&pmax)h.textContent='მინიმუმი: $'+fmt(pmax*0.7)+' (ავტომატურად)';
+   ok=!!S.cat&&pmax>0;
+  }
+  if(step===1)ok=!!S.lat&&validateWho();
+ }else{
+  if(step===0)ok=!!S.cat;
+  /* ⚠️ 2026-08-25: paneMap/paneObj ადგილი გაცვალეს (იხ. STEPS.lst-ის
+     კომენტარი) — შესაბამისად ვალიდაციის ბიჯებიც შებრუნდა: 1=მდებარეობა,
+     2=ობიექტი. */
+  if(step===1)ok=!!S.lat;
+  if(step===2){
+   ok=(+S.price>0)&&(+S.area>0)&&(S.deal==='rent'||!!S.cadAddr)&&attrsOK()&&
+      S.photos.length>0&&!S.photos.some(p=>p.up);
+   const n=el('lf-phnote');
+   if(n&&!S.photos.length){n.textContent='მინიმუმ 1 ფოტო აუცილებელია.'; n.classList.add('bad')}
+  }
+  if(step===3)ok=validateWho();
+ }
+ el('next').disabled=!ok;
+}
+
+/* ================= ნავიგაცია ================= */
+/* ვერიფიკაციის ეკრანი — დადასტურების გარეშე არაფერი ქვეყნდება */
+function paneVerify(){
+ el('steps').innerHTML='';
+ el('back').style.visibility='hidden';
+ el('next').style.display='none';
+ el('body').innerHTML='<div class="pane on">'+
+  '<div class="sh">დაადასტურე ელფოსტა</div>'+
+  '<div class="ssub">6-ნიშნა კოდი გავგზავნეთ მისამართზე <b>'+S.email+'</b>. '+
+   'დადასტურებამდე '+(TAB==='req'?'მოთხოვნა':'განცხადება')+' არ ქვეყნდება.</div>'+
+  '<div class="f" id="fcode" style="max-width:280px"><label>კოდი</label>'+
+   '<input id="code" inputmode="numeric" maxlength="6" placeholder="000000" '+
+   'style="font-size:22px;letter-spacing:7px;text-align:center;height:52px">'+
+   '<div class="err" id="codeerr">კოდი არასწორია.</div></div>'+
+  '<div style="display:flex;gap:9px;margin-top:16px">'+
+   '<button class="btn pri" id="vok" disabled>დადასტურება</button>'+
+   '<button class="btn gh" id="vre">კოდის თავიდან გაგზავნა</button></div>'+
+  (DEV_CODE?'<div class="note ok">სატესტო კოდი: <b>'+DEV_CODE+'</b></div>':'')+
+  '<div class="note">წერილი ვერ მოვიდა? შეამოწმე სპამის საქაღალდე. '+
+   'კოდი 15 წუთის განმავლობაშია აქტიური.</div>'+
+ '</div>';
+ /* ⚠️ ეს ეკრანი render()-ის მიღმაა აგებული, ამიტომ იქაური ავტომატური
+    თარგმანი აქ არ ეშვება — თვითონ უნდა გამოვიძახოთ. */
+ if(typeof LANG!=='undefined'&&LANG==='en'&&typeof trNode==='function')trNode(el('body'));
+ const c=el('code');
+ c.oninput=()=>{c.value=c.value.replace(/\D/g,'');el('vok').disabled=c.value.length!==6;
+   el('fcode').classList.remove('bad')};
+ c.focus();
+ /* ⚠️ 2026-08-26: იგივე მიზეზით, რაც done()-ში — ეს ეკრანიც render()-ის
+    გვერდითაა აგებული და წინა (ხშირად გრძელი) ბიჯიდან მოკლე კოდის
+    ველზე გადასვლისას მშობლის .mdb ძველ სქროლ-პოზიციაზე რჩებოდა. */
+ postH();
+ try{parent.postMessage({mm:'top'},'*')}catch(e){}
+ /* სერვერი ამოწმებს: 5 მცდელობა, 15 წუთი ვადა. */
+ el('vok').onclick=async()=>{
+  const b=el('vok'); b.disabled=true; b.textContent=T('მოწმდება…');
+  try{
+   const r=await fetch('/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:S.email,code:c.value})});
+   const j=await r.json().catch(()=>({}));
+   if(!r.ok){
+    el('fcode').classList.add('bad');
+    const er=el('codeerr');
+    if(er)er.textContent = T(
+      j.error==='too-many-tries' ? 'მცდელობები ამოიწურა — გამოითხოვე ახალი კოდი.'
+    : j.error==='expired'        ? 'კოდს ვადა გაუვიდა — გამოითხოვე ახალი.'
+    : j.left!=null               ? 'კოდი არასწორია. დარჩა '+j.left+' მცდელობა.'
+    :                              'კოდი არასწორია.');
+    b.disabled=false;b.textContent=T('დადასტურება');return;
+   }
+  }catch(e){
+   el('fcode').classList.add('bad');
+   const er=el('codeerr'); if(er)er.textContent=T('კავშირი ვერ დამყარდა — სცადე ხელახლა.');
+   b.disabled=false;b.textContent=T('დადასტურება');return;
+  }
+  done();
+ };
+ /* ⚠️ ადრე ეს ღილაკი მხოლოდ ტექსტს იცვლიდა — სერვერს არაფერს
+    უგზავნიდა, ამიტომ ახალი კოდი არასდროს მოდიოდა. ახლა რეალურად
+    ითხოვს: /api/submit?resend=1. */
+ el('vre').onclick=async()=>{
+  const rb=el('vre'); rb.disabled=true; rb.textContent=T('იგზავნება…');
+  let ok=false;
+  try{
+   const r=await fetch('/api/submit?resend=1',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:S.email})});
+   const j=await r.json().catch(()=>({}));
+   if(r.status===429){alert(T('ძალიან ბევრი მცდელობა. სცადე მოგვიანებით.'))}
+   else{ ok=true; if(j&&j.devCode)DEV_CODE=j.devCode; }
+  }catch(e){}
+  rb.disabled=false;
+  rb.textContent=T(ok?'გაიგზავნა ✓':'კოდის თავიდან გაგზავნა');
+  if(ok)setTimeout(()=>{rb.textContent=T('კოდის თავიდან გაგზავნა')},2500);
+ };
+}
+
+function done(){
+ /* ⚠️ 2026-08-26, George-ის მოთხოვნით: დადასტურების ეკრანზე დეტალური
+    შეჯამების ბარათი (ტიპი/რადიუსი/ბიუჯეტი/კოორდინატი/ელფოსტა/ტელეფონი)
+    მოიხსნა — არასაჭირო ინფორმაციაა ამ ეტაპზე, საკმარისია მოკლე,
+    თბილი დადასტურება. */
+ el('body').innerHTML='<div class="pane on">'+
+  '<div class="donewrap">'+
+   '<div class="doneic">✓</div>'+
+   '<div class="sh">'+(TAB==='req'?'მოთხოვნა გაიგზავნა!':'განცხადება გაიგზავნა!')+'</div>'+
+   '<div class="ssub">'+(TAB==='req'
+    ?'ელფოსტა დადასტურდა და მოთხოვნა გადავიდა განხილვაზე. დამტკიცებისთანავე გამოქვეყნდება — შესაბამისი ნაკვეთის გამოჩენისთანავე პირველი შენ შეიტყობი.'
+    :'ელფოსტა დადასტურდა და განცხადება გადავიდა განხილვაზე. დამტკიცებისთანავე ელფოსტაზე შეგატყობინებთ.')+
+   '</div>'+
+  '</div>'+
+  '<div class="note"><i>✉</i><span>ყველა სიახლე ელფოსტაზე მოგივა — ეს ფანჯარა თამამად დახურე.</span></div>'+
+ '</div>';
+ el('steps').innerHTML=''; el('back').style.visibility='hidden'; el('next').style.display='none';
+ if(typeof LANG!=='undefined'&&LANG==='en'&&typeof trNode==='function')trNode(el('body'));
+ /* ⚠️ 2026-08-26: render()-ს გვერდს ვუვლით (ეს ცალკე ეკრანია), ამიტომ
+    postH()-ც და მშობლისთვის სქროლის თავში დაბრუნების მოთხოვნაც აქ
+    თვითონ უნდა გავაგზავნოთ — თორემ .mdb წინა (გრძელი) ბიჯის სქროლ-
+    პოზიციაზე რჩება და მომხმარებელს ეს ეკრანი საერთოდ ცარიელი ჩანს. */
+ postH();
+ try{parent.postMessage({mm:'top'},'*')}catch(e){}
+}
+el('next').onclick=async()=>{
+ if(step<lastStep()){step++;render();return}
+ /* სერვერზე გაგზავნა; თუ backend ჯერ არ არის — პროტოტიპი განაგრძობს */
+ const btn=el('next'); btn.disabled=true; btn.textContent=T('იგზავნება…');
+ /* pmin ფორმაში აღარ ითხოვება — მაქსიმუმის 70%-ად ითვლება ავტომატურად.
+    amin ასევე აღარსად ითხოვება (ველი UI-დან ყველა კატეგორიისთვის
+    მოცილებულია) — აქაც ცარიელი ვაგზავნით, თუნდაც S.amin ძველი
+    კატეგორიიდან იყოს დარჩენილი. */
+ const autoPmin=S.pmax?Math.round(+S.pmax*0.7):'';
+ const body={kind:TAB==='lst'?'lst':'req',cat:S.cat,deal:S.deal,period:S.period,
+  lat:S.lat,lng:S.lng,radius:S.radius,
+  amin:'',amax:S.amax,pmin:autoPmin,pmax:S.pmax,note:S.note,
+  area:S.area,price:S.price,cad:S.cad,  /* addr აღარ იგზავნება — სერვერი რეესტრიდან იღებს */
+  ttl:(catOf(S.cat).n+' · '+(S.cadAddr||'')).slice(0,160),
+  name:S.name,email:S.email,tel:S.phone?('+'+dialOf(S.cc)+' '+S.phone):'',
+  who:S.who,comp:S.comp,cid:S.cid,attrs:A,pass:S.pass,
+  photos:TAB==='lst'?S.photos.filter(p=>p.url).map(p=>p.url):[],
+  terms:(TAB==='req'?!!S.terms:!!(S.d1&&S.d2&&S.d3&&S.d4)),
+  decl:(TAB==='req'?null:{d1:!!S.d1,d2:!!S.d2,d3:!!S.d3,d4:!!S.d4}),
+  sub:!!S.sub,
+  src_req:(TAB==='lst'&&S.srcReq)?S.srcReq:undefined};
+ try{
+  const r=await fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(r.status===409&&j.error==='phone-taken'){alert(T('ეს ტელეფონის ნომერი უკვე სხვა ანგარიშზეა რეგისტრირებული.'));btn.disabled=false;btn.textContent=T('გაგზავნა');return}
+  if(r.status===409){alert(T('ლიმიტი ამოწურულია: ')+j.cap+T(' აქტიური.'));btn.disabled=false;btn.textContent=T('გაგზავნა');return}
+  if(r.status===429){alert(T('ძალიან ბევრი მცდელობა. სცადე მოგვიანებით.'));btn.disabled=false;btn.textContent=T('გაგზავნა');return}
+  /* ⚠️ 2026-08-26: George-ის მოთხოვნით დამატებული პაროლის ლოგიკის
+     შეცდომები — თუ ეს მეილი უკვე რეგისტრირებულია და პაროლი არ ემთხვევა,
+     ან პაროლი საერთოდ სუსტია (< 8 სიმბოლო). ორივე შემთხვევაში
+     „ვინ ხარ" ბიჯზე ვაბრუნებთ, პაროლის ველს ვუსვამთ წითელს. */
+  if((r.status===401&&j.error==='wrong-pass')||(r.status===400&&j.error==='weak-pass')){
+   step=lastStep(); render();
+   const pf=el('fpass'), pe=el('passerr');
+   if(pf)pf.classList.add('bad');
+   if(pe)pe.textContent=T(j.error==='wrong-pass'
+     ?'პაროლი არასწორია — ეს მეილი უკვე რეგისტრირებულია. ჩაწერე შენი არსებული პაროლი.'
+     :'პაროლი მინ. 8 სიმბოლო უნდა იყოს.');
+   btn.disabled=false;btn.textContent=T('გაგზავნა');return;
+  }
+  if(j&&j.devCode)DEV_CODE=j.devCode;
+  /* ⚠️ comp_ok („ულიმიტო") ანგარიშისთვის სერვერი კოდის გარეშე პირდაპირ
+     ადასტურებს draft→pending-ს (იხ. submit.js) — ასეთ შემთხვევაში
+     ვერიფიკაციის ეკრანი საერთოდ არ სჭირდება, პირდაპირ done()-ზე გადავდივართ. */
+  if(j&&j.autoVerified){btn.disabled=false;done();return}
+ }catch(e){}
+ btn.disabled=false; paneVerify();
+};
+let DEV_CODE='';
+el('back').onclick=()=>{if(step){step--;render()}};
+el('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+ el('tabs').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on'); TAB=b.dataset.t; step=0;
+ el('next').style.display=''; render();
+});
+
+/* ✕ — საიტზე დაბრუნება (ან ფორმის თავიდან დაწყება, თუ პირდაპირ გაიხსნა) */
+function closeForm(){
+ if(history.length>1&&document.referrer&&!/form\.html/.test(document.referrer)){history.back();return}
+ try{location.href='index.html'}catch(e){}
+}
+const BARE=/[?&]bare/.test(location.search);
+if(BARE)document.body.classList.add('bare');
+document.querySelector('.mdx').onclick=closeForm;
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!BARE)closeForm()});
+
+S.cc=detectCountry();
+/* #lst ან #req — საიტიდან პირდაპირ სწორ ფორმაზე */
+if(location.hash==='#lst'){TAB='lst';
+ el('tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t==='lst'));}
+/* ?req=<id> — მყიდველის კონკრეტულ მოთხოვნაზე პასუხად („შეთავაზების გაგზავნა" რუკიდან).
+   ეს ყოველთვის განცხადების ფორმაა — მოთხოვნას მოთხოვნით არ პასუხობენ. */
+{
+ const qp=new URLSearchParams(location.search);
+ const rq=qp.get('req');
+ if(rq){
+  S.srcReq=rq; TAB='lst';
+  el('tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t==='lst'));
+  /* კონკრეტულ მოთხოვნაზე პასუხის ფორმას გადმოცემული აქვს კატეგორია,
+     გარიგება, სასურველი ფართობი და ბიუჯეტი — ეს ყველაფერი წინასწარ
+     ივსება, მომხმარებელს მხოლოდ დათანხმება/დაზუსტება რჩება. */
+  const qcat=qp.get('cat');
+  if(qcat&&catOf(qcat)){ S.cat=qcat; const c=catOf(qcat); S.radius=c.d; if(c.buyOnly)S.deal='buy'; }
+  const qdeal=qp.get('deal');
+  if(qdeal&&(qdeal==='buy'||qdeal==='rent')){
+   const c=catOf(S.cat); if(!(c&&c.buyOnly))S.deal=qdeal;
+  }
+  const qarea=qp.get('area'); if(qarea&&+qarea>0)S.area=qarea;
+  const qprice=qp.get('price'); if(qprice&&+qprice>0)S.price=qprice;
+ }
+}
+/* ═══════ თარგმანი ═══════
+   ფორმა iframe-შია და მშობლის observer მას ვერ სწვდება — საკუთარი გვჭირდება.
+   ენა მოდის ან URL-იდან (?lang=en), ან localStorage-იდან — index.html
+   იქ ინახავს არჩევანს და ორივე ერთსა და იმავე გასაღებს კითხულობს. */
+try{
+ if(typeof applyLang==='function'){
+  applyLang();
+  if(typeof mo!=='undefined'&&mo.observe)
+   mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+  /* მშობელს ენის შეცვლა ფორმის გახსნის შემდეგაც შეუძლია */
+  addEventListener('message',e=>{
+   if(e.data&&e.data.mmLang&&e.data.mmLang!==LANG){
+    try{localStorage.setItem('mm_lang',e.data.mmLang)}catch(_){}
+    location.reload();
+   }
+  });
+ }
+}catch(e){}
+render();
+</script>
+</body>
+</html>

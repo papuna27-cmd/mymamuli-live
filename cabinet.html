@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>MyMamuli.ge — კაბინეტი</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   კაბინეტი — „2080"
+   ---------------------------------------------------------------
+   რას ნიშნავს აქ მომავლის დიზაინი: არა ციმციმა ეფექტებს, არამედ
+   სიმშვიდეს. ღრმა ფონი, შუშისებრი ზედაპირები, ერთადერთი აქცენტის
+   ფერი და ციფრები, რომლებიც ყველაზე დიდია ეკრანზე — რადგან
+   მომხმარებელი აქ ერთი კითხვისთვის შემოდის: „რამდენმა ნახა?"
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+ --bg:#070B0A; --bg2:#0C1311; --line:rgba(255,255,255,.09);
+ --ink:#EAF2EE; --ink2:#93A69E; --mute:#5C6E67;
+ --acc:#3DE0A8; --acc2:#0F6B4F; --amber:#E5A44D; --bad:#E5675C;
+ --glass:rgba(255,255,255,.045);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);min-height:100vh;
+ font:15px/1.55 'Noto Sans Georgian',system-ui,-apple-system,'Segoe UI',sans-serif;
+ -webkit-font-smoothing:antialiased}
+
+/* ფონის ნაზი ნათება — სტატიკური, რომ ბატარეას არ ჭამდეს */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+ background:
+  radial-gradient(900px 500px at 12% -8%, rgba(61,224,168,.10), transparent 60%),
+  radial-gradient(700px 450px at 92% 8%, rgba(229,164,77,.07), transparent 62%)}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:26px 20px 60px}
+
+/* ── ჰედერი ── */
+.top{display:flex;align-items:center;gap:14px;margin-bottom:30px}
+.logo{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:18px;letter-spacing:-.3px;
+ text-decoration:none;color:var(--ink)}
+.logo .bk{font-weight:600;font-size:14px;color:var(--ink2);transition:color .18s}
+.logo:hover .bk{color:var(--acc)}
+.logo b{color:var(--acc)}
+.sp{flex:1}
+.ghost{height:36px;padding:0 15px;border:1px solid var(--line);border-radius:10px;
+ background:var(--glass);color:var(--ink2);font:600 13px/1 inherit;cursor:pointer;
+ transition:border-color .18s,color .18s}
+.ghost:hover{border-color:rgba(61,224,168,.45);color:var(--ink)}
+
+/* ── მთავარი ციფრი ── */
+.hero{border:1px solid var(--line);border-radius:22px;padding:30px 28px;margin-bottom:22px;
+ background:linear-gradient(155deg,rgba(61,224,168,.10),rgba(255,255,255,.02) 46%);
+ position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;inset:0;border-radius:22px;pointer-events:none;
+ border:1px solid transparent;
+ background:linear-gradient(140deg,rgba(61,224,168,.5),transparent 40%) border-box;
+ -webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);
+ -webkit-mask-composite:xor;mask-composite:exclude}
+.hlab{font-size:12.5px;color:var(--ink2);letter-spacing:.6px;text-transform:uppercase}
+.hnum{font-size:clamp(52px,11vw,86px);font-weight:800;line-height:1;letter-spacing:-3px;
+ margin:10px 0 4px;font-variant-numeric:tabular-nums;
+ background:linear-gradient(180deg,#fff,var(--acc));-webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;background-clip:text}
+.hsub{color:var(--ink2);font-size:13.5px}
+
+/* ── ციფრების ბადე ── */
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:26px}
+.kpi{border:1px solid var(--line);border-radius:16px;padding:16px 17px;background:var(--glass);
+ -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.kpi .l{font-size:11.5px;color:var(--mute);letter-spacing:.5px;text-transform:uppercase}
+.kpi .v{font-size:27px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
+
+/* ── განცხადებები ── */
+h2{font-size:14px;font-weight:600;color:var(--ink2);letter-spacing:.4px;margin:0 0 12px}
+.row{display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);
+ border-radius:16px;background:var(--glass);margin-bottom:10px;
+ transition:border-color .18s,transform .18s}
+.row:hover{border-color:rgba(61,224,168,.32);transform:translateY(-1px)}
+.th{width:60px;height:60px;flex:0 0 auto;border-radius:12px;object-fit:cover;
+ background:linear-gradient(135deg,#16211D,#0E1614)}
+.mid{flex:1;min-width:0}
+.t{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m{font-size:12.5px;color:var(--mute);margin-top:3px}
+.st{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;
+ border:1px solid var(--line);color:var(--ink2);margin-left:6px}
+.st.on{color:var(--acc);border-color:rgba(61,224,168,.4);background:rgba(61,224,168,.09)}
+.st.wait{color:var(--amber);border-color:rgba(229,164,77,.4)}
+.st.no{color:var(--bad);border-color:rgba(229,103,92,.4)}
+.vw{text-align:right;flex:0 0 auto}
+.vw b{display:block;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.vw span{font-size:11px;color:var(--mute)}
+.del{flex:0 0 auto;width:32px;height:32px;border-radius:9px;border:1px solid var(--line);
+ background:rgba(229,103,92,.08);color:var(--bad);font-size:14px;cursor:pointer;
+ transition:border-color .18s,background .18s}
+.del:hover{border-color:rgba(229,103,92,.5);background:rgba(229,103,92,.16)}
+.del:disabled{opacity:.5;cursor:default}
+.empty{border:1px dashed var(--line);border-radius:16px;padding:34px 20px;text-align:center;
+ color:var(--mute);font-size:13.5px}
+
+/* ── შესვლის ფორმა ── */
+.auth{max-width:390px;margin:8vh auto 0}
+.card{border:1px solid var(--line);border-radius:22px;padding:28px 26px;background:var(--glass);
+ -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.card h1{font-size:22px;font-weight:700;letter-spacing:-.4px;margin-bottom:6px}
+.card p{color:var(--ink2);font-size:13.5px;margin-bottom:20px}
+.seg{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:12px;margin-bottom:18px}
+.seg button{flex:1;height:34px;border:0;border-radius:9px;background:transparent;color:var(--ink2);
+ font:600 13px/1 inherit;cursor:pointer;transition:.18s}
+.seg button.on{background:rgba(61,224,168,.14);color:var(--acc)}
+label{display:block;font-size:12px;color:var(--mute);margin:0 0 6px;letter-spacing:.3px}
+input,select{width:100%;height:46px;padding:0 14px;border:1px solid var(--line);border-radius:12px;
+ background:rgba(0,0,0,.28);color:var(--ink);font:15px/1 inherit;margin-bottom:14px;
+ transition:border-color .18s}
+input:focus,select:focus{outline:0;border-color:rgba(61,224,168,.55)}
+select{-webkit-appearance:none;appearance:none;cursor:pointer}
+.phrow{display:flex;gap:8px}
+.phrow select{width:auto;flex:0 0 88px;padding:0 8px;font-size:13px;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phrow input{flex:1;min-width:0}
+.code{text-align:center;font-size:26px;font-weight:700;letter-spacing:10px;padding:0 10px}
+.resend{background:none;border:0;color:var(--acc);font:600 13px/1 inherit;cursor:pointer;
+ padding:6px 0;display:block;margin:0 auto}
+.resend:disabled{color:var(--mute);cursor:default}
+.go{width:100%;height:48px;border:0;border-radius:12px;cursor:pointer;
+ background:linear-gradient(135deg,var(--acc),var(--acc2));color:#04120C;
+ font:700 15px/1 inherit;letter-spacing:.2px;transition:filter .18s}
+.go:hover{filter:brightness(1.08)}
+.go:disabled{opacity:.5;cursor:default}
+.err{color:var(--bad);font-size:12.5px;min-height:17px;margin-top:9px;text-align:center}
+.hint{color:var(--mute);font-size:11.5px;margin-top:14px;text-align:center;line-height:1.5}
+a{color:var(--acc)}
+
+/* ── ქმედებების ღილაკები რიგში (ცოცხალზე ნახვა / რედაქტირება) ── */
+.act{flex:0 0 auto;display:flex;gap:6px}
+.ico{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);
+ background:var(--glass);color:var(--ink2);font-size:14px;cursor:pointer;
+ display:inline-flex;align-items:center;justify-content:center;text-decoration:none;
+ transition:border-color .18s,color .18s}
+.ico:hover{border-color:rgba(61,224,168,.45);color:var(--acc)}
+
+/* ── რედაქტირების მოდალი ── */
+.modal-ov{position:fixed;inset:0;background:rgba(3,6,5,.72);z-index:60;
+ display:flex;align-items:center;justify-content:center;padding:20px;
+ -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.modal-ov .card{width:100%;max-width:420px;max-height:88vh;overflow:auto}
+textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;
+ background:rgba(0,0,0,.28);color:var(--ink);font:14px/1.5 inherit;margin-bottom:14px;
+ resize:vertical;min-height:84px;transition:border-color .18s}
+textarea:focus{outline:0;border-color:rgba(61,224,168,.55)}
+.mrow{display:flex;gap:10px}
+.mrow>div{flex:1}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script src="i18n.js"></script>
+<script>
+const el=i=>document.getElementById(i);
+
+/* ⚠️ 2026-08-26: George-ის შენიშვნით — (1) კაბინეტი მხოლოდ ქართულად
+   იყო, საიტის დანარჩენი ნაწილივით ორენოვანი (ka/en) არ იყო; (2) მოთხოვნის
+   კატეგორია (r.cat) ბაზიდან ხედავდი როგორც ინგლისურ კოდს ("flat","house"…),
+   არა ადამიანურ სახელს. orpiv პრობლემას ერთი მიდგომით ვხსნით — cabinet.html
+   მთლიანად JS-გენერირებულია (არა სტატიკური HTML), ამიტომ საიტის
+   ზოგადი i18n.js-ის ტექსტის-ძებნის მექანიზმზე დაყრდნობის მაგივრად (რომელიც
+   ცვლადებით აწყობილ წინადადებებზე მყიფეა — whitespace/interpolation
+   ამტვრევს ზუსტ დამთხვევას) პირდაპირ ვირჩევთ ენას t(ka,en) ჰელპერით.
+   LANG გლობალური ცვლადი i18n.js-დანაა (URL ?lang=en/localStorage). */
+const t=(ka,en)=>(typeof LANG!=='undefined'&&LANG==='en')?en:ka;
+const CATN_KA={flat:'ბინა',house:'სახლი / აგარაკი',cottage:'კოტეჯი',office:'საოფისე ფართი',
+ comm:'კომერციული ფართი',hotel:'სასტუმრო',resto:'რესტორანი / ბარი',base:'სარდაფი',
+ land:'მიწის ნაკვეთი',invest:'საინვესტიციო მიწის ნაკვეთი',garage:'პარკინგი / ავტოფარეხი'};
+const CATN_EN={flat:'Apartment',house:'House / Villa',cottage:'Cottage',office:'Office space',
+ comm:'Commercial space',hotel:'Hotel',resto:'Restaurant / Bar',base:'Basement',
+ land:'Land plot',invest:'Investment land',garage:'Parking / Garage'};
+const catName=c=>(t(0,1)?CATN_EN:CATN_KA)[c]||c;
+const dealName=d=>d==='rent'?t('ქირა','Rent'):t('ყიდვა','Buy');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString('en-US');
+
+/* =================================================================
+   ქვეყნის კოდები — იგივე სია და ავტომატური ამოცნობა, რაც form.html-ში.
+   ================================================================= */
+const COUNTRIES=[
+ ['GE','საქართველო','995','Georgia'],['AM','სომხეთი','374','Armenia'],['AZ','აზერბაიჯანი','994','Azerbaijan'],
+ ['TR','თურქეთი','90','Turkey'],['RU','რუსეთი','7','Russia'],['UA','უკრაინა','380','Ukraine'],['BY','ბელარუსი','375','Belarus'],
+ ['KZ','ყაზახეთი','7','Kazakhstan'],['IL','ისრაელი','972','Israel'],['AE','არაბთა საამიროები','971','United Arab Emirates'],
+ ['SA','საუდის არაბეთი','966','Saudi Arabia'],['QA','კატარი','974','Qatar'],['KW','ქუვეითი','965','Kuwait'],['IR','ირანი','98','Iran'],
+ ['US','აშშ','1','United States'],['CA','კანადა','1','Canada'],['GB','დიდი ბრიტანეთი','44','United Kingdom'],['IE','ირლანდია','353','Ireland'],
+ ['DE','გერმანია','49','Germany'],['FR','საფრანგეთი','33','France'],['IT','იტალია','39','Italy'],['ES','ესპანეთი','34','Spain'],
+ ['PT','პორტუგალია','351','Portugal'],['NL','ნიდერლანდები','31','Netherlands'],['BE','ბელგია','32','Belgium'],['AT','ავსტრია','43','Austria'],
+ ['CH','შვეიცარია','41','Switzerland'],['SE','შვედეთი','46','Sweden'],['NO','ნორვეგია','47','Norway'],['DK','დანია','45','Denmark'],
+ ['FI','ფინეთი','358','Finland'],['PL','პოლონეთი','48','Poland'],['CZ','ჩეხეთი','420','Czechia'],['SK','სლოვაკეთი','421','Slovakia'],
+ ['HU','უნგრეთი','36','Hungary'],['RO','რუმინეთი','40','Romania'],['BG','ბულგარეთი','359','Bulgaria'],['GR','საბერძნეთი','30','Greece'],
+ ['CY','კვიპროსი','357','Cyprus'],['HR','ხორვატია','385','Croatia'],['RS','სერბეთი','381','Serbia'],['SI','სლოვენია','386','Slovenia'],
+ ['LT','ლიეტუვა','370','Lithuania'],['LV','ლატვია','371','Latvia'],['EE','ესტონეთი','372','Estonia'],['MD','მოლდოვა','373','Moldova'],
+ ['CN','ჩინეთი','86','China'],['IN','ინდოეთი','91','India'],['JP','იაპონია','81','Japan'],['KR','სამხრეთ კორეა','82','South Korea'],
+ ['AU','ავსტრალია','61','Australia'],['NZ','ახალი ზელანდია','64','New Zealand'],['BR','ბრაზილია','55','Brazil'],['AR','არგენტინა','54','Argentina'],
+ ['ZA','სამხრეთ აფრიკა','27','South Africa'],['EG','ეგვიპტე','20','Egypt'],['UZ','უზბეკეთი','998','Uzbekistan'],['TJ','ტაჯიკეთი','992','Tajikistan'],
+ ['TM','თურქმენეთი','993','Turkmenistan'],['KG','ყირგიზეთი','996','Kyrgyzstan'],['MN','მონღოლეთი','976','Mongolia'],['TH','ტაილანდი','66','Thailand']
+];
+const TZ2C={'Asia/Tbilisi':'GE','Asia/Yerevan':'AM','Asia/Baku':'AZ','Europe/Istanbul':'TR',
+ 'Europe/Moscow':'RU','Europe/Kyiv':'UA','Europe/Kiev':'UA','Europe/Minsk':'BY','Asia/Almaty':'KZ',
+ 'Asia/Jerusalem':'IL','Asia/Dubai':'AE','Asia/Riyadh':'SA','Asia/Qatar':'QA','Asia/Kuwait':'KW',
+ 'Asia/Tehran':'IR','Europe/London':'GB','Europe/Dublin':'IE','Europe/Berlin':'DE','Europe/Paris':'FR',
+ 'Europe/Rome':'IT','Europe/Madrid':'ES','Europe/Lisbon':'PT','Europe/Amsterdam':'NL','Europe/Brussels':'BE',
+ 'Europe/Vienna':'AT','Europe/Zurich':'CH','Europe/Stockholm':'SE','Europe/Oslo':'NO','Europe/Copenhagen':'DK',
+ 'Europe/Helsinki':'FI','Europe/Warsaw':'PL','Europe/Prague':'CZ','Europe/Bratislava':'SK','Europe/Budapest':'HU',
+ 'Europe/Bucharest':'RO','Europe/Sofia':'BG','Europe/Athens':'GR','Asia/Nicosia':'CY','Europe/Zagreb':'HR',
+ 'Europe/Belgrade':'RS','Europe/Ljubljana':'SI','Europe/Vilnius':'LT','Europe/Riga':'LV','Europe/Tallinn':'EE',
+ 'Europe/Chisinau':'MD','Asia/Shanghai':'CN','Asia/Kolkata':'IN','Asia/Calcutta':'IN','Asia/Tokyo':'JP',
+ 'Asia/Seoul':'KR','Australia/Sydney':'AU','Pacific/Auckland':'NZ','Asia/Tashkent':'UZ','Asia/Dushanbe':'TJ',
+ 'Asia/Ashgabat':'TM','Asia/Bishkek':'KG','Asia/Bangkok':'TH','Africa/Cairo':'EG','Africa/Johannesburg':'ZA'};
+function detectCountry(){
+ try{
+  const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
+  if(TZ2C[tz])return TZ2C[tz];
+  if(/^America\//.test(tz))return 'US';
+ }catch(e){}
+ try{
+  const m=(navigator.language||'').match(/[-_]([A-Za-z]{2})$/);
+  if(m){const cc=m[1].toUpperCase(); if(COUNTRIES.some(c=>c[0]===cc))return cc}
+ }catch(e){}
+ return 'GE';
+}
+const dialOf=c=>{const x=COUNTRIES.find(k=>k[0]===c);return x?x[2]:'995'};
+
+/* ══ შესვლის ეკრანი ══ */
+let MODE='login', CC=detectCountry();
+let LAST_REG=null;         /* რეგისტრაციის ბოლო მონაცემი — კოდის თავიდან გასაგზავნად */
+
+function paintAuth(msg){
+ el('app').innerHTML=
+ '<div class="top"><a class="logo" href="index.html" title="'+t('მთავარზე დაბრუნება','Back to home')+'"><span class="bk">←</span>My<b>Mamuli</b>.ge</a></div>'+
+ '<div class="auth"><div class="card">'+
+  '<h1>'+(MODE==='login'?t('შესვლა','Log in'):t('რეგისტრაცია','Sign up'))+'</h1>'+
+  '<p>'+(MODE==='login'
+    ? t('შედი და ნახე, რამდენმა ნახა შენი განცხადება.','Log in to see how many people viewed your listing.')
+    : t('ერთი წუთი — და საკუთარი კაბინეტი გექნება.','One minute — and you\'ll have your own account.'))+'</p>'+
+  '<div class="seg">'+
+   '<button data-m="login"'+(MODE==='login'?' class="on"':'')+'>'+t('შესვლა','Log in')+'</button>'+
+   '<button data-m="register"'+(MODE==='register'?' class="on"':'')+'>'+t('რეგისტრაცია','Sign up')+'</button>'+
+  '</div>'+
+  (MODE==='login'?
+   '<label for="id">'+t('ელფოსტა ან ტელეფონი','Email or phone')+'</label><input id="id" autocomplete="username" placeholder="'+t('mail@example.com ან 5xx xx xx xx','mail@example.com or 5xx xx xx xx')+'">'
+   :
+   /* რეგისტრაცია — სახელი, ელფოსტა და ტელეფონი ორივე სავალდებულოა */
+   '<label for="nm">'+t('სახელი','Name')+'</label><input id="nm" autocomplete="name" placeholder="'+t('გიორგი ბერიძე','George Beridze')+'">'+
+   '<label for="em">'+t('ელფოსტა','Email')+'</label><input id="em" type="email" autocomplete="email" placeholder="mail@example.com">'+
+   '<label for="tl">'+t('ტელეფონი','Phone')+'</label><div class="phrow">'+
+    '<select id="cc" data-noi18n aria-label="'+t('ქვეყნის კოდი','Country code')+'">'+COUNTRIES.map(c=>'<option value="'+c[0]+'"'+(CC===c[0]?' selected':'')+'>+'+c[2]+' '+(t(0,1)?c[3]:c[1])+'</option>').join('')+'</select>'+
+    '<input id="tl" inputmode="tel" autocomplete="tel" placeholder="'+(CC==='GE'?'5xx xx xx xx':t('ნომერი კოდის გარეშე','Number without code'))+'">'+
+   '</div>'
+  )+
+  '<label for="pw">'+t('პაროლი','Password')+'</label><input id="pw" type="password" autocomplete="'+
+    (MODE==='login'?'current-password':'new-password')+'">'+
+  '<button class="go" id="go">'+(MODE==='login'?t('შესვლა','Log in'):t('ანგარიშის შექმნა','Create account'))+'</button>'+
+  '<div class="err" id="er">'+(msg||'')+'</div>'+
+  (MODE==='register'?'<div class="hint">'+t('ელფოსტაზე დადასტურების კოდს გამოგიგზავნით.','We\'ll send a confirmation code to your email.')+'</div>':'')+
+  (MODE==='login'?'<div class="hint"><a href="mailto:info@mymamuli.ge?subject='+encodeURIComponent(t('პაროლის აღდგენა','Password recovery'))+'">'+t('პაროლი დაგავიწყდა?','Forgot your password?')+'</a></div>':'')+
+ '</div></div>';
+
+ document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{MODE=b.dataset.m;paintAuth()});
+ /* ქვეყნის შეცვლისას ფორმა აღარ ინახლება მთლიანად — მხოლოდ ველის placeholder,
+    რომ უკვე შეყვანილი სახელი/ელფოსტა/ტელეფონი/პაროლი არ წაიშალოს */
+ const ccEl=el('cc'); if(ccEl)ccEl.onchange=()=>{
+  CC=ccEl.value;
+  const tlEl=el('tl'); if(tlEl)tlEl.placeholder=(CC==='GE'?'5xx xx xx xx':t('ნომერი კოდის გარეშე','Number without code'));
+ };
+ el('go').onclick=submit;
+ el('pw').onkeydown=e=>{if(e.key==='Enter')submit()};
+ if(typeof applyLang==='function')applyLang();
+}
+
+async function submit(){
+ const b=el('go'), pw=el('pw').value;
+ if(pw.length<8){el('er').textContent=t('პაროლი მინიმუმ 8 სიმბოლო უნდა იყოს.','Password must be at least 8 characters.');return}
+ const body={mode:MODE,pass:pw};
+ if(MODE==='register'){
+  const name=el('nm').value.trim(), email=el('em').value.trim(), tel=el('tl').value.trim();
+  if(!name){el('er').textContent=t('სახელი აუცილებელია.','Name is required.');return}
+  if(!email){el('er').textContent=t('ელფოსტა აუცილებელია.','Email is required.');return}
+  if(!tel){el('er').textContent=t('ტელეფონის ნომერი აუცილებელია.','Phone number is required.');return}
+  body.name=name; body.email=email; body.tel='+'+dialOf(CC)+' '+tel;
+  LAST_REG={mode:'register',pass:pw,name,email,tel:body.tel};
+ }else{
+  const v=el('id').value.trim();
+  if(v.indexOf('@')>-1)body.email=v; else body.tel=v;
+ }
+ b.disabled=true; b.textContent='…';
+ let j={};
+ try{
+  const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)});
+  j=await r.json().catch(()=>({}));
+  if(r.ok){
+   if(j.needVerify){paintVerify(j.email);return}
+   load();return;
+  }
+ }catch(e){ j={error:'net'} }
+ if(j.error==='unverified'){paintVerify(j.email,true);return}
+ const M={wrong:t('მონაცემები არ ემთხვევა.','Details don\'t match.'),
+  exists:t('ასეთი ანგარიში უკვე არსებობს — შედი.','This account already exists — log in instead.'),
+  'weak-pass':t('პაროლი მინიმუმ 8 სიმბოლო უნდა იყოს.','Password must be at least 8 characters.'),
+  'bad-id':t('ელფოსტა არასწორია.','Invalid email.'),
+  'bad-name':t('სახელი აუცილებელია.','Name is required.'),
+  'bad-phone':t('ტელეფონის ნომერი არასწორია.','Invalid phone number.'),
+  'phone-taken':t('ეს ნომერი უკვე დარეგისტრირებულია სხვა ანგარიშზე.','This number is already registered to another account.'),
+  blocked:t('ანგარიში დაბლოკილია.','This account is blocked.'),
+  'too-many':t('ძალიან ბევრი მცდელობა — სცადე მოგვიანებით.','Too many attempts — try again later.'),
+  net:t('კავშირი ვერ დამყარდა.','Could not connect.')};
+ paintAuth(M[j.error]||t('ვერ მოხერხდა.','Something went wrong.'));
+}
+
+/* ══ ელფოსტის დადასტურების ეკრანი ══ */
+function paintVerify(email,fromLogin){
+ el('app').innerHTML=
+ '<div class="top"><a class="logo" href="index.html" title="'+t('მთავარზე დაბრუნება','Back to home')+'"><span class="bk">←</span>My<b>Mamuli</b>.ge</a></div>'+
+ '<div class="auth"><div class="card">'+
+  '<h1>'+t('დაადასტურე ელფოსტა','Confirm your email')+'</h1>'+
+  '<p>'+(fromLogin?t('შენი ანგარიში ჯერ არ არის დადასტურებული. ','Your account isn\'t confirmed yet. '):'')+
+   t('ექვსნიშნა კოდი გამოგზავნილია მისამართზე ','A six-digit code was sent to ')+'<b>'+esc(email)+'</b>'+
+   t(' — შეამოწმე შემოსული ფოსტა.',' — check your inbox.')+'</p>'+
+  '<input id="cd" class="code" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">'+
+  '<button class="go" id="go">'+t('დადასტურება','Confirm')+'</button>'+
+  '<div class="err" id="er"></div>'+
+  '<button class="resend" id="rs">'+t('კოდი არ მოვიდა? ხელახლა გაგზავნა','Didn\'t get a code? Resend')+'</button>'+
+ '</div></div>';
+
+ el('go').onclick=()=>confirmCode(email);
+ el('cd').onkeydown=e=>{if(e.key==='Enter')confirmCode(email)};
+ el('cd').focus();
+ el('rs').onclick=()=>resendCode(email);
+ if(typeof applyLang==='function')applyLang();
+}
+
+async function confirmCode(email){
+ const b=el('go'), code=el('cd').value.trim();
+ if(!/^\d{6}$/.test(code)){el('er').textContent=t('კოდი 6 ციფრისგან უნდა შედგებოდეს.','The code must be 6 digits.');return}
+ b.disabled=true; b.textContent='…';
+ let j={};
+ try{
+  const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({mode:'verify',email,code})});
+  j=await r.json().catch(()=>({}));
+  if(r.ok){LAST_REG=null;load();return}
+ }catch(e){ j={error:'net'} }
+ const M={'wrong-code':t('კოდი არასწორია.','The code is incorrect.'),
+  expired:t('კოდის ვადა ამოიწურა — მოითხოვე ახალი.','The code has expired — request a new one.'),
+  'too-many-tries':t('ბევრი არასწორი მცდელობა — მოითხოვე ახალი კოდი.','Too many wrong attempts — request a new code.'),
+  'too-many':t('ძალიან ბევრი მცდელობა — სცადე მოგვიანებით.','Too many attempts — try again later.'),
+  net:t('კავშირი ვერ დამყარდა.','Could not connect.')};
+ b.disabled=false; b.textContent=t('დადასტურება','Confirm');
+ el('er').textContent=M[j.error]||t('ვერ მოხერხდა.','Something went wrong.');
+}
+
+async function resendCode(email){
+ const b=el('rs');
+ b.disabled=true; b.textContent=t('იგზავნება…','Sending…');
+ try{
+  await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({mode:'resend',email})});
+ }catch(e){}
+ b.textContent=t('გაიგზავნა ✓','Sent ✓');
+ setTimeout(()=>{b.disabled=false;b.textContent=t('კოდი არ მოვიდა? ხელახლა გაგზავნა','Didn\'t get a code? Resend')},20000);
+}
+
+/* ══ კაბინეტი ══ */
+const STL={active:['on',t('აქტიური','Active')],pending:['wait',t('განხილვაშია','Under review')],
+ draft:['wait',t('დაუდასტურებელი','Unconfirmed')],hold:['wait',t('შეჩერებული','Paused')],
+ paused:['wait',t('შეჩერებული','Paused')],rejected:['no',t('უარყოფილი','Rejected')],expired:['',t('ვადაგასული','Expired')],
+ closed:['no',t('წაშლილი','Removed')]};
+
+/* წაშლა — არა ნამდვილი DELETE, status='closed' (me.js). სასურველი
+   რომ ღილაკის ერთი დაწკაპუნებით არაფერი წაიშალოს დაუფიქრებლად —
+   ამიტომ დადასტურების კითხვა. */
+async function delItem(kind,id,btn){
+ if(!confirm(kind==='lst'?t('წავშალო ეს განცხადება?','Delete this listing?'):t('წავშალო ეს მოთხოვნა?','Delete this request?')))return;
+ if(btn){btn.disabled=true;btn.textContent='…'}
+ try{
+  const r=await fetch('/api/me',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({kind,id})});
+  if(!r.ok)throw 0;
+ }catch(e){ alert(t('წაშლა ვერ მოხერხდა — სცადე ხელახლა.','Could not delete — try again.')); if(btn){btn.disabled=false;btn.textContent='✕'} return }
+ load();
+}
+
+function paintMe(d){
+ const tt=d.totals;
+ el('app').innerHTML=
+ '<div class="top"><a class="logo" href="index.html" title="'+t('მთავარზე დაბრუნება','Back to home')+'"><span class="bk">←</span>My<b>Mamuli</b>.ge</a><div class="sp"></div>'+
+  '<button class="ghost" id="out">'+t('გასვლა','Log out')+'</button></div>'+
+
+ '<div class="hero"><div class="hlab">'+t('ჯამური ნახვები — განცხადება + მოთხოვნა','Total views — listings + requests')+'</div>'+
+  '<div class="hnum">'+fmt(tt.views)+'</div>'+
+  '<div class="hsub">'+(tt.today?(t('დღეს ','Today ')+fmt(tt.today)+t(' ნახვა · ',' views · ')):'')+
+   t('ბოლო 7 დღეში ','Last 7 days ')+fmt(tt.week)+'</div></div>'+
+
+ '<div class="grid">'+
+  '<div class="kpi"><div class="l">'+t('განცხადება','Listings')+'</div><div class="v">'+fmt(tt.listings)+'</div></div>'+
+  '<div class="kpi"><div class="l">'+t('მოთხოვნა','Requests')+'</div><div class="v">'+fmt(tt.requests)+'</div></div>'+
+  '<div class="kpi"><div class="l">'+t('აქტიური','Active')+'</div><div class="v">'+fmt(tt.active)+'</div></div>'+
+  '<div class="kpi"><div class="l">'+t('დღეს','Today')+'</div><div class="v">'+fmt(tt.today)+'</div></div>'+
+  '<div class="kpi"><div class="l">'+t('7 დღე','7 days')+'</div><div class="v">'+fmt(tt.week)+'</div></div>'+
+ '</div>'+
+
+ '<h2>'+t('განცხადებები','Listings')+'</h2>'+
+ (d.lst.length? d.lst.map(l=>{
+   const s=STL[l.status]||['',l.status];
+   const canDel=l.status!=='closed';
+   const live=l.status==='active';
+   return '<div class="row">'+
+    (l.photo?'<img class="th" src="'+esc(l.photo)+'" alt="">':'<div class="th"></div>')+
+    '<div class="mid"><div class="t">'+esc(l.ttl||t('უსათაურო','Untitled'))+
+      '<span class="st '+s[0]+'">'+s[1]+'</span></div>'+
+     '<div class="m">'+[l.loc,l.reg].filter(Boolean).map(esc).join(', ')+
+      (l.price?' · $'+fmt(l.price):'')+(l.area?' · '+fmt(l.area)+t(' მ²',' m²'):'')+'</div></div>'+
+    '<div class="vw"><b>'+fmt(l.views)+'</b><span>'+t('ნახვა','views')+'</span></div>'+
+    '<div class="act">'+
+     (live?'<a class="ico" href="/g/'+esc(l.id)+'/" target="_blank" rel="noopener" title="'+t('ნახე ცოცხალზე','View live')+'">↗</a>':'')+
+     '<button type="button" class="ico" data-e="lst" data-id="'+esc(l.id)+'" title="'+t('რედაქტირება','Edit')+'">✎</button>'+
+     (canDel?'<button type="button" class="ico del" data-k="lst" data-id="'+esc(l.id)+'" title="'+t('წაშლა','Delete')+'">✕</button>':'')+
+    '</div></div>';
+  }).join('')
+  : '<div class="empty">'+t('განცხადება ჯერ არ გაქვს. ','You have no listings yet. ')+'<a href="index.html#post">'+t('განათავსე უფასოდ','Post for free')+'</a></div>')+
+
+ (d.req.length?'<h2 style="margin-top:26px">'+t('მოთხოვნები','Requests')+'</h2>'+d.req.map(r=>{
+   const s=STL[r.status]||['',r.status];
+   const canDel=r.status!=='closed';
+   const live=r.status==='active';
+   const cityName=t(0,1)?r.loc_en:r.loc_ka;
+   return '<div class="row"><div class="th"></div><div class="mid">'+
+    '<div class="t">'+esc(catName(r.cat))+' · '+esc(dealName(r.deal))+
+     (cityName?' · '+esc(cityName):'')+
+     '<span class="st '+s[0]+'">'+s[1]+'</span></div>'+
+    '<div class="m">'+(r.price_max?'$'+fmt(r.price_max)+t('-მდე · ','max · '):'')+r.radius+t(' მ რადიუსი · ',' m radius · ')+fmt(r.views)+' '+t('ნახვა','views')+'</div></div>'+
+    '<div class="vw"><b>'+fmt(r.sent_n)+'</b><span>'+t('შეთავაზება','offers')+'</span></div>'+
+    '<div class="act">'+
+     (live?'<a class="ico" href="/g/'+esc(r.id)+'/" target="_blank" rel="noopener" title="'+t('ნახე ცოცხალზე','View live')+'">↗</a>':'')+
+     '<button type="button" class="ico" data-er="req" data-id="'+esc(r.id)+'" title="'+t('რედაქტირება','Edit')+'">✎</button>'+
+     (canDel?'<button type="button" class="ico del" data-k="req" data-id="'+esc(r.id)+'" title="'+t('წაშლა','Delete')+'">✕</button>':'')+
+    '</div></div>';
+  }).join(''):'');
+
+ el('out').onclick=async()=>{
+  await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({mode:'out'})});
+  paintAuth();
+ };
+ document.querySelectorAll('.del').forEach(b=>b.onclick=()=>delItem(b.dataset.k,b.dataset.id,b));
+ document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>openEdit(b.dataset.id,d.lst));
+ document.querySelectorAll('[data-er]').forEach(b=>b.onclick=()=>openEditReq(b.dataset.id,d.req));
+ if(typeof applyLang==='function')applyLang();
+}
+
+/* ══ განცხადების რედაქტირება — MVP: სათაური/აღწერა/ფასი/საკონტაქტო.
+   გეო-მონაცემები და ფოტოები აქედან არ იცვლება (task #73). ══ */
+function openEdit(id,list){
+ const l=(list||[]).find(x=>x.id===id); if(!l)return;
+ const ov=document.createElement('div');
+ ov.className='modal-ov';
+ ov.innerHTML='<div class="card">'+
+  '<h1 style="font-size:18px;margin-bottom:14px">'+t('განცხადების რედაქტირება','Edit listing')+'</h1>'+
+  '<label for="e_ttl">'+t('სათაური','Title')+'</label><input id="e_ttl" value="'+esc(l.ttl||'')+'">'+
+  '<label for="e_dsc">'+t('აღწერა','Description')+'</label><textarea id="e_dsc">'+esc(l.dsc||'')+'</textarea>'+
+  '<div class="mrow"><div><label for="e_price">'+t('ფასი ($)','Price ($)')+'</label><input id="e_price" inputmode="numeric" value="'+esc(l.price||'')+'"></div>'+
+  '<div><label for="e_tel">'+t('ტელეფონი','Phone')+'</label><input id="e_tel" value="'+esc(l.tel||'')+'"></div></div>'+
+  '<button class="go" id="e_save">'+t('შენახვა','Save')+'</button>'+
+  '<div class="err" id="e_er"></div>'+
+  '<button type="button" class="resend" id="e_cancel">'+t('გაუქმება','Cancel')+'</button>'+
+ '</div>';
+ document.body.appendChild(ov);
+ ov.addEventListener('click',e=>{if(e.target===ov)ov.remove()});
+ el('e_cancel').onclick=()=>ov.remove();
+ el('e_save').onclick=async()=>{
+  const b=el('e_save'); b.disabled=true; b.textContent='…';
+  const ttl=el('e_ttl').value.trim();
+  if(!ttl){el('e_er').textContent=t('სათაური აუცილებელია.','Title is required.');b.disabled=false;b.textContent=t('შენახვა','Save');return}
+  try{
+   const r=await fetch('/api/me',{method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({kind:'lst',id,action:'edit',
+       ttl,dsc:el('e_dsc').value.trim(),price:el('e_price').value.trim(),tel:el('e_tel').value.trim()})});
+   if(!r.ok)throw 0;
+  }catch(e){ el('e_er').textContent=t('ვერ შენახულა — სცადე ხელახლა.','Could not save — try again.'); b.disabled=false; b.textContent=t('შენახვა','Save'); return }
+  ov.remove(); load();
+ };
+}
+
+/* ══ მოთხოვნის რედაქტირება — MVP: ბიუჯეტი/მაქს.ფართობი/რადიუსი/შენიშვნა.
+   კატეგორია/გარიგება/მდებარეობა აქედან არ იცვლება. ══ */
+function openEditReq(id,list){
+ const r=(list||[]).find(x=>x.id===id); if(!r)return;
+ const ov=document.createElement('div');
+ ov.className='modal-ov';
+ ov.innerHTML='<div class="card">'+
+  '<h1 style="font-size:18px;margin-bottom:14px">'+t('მოთხოვნის რედაქტირება','Edit request')+'</h1>'+
+  '<div class="mrow"><div><label for="q_price">'+t('ბიუჯეტი — მაქს. ($)','Budget — max ($)')+'</label><input id="q_price" inputmode="numeric" value="'+esc(r.price_max||'')+'"></div>'+
+  '<div><label for="q_area">'+t('ფართობი — მაქს. (მ²)','Area — max (m²)')+'</label><input id="q_area" inputmode="numeric" value="'+esc(r.area_max||'')+'"></div></div>'+
+  '<label for="q_rad">'+t('საძიებო რადიუსი (მ)','Search radius (m)')+'</label><input id="q_rad" inputmode="numeric" value="'+esc(r.radius||'')+'">'+
+  '<label for="q_note">'+t('შენიშვნა','Note')+'</label><textarea id="q_note">'+esc(r.note||'')+'</textarea>'+
+  '<button class="go" id="q_save">'+t('შენახვა','Save')+'</button>'+
+  '<div class="err" id="q_er"></div>'+
+  '<button type="button" class="resend" id="q_cancel">'+t('გაუქმება','Cancel')+'</button>'+
+ '</div>';
+ document.body.appendChild(ov);
+ ov.addEventListener('click',e=>{if(e.target===ov)ov.remove()});
+ el('q_cancel').onclick=()=>ov.remove();
+ el('q_save').onclick=async()=>{
+  const b=el('q_save'); b.disabled=true; b.textContent='…';
+  try{
+   const r2=await fetch('/api/me',{method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({kind:'req',id,action:'edit',
+       price_max:el('q_price').value.trim(),area_max:el('q_area').value.trim(),
+       radius:el('q_rad').value.trim(),note:el('q_note').value.trim()})});
+   if(!r2.ok)throw 0;
+  }catch(e){ el('q_er').textContent=t('ვერ შენახულა — სცადე ხელახლა.','Could not save — try again.'); b.disabled=false; b.textContent=t('შენახვა','Save'); return }
+  ov.remove(); load();
+ };
+}
+
+document.title=t('MyMamuli.ge — კაბინეტი','MyMamuli.ge — My account');
+if(t(0,1))document.documentElement.lang='en';
+
+async function load(){
+ try{
+  const r=await fetch('/api/me',{cache:'no-store'});
+  if(r.status===401){paintAuth();return}
+  const d=await r.json();
+  if(d.ok){paintMe(d);return}
+ }catch(e){}
+ paintAuth();
+}
+load();
+try{
+ if(typeof mo!=='undefined'&&mo.observe)
+  mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+}catch(e){}
+</script>
+</body>
+</html>

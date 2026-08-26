@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>MyMamuli — მოდერაცია</title>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" integrity="sha384-MinO0mNliZ3vwppuPOUnGa+iq619pfMhLVUXfC4LHwSCvF9H+6P/KO4Q7qBOYV5V" crossorigin="anonymous">
+<style>
+:root{--ink:#0E1A16;--ink2:#4A5A54;--mute:#8E9B96;--line:#E7EBE9;--brand:#0F6B4F;
+ --sand:#F5F6F5;--amber:#C8873A;--down:#C0453B;--blue:#2F5C93}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:none}
+body{font:400 15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Georgian",sans-serif;
+ color:var(--ink);background:#fff;display:flex;flex-direction:column;overflow:hidden}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+/* ============ ჰედერი ============ */
+header{flex:0 0 auto;background:#fff;z-index:20;padding-top:env(safe-area-inset-top)}
+.hb{display:flex;align-items:center;gap:8px;padding:12px 16px 2px}
+.logo{font-weight:700;font-size:17px;letter-spacing:-.3px;color:var(--brand)}
+.logo b{color:var(--ink);font-weight:700}
+.hb .md{font-size:14px;color:var(--ink2);display:flex;align-items:center;gap:5px;margin-left:auto}
+.hb .md i{font-style:normal;color:var(--brand)}
+.kbtn{width:32px;height:32px;border-radius:10px;background:var(--sand);display:grid;place-items:center;
+ font-size:14px;color:var(--ink2);margin-left:8px}
+
+/* პილები */
+.pills{display:flex;gap:8px;padding:10px 16px 0;flex-wrap:wrap}
+.pills button{height:38px;padding:0 16px;border-radius:19px;border:1px solid var(--line);background:#fff;
+ font-size:13.5px;font-weight:600;color:var(--ink2);display:flex;align-items:center;gap:7px;
+ transition:transform .16s cubic-bezier(.22,1,.36,1),background .16s,border-color .16s,color .16s}
+.pills button:active{transform:scale(.97)}
+.pills button .n{font-size:12.5px;font-weight:700;opacity:.55}
+.pills button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.pills button.on .n{opacity:.8}
+.pills.amber button.on{background:var(--amber);border-color:var(--amber)}
+
+.warn{background:#FDF6EA;color:#7A5411;font-size:12.5px;padding:10px 16px;text-align:center;
+ flex:0 0 auto;line-height:1.45}
+.warn button{background:#8A5D14;color:#fff;padding:5px 11px;border-radius:8px;font:600 12px inherit;margin-left:6px}
+.warn code{background:#fff;padding:1px 5px;border-radius:4px;font-size:11.5px}
+
+/* პროგრესი */
+.prog{padding:14px 16px 0;font-size:13px;color:var(--ink2);font-weight:600}
+.prog .bar{height:3px;background:var(--line);border-radius:2px;margin-top:8px;overflow:hidden;max-width:160px}
+.prog .bar i{display:block;height:100%;background:var(--brand);border-radius:2px;transition:width .3s}
+
+/* ============ ბარათი ============ */
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;
+ padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+.wrap{max-width:560px;margin:0 auto}
+
+/* ფოტოს ლენტა */
+.ph{display:flex;gap:8px;padding:12px 16px 0;overflow-x:auto;scrollbar-width:none}
+.ph::-webkit-scrollbar{display:none}
+.ph .th{position:relative;flex:0 0 calc((100% - 16px)/3);aspect-ratio:4/3;border-radius:12px;overflow:hidden;
+ background:var(--sand);cursor:zoom-in}
+.ph .th img{width:100%;height:100%;object-fit:cover;display:block}
+.ph .th .cnt{position:absolute;right:6px;top:6px;background:rgba(14,26,22,.72);color:#fff;
+ font:700 10.5px/1 inherit;padding:4px 6px;border-radius:6px}
+.ph .no{flex:1;aspect-ratio:16/6;display:grid;place-items:center;background:var(--sand);
+ border-radius:12px;color:var(--mute);font-size:13px}
+
+.hd{padding:16px 16px 0}
+.hd .pr{display:flex;align-items:baseline;gap:9px}
+.hd .pr b{font-size:28px;font-weight:700;letter-spacing:-.9px;line-height:1}
+.hd .pr span{font-size:14px;color:var(--mute);font-weight:500}
+.hd h1{font-size:16.5px;font-weight:600;line-height:1.4;margin-top:9px}
+.hd .loc{font-size:13.5px;color:var(--ink2);margin-top:7px;display:flex;align-items:center;gap:6px}
+.hd .loc i{font-style:normal;color:var(--brand)}
+.tag{display:inline-block;font:700 10.5px/1 inherit;padding:5px 9px;border-radius:7px;margin-bottom:10px}
+.tag.new{background:#FDF6EA;color:#8A5D14}
+.tag.req{background:#EEF3FA;color:var(--blue)}
+
+/* ფაქტების ბლოკი — ხატულებით, კიდით */
+.facts{margin:16px 16px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.fr{display:flex;align-items:center;gap:10px;padding:12px 14px;font-size:14px}
+.fr+.fr{border-top:1px solid var(--line)}
+.fr i{font-style:normal;width:18px;text-align:center;color:var(--mute);font-size:14px;flex:0 0 auto}
+.fr span{color:var(--ink2);flex:1}
+.fr b{font-weight:600;text-align:right;max-width:58%}
+.fr a{color:var(--brand);text-decoration:none}
+
+.dsc{margin:16px 16px 0;font-size:14px;line-height:1.65;color:var(--ink2);white-space:pre-wrap}
+
+/* რუკა */
+.mapbox{position:relative;margin:16px 16px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#map{height:170px;background:var(--sand)}
+.mapbox .exp{position:absolute;right:8px;top:8px;width:30px;height:30px;border-radius:9px;
+ background:rgba(255,255,255,.94);display:grid;place-items:center;color:var(--ink2);font-size:13px;
+ box-shadow:0 1px 4px rgba(0,0,0,.14)}
+
+/* ავტორი */
+.who{display:flex;align-items:center;gap:11px;margin:16px 16px 0;padding:13px 14px;
+ border:1px solid var(--line);border-radius:14px}
+.who .av{width:38px;height:38px;border-radius:50%;background:var(--sand);display:grid;place-items:center;
+ color:var(--mute);flex:0 0 auto;font-size:16px}
+.who .i{flex:1;min-width:0}
+.who .nm{font-size:14px;font-weight:600}
+.who .em{font-size:12.5px;color:var(--mute);overflow:hidden;text-overflow:ellipsis}
+.who .st{font-size:12px;color:var(--mute);margin-top:3px}
+.badge{font:600 11px/1 inherit;padding:6px 9px;border-radius:8px;background:#EDF5F1;color:var(--brand);
+ flex:0 0 auto;border:1px solid #D4E6DD}
+.badge.warn{background:#FDF6EA;color:#8A5D14;border-color:#F0E0C4}
+
+.flagbox{margin:14px 16px 0;background:#FDF6EA;color:#8A5D14;border-radius:12px;padding:11px 13px;
+ font-size:12.5px;line-height:1.5;display:flex;gap:8px}
+
+/* ცარიელი */
+.done{padding:70px 24px;text-align:center}
+.done .ring{width:104px;height:104px;margin:0 auto;border-radius:50%;background:var(--brand);
+ display:grid;place-items:center;color:#fff;font-size:44px;
+ box-shadow:0 0 0 10px rgba(15,107,79,.10),0 0 0 22px rgba(15,107,79,.05)}
+.done h2{font-size:21px;margin-top:26px;font-weight:700;letter-spacing:-.5px;line-height:1.3}
+.done p{color:var(--mute);font-size:14px;margin-top:10px}
+.done .rf{margin-top:26px;height:52px;padding:0 30px;border-radius:14px;background:var(--brand);color:#fff;
+ font-weight:600;font-size:15px;display:inline-flex;align-items:center;gap:9px}
+
+/* ============ ქმედებები ============ */
+.act{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.96);
+ -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--line);
+ padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.actin{max-width:560px;margin:0 auto;display:flex;gap:9px}
+.ab{flex:1;height:54px;border-radius:14px;font-weight:600;font-size:14.5px;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+ border:1.5px solid transparent;
+ transition:transform .16s cubic-bezier(.22,1,.36,1),background .16s}
+.ab:active{transform:scale(.96)}
+.ab .em{font-size:17px;line-height:1}
+.ab.no{border-color:#EFD3D0;background:#FDF4F3;color:var(--down)}
+.ab.hd{border-color:#F0E0C4;background:#FDF9F1;color:#9A6516}
+.ab.edit{border-color:#D6E2F0;background:#F2F6FC;color:var(--blue)}
+.ab.del{border-color:#EFD3D0;background:#FDF4F3;color:var(--down)}
+.ab.ok{flex:1.6;background:var(--brand);color:#fff;flex-direction:row;gap:8px;font-size:15.5px}
+
+/* ============ კორექტირების ფურცელი ============ */
+.ef{margin-bottom:12px}
+.ef label{display:block;font-size:12.5px;font-weight:600;color:var(--ink2);margin-bottom:6px}
+.ef input,.ef textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 13px;
+ font:inherit;font-size:14.5px;color:var(--ink);background:#fff}
+.ef textarea{resize:vertical;min-height:74px;line-height:1.5}
+.ef input:focus,.ef textarea:focus{outline:none;border-color:var(--brand)}
+.efrow{display:flex;gap:10px}
+.efrow .ef{flex:1}
+.esave{width:100%;height:50px;border-radius:14px;font-size:15px;font-weight:600;
+ color:#fff;background:var(--brand);margin-top:4px}
+.esave[disabled]{background:var(--sand);color:var(--mute)}
+
+/* ფურცელი */
+.sheet{position:fixed;inset:0;z-index:60;background:rgba(14,26,22,.42);display:none;align-items:flex-end}
+.sheet.on{display:flex}
+.sheetin{width:100%;max-width:560px;margin:0 auto;background:#fff;border-radius:22px 22px 0 0;
+ padding:22px 16px calc(18px + env(safe-area-inset-bottom));max-height:82vh;overflow-y:auto;
+ animation:up .26s cubic-bezier(.22,1,.36,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheetin h3{font-size:17px;font-weight:700;letter-spacing:-.3px;margin-bottom:16px}
+.sheetin .r{width:100%;display:flex;align-items:center;gap:12px;padding:14px 4px;font-size:14.5px;text-align:left}
+.sheetin .r+.r{border-top:1px solid var(--line)}
+.sheetin .r em{font-style:normal;color:var(--mute);width:16px;flex:0 0 auto}
+.sheetin .r s{margin-left:auto;width:21px;height:21px;border-radius:50%;border:1.5px solid var(--line);
+ flex:0 0 auto;text-decoration:none;transition:.14s}
+.sheetin .r:active s{border-color:var(--brand);box-shadow:inset 0 0 0 5px var(--brand)}
+.sheetin .cancel{width:100%;height:50px;border-radius:14px;font-size:15px;font-weight:600;
+ color:var(--ink2);background:var(--sand);margin-top:14px}
+
+/* გაუქმება */
+.undo{position:fixed;left:16px;right:16px;bottom:calc(80px + env(safe-area-inset-bottom));z-index:50;
+ max-width:528px;margin:0 auto;background:var(--ink);color:#fff;border-radius:14px;padding:13px 15px;
+ display:flex;align-items:center;gap:12px;font-size:13.5px;overflow:hidden;
+ box-shadow:0 10px 30px rgba(0,0,0,.28);opacity:0;transform:translateY(12px);pointer-events:none;
+ transition:.24s cubic-bezier(.22,1,.36,1)}
+.undo.on{opacity:1;transform:none;pointer-events:auto}
+.undo button{color:#7FD3B0;font-weight:700;margin-left:auto}
+.undo i.bar{position:absolute;left:0;bottom:0;height:3px;background:#7FD3B0}
+
+.lbx{position:fixed;inset:0;background:#000;display:none;place-items:center;z-index:80;padding:16px}
+.lbx.on{display:grid}
+.lbx img{max-width:100%;max-height:100%;border-radius:12px}
+
+/* ============ ლეპტოპი ============ */
+@media(min-width:900px){
+ body{background:#F3F5F4}
+ header{background:transparent;padding-top:18px}
+ .hb,.pills{max-width:1020px;margin-left:auto;margin-right:auto}
+ .warn{max-width:1020px;margin:12px auto 0;border-radius:12px}
+ main{padding:0 20px calc(96px + env(safe-area-inset-bottom))}
+ .wrap{max-width:1020px;background:#fff;border-radius:20px;margin-top:16px;padding:0 0 20px;
+  box-shadow:0 1px 3px rgba(14,26,22,.06),0 12px 36px rgba(14,26,22,.08)}
+ .prog{padding:18px 22px 0}
+ .ph{padding:14px 22px 0}
+ .ph .th{flex:0 0 calc((100% - 32px)/5)}
+ /* ორი სვეტი */
+ .cols{display:grid;grid-template-columns:1.15fr .85fr;gap:0 22px;padding:0 22px}
+ .hd{padding:18px 0 0}
+ .facts,.dsc,.flagbox{margin-left:0;margin-right:0}
+ .mapbox,.who{margin-left:0;margin-right:0}
+ #map{height:210px}
+ .actin{max-width:1020px}
+ .undo{max-width:1020px;left:20px;right:20px}
+ .done{padding:80px 24px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hb">
+    <div class="logo"><b>My</b>Mamuli</div>
+    <div class="md">მოდერაცია <i>◈</i></div>
+    <a href="users.html" style="margin-left:8px;font-size:12px;font-weight:600;color:var(--ink2);text-decoration:none">მომხმარებლები</a>
+    <button class="kbtn" id="rfrTop" title="სიის განახლება">↻</button>
+    <button class="kbtn" id="kbtn" title="ადმინის გასაღები">🔑</button>
+  </div>
+  <div class="pills" id="secs">
+    <button data-s="pending" class="on">დასადასტურებელი <span class="n" id="n-pending">0</span></button>
+    <button data-s="active">დადასტურებული <span class="n" id="n-active">0</span></button>
+  </div>
+  <div class="pills" id="tabs">
+    <button data-k="lst" class="on">ვყიდი <span class="n" id="n-lst">0</span></button>
+    <button data-k="req">ვეძებ <span class="n" id="n-req">0</span></button>
+  </div>
+</header>
+
+<div class="warn" id="warn"></div>
+
+<main id="main"><div class="wrap" id="wrap"></div></main>
+
+<div class="act" id="act">
+  <div class="actin">
+    <button class="ab no" id="bNo"><span class="em">✕</span>უარი</button>
+    <button class="ab hd" id="bHd"><span class="em">⏸</span>ჰოლდი</button>
+    <button class="ab edit" id="bEdit"><span class="em">✎</span>კორექტირება</button>
+    <button class="ab del" id="bDel"><span class="em">🗑</span>წაშლა</button>
+    <button class="ab ok" id="bOk"><span class="em">✓</span>დადასტურება</button>
+  </div>
+</div>
+
+<div class="undo" id="undo"><span id="undoT"></span><button id="undoB">დაბრუნება</button><i class="bar" id="undoBar"></i></div>
+
+<div class="sheet" id="sheet">
+  <div class="sheetin">
+    <h3>აირჩიე უარის მიზეზი</h3>
+    <div id="reasons"></div>
+    <button class="cancel" id="rcancel">გაუქმება</button>
+  </div>
+</div>
+
+<!-- ⚠️ 2026-08-26, George-ის მოთხოვნით: მოდერატორის კორექტირების ფურცელი —
+     ველების ხელით გასწორება დადასტურებამდე (task #136). ველების ნაკრები
+     drawEditFields()-ში დინამიურად აგება (lst/req სხვადასხვაა). -->
+<div class="sheet" id="esheet">
+  <div class="sheetin">
+    <h3>განაცხადის კორექტირება</h3>
+    <div id="efields"></div>
+    <button class="esave" id="esave">შენახვა</button>
+    <button class="cancel" id="ecancel">გაუქმება</button>
+  </div>
+</div>
+
+<div class="lbx" id="lbx"><img id="lbxI" alt=""></div>
+
+<div id="lsheet" style="display:none;position:fixed;inset:0;z-index:90;background:rgba(14,26,22,.42);align-items:center;justify-content:center;padding:16px">
+  <form id="lform" autocomplete="on" style="background:#fff;border-radius:16px;padding:22px;width:min(340px,100%);box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:14px">ადმინის სესია</h3>
+    <input type="text" name="username" autocomplete="username" value="admin" style="position:absolute;left:-9999px;top:auto" tabindex="-1" aria-hidden="true">
+    <label for="lpass" style="font-size:12.5px;color:var(--ink2);display:block;margin-bottom:6px">ADMIN_KEY</label>
+    <input type="password" id="lpass" name="password" autocomplete="current-password" placeholder="ADMIN_KEY"
+      style="width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;font:inherit;font-size:14px;margin-bottom:8px;box-sizing:border-box">
+    <div id="lerr" style="color:var(--down);font-size:12.5px;min-height:16px;margin-bottom:8px"></div>
+    <div style="display:flex;gap:8px">
+      <button type="button" id="lcancel" style="flex:1;height:42px;border-radius:10px;background:var(--sand);font:inherit;font-weight:600;border:0;cursor:pointer">გაუქმება</button>
+      <button type="submit" style="flex:1;height:42px;border-radius:10px;background:var(--brand);color:#fff;font:inherit;font-weight:600;border:0;cursor:pointer">შესვლა</button>
+    </div>
+  </form>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" integrity="sha384-SYKAG6cglRMN0RVvhNeBY0r3FYKNOJtznwA0v7B5Vp9tr31xAHsZC0DqkQ/pZDmj" crossorigin="anonymous"></script>
+<script>
+const el=id=>document.getElementById(id);
+const fmt=n=>new Intl.NumberFormat('ka-GE').format(Math.round(n||0));
+const CAT={land:'მიწის ნაკვეთი',flat:'ბინა',house:'სახლი',comm:'კომერციული',garage:'ავტოფარეხი',
+ office:'ოფისი',hotel:'სასტუმრო',resto:'რესტორანი',base:'სარდაფი',cottage:'კოტეჯი',invest:'საინვესტიციო'};
+const DEAL={buy:'იყიდება',rent:'ქირავდება'};
+const REASONS=['დუბლიკატი განცხადება','ყალბი ან მცდარი ინფორმაცია','არასწორი კატეგორია',
+ 'არასწორი მდებარეობა','ფასი არასწორია','საკონტაქტო ინფორმაცია არასწორია','სხვა მიზეზი'];
+
+/* ---------- დემო ---------- */
+const DEMO={lst:[
+ {id:'l-9f2a',cat:'land',deal:'buy',ttl:'7 400 მ² სასოფლო-სამეურნეო ნაკვეთი მჭადიჯვარში',
+  cad:'81.05.34.123',lat:42.0043,lng:44.6121,loc:'მჭადიჯვარი, დუშეთი',reg:'მცხეთა-მთიანეთი',
+  area:7400,price:51800,tel:'+995 555 12 34 56',contact_name:'გიორგი ბ.',
+  dsc:'ნაკვეთი მდებარეობს მჭადიჯვარში, მშვიდ, ეკოლოგიურად სუფთა გარემოში. იდეალურია სასოფლო-სამეურნეო საქმიანობისთვის, ახლოს არის მთავარი გზა.',
+  photos:['img/land-1.jpg','img/land-2.jpg','img/land-3.jpg','img/land-4.jpg'],
+  flag:'სისტემას აქვს ეჭვი: მხედველი შუამავალი',
+  user:{name:'გიორგი ბ.',email:'info@example.com',created:'2024-02-18',total:2,rejected:0,comp_ok:1}},
+ {id:'l-4b71',cat:'flat',deal:'rent',ttl:'68 მ² ბინა ვაკეში, ავეჯით',lat:41.7092,lng:44.7590,
+  loc:'ვაკე',reg:'თბილისი',area:68,price:850,tel:'+995 577 88 21 09',contact_name:'ნინო',
+  dsc:'ვაქირავებ 2 ოთახიან ბინას. ჩემი სააგენტო გთავაზობთ კიდევ 40-ზე მეტ ვარიანტს ვაკეში.',
+  photos:['img/land-4.jpg'],flag:'აღწერაში სავარაუდოდ სარეკლამო ტექსტია',
+  user:{name:'ნინო',email:'estate.pro@gmail.com',created:'2026-08-22',total:9,rejected:3,comp_ok:0}}
+],req:[
+ {id:'r-31c8',cat:'land',deal:'buy',lat:41.8400,lng:44.7200,radius:2500,loc:'მცხეთა',reg:'მცხეთა-მთიანეთი',
+  area_min:800,area_max:2000,price_min:25000,price_max:50000,
+  dsc:'ვეძებ ნაკვეთს სახლის ასაშენებლად, გზასთან ახლოს.',photos:[],
+  user:{name:'ანა ჭ.',email:'anna@example.com',created:'2026-08-20',total:1,rejected:0,comp_ok:0}}
+]};
+
+let SEC='pending', TAB='lst', cur=0, map=null, LAST=null, uT=null, LIVE=false;
+let ALL={pending:{lst:[...DEMO.lst],req:[...DEMO.req]},active:{lst:[],req:[]}};
+let TOT={pending:{lst:DEMO.lst.length,req:DEMO.req.length},active:{lst:0,req:0}};
+const Q=()=>ALL[SEC][TAB];
+
+/* ---------- გასაღები ---------- */
+/* ═══════ ადმინის სესია ═══════
+   გასაღები აღარ ინახება localStorage-ში და აღარ მიდის URL-ში.
+   ერთხელ იგზავნება POST-ის სხეულში; სანაცვლოდ HttpOnly cookie გაიცემა,
+   რომელსაც JavaScript ვერ კითხულობს. fetch მას თავისით ატარებს. */
+let AUTHED=false;
+async function chkAuth(){
+ try{const r=await fetch('/api/admin',{cache:'no-store'});AUTHED=r.ok&&(await r.json()).ok}
+ catch(e){AUTHED=false}
+ return AUTHED;
+}
+function openLogin(){
+ el('lerr').textContent=''; el('lpass').value=''; el('lsheet').style.display='flex';
+ setTimeout(()=>el('lpass').focus(),30);
+}
+function closeLogin(){ el('lsheet').style.display='none'; }
+el('lcancel').onclick=closeLogin;
+el('lsheet').onclick=e=>{ if(e.target===el('lsheet'))closeLogin(); };
+el('lform').onsubmit=async e=>{
+ e.preventDefault();
+ const k=el('lpass').value.trim();
+ if(!k)return;
+ const btn=el('lform').querySelector('button[type=submit]');
+ btn.disabled=true;
+ let r;
+ try{r=await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({key:k})})}catch(err){el('lerr').textContent='კავშირი ვერ დამყარდა.';btn.disabled=false;return}
+ AUTHED=r.ok;
+ btn.disabled=false;
+ if(!AUTHED){el('lerr').textContent=r.status===429?'ძალიან ბევრი მცდელობა — სცადე ერთ საათში.':'გასაღები არ ემთხვევა.';return}
+ closeLogin(); load();
+};
+async function logout(){
+ try{await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({out:1})})}catch(e){}
+ AUTHED=false;
+}
+el('kbtn').onclick=()=>{ if(AUTHED){logout().then(load)} else {openLogin()} };
+
+async function load(){
+ const w=el('warn');
+ if(!AUTHED)await chkAuth();
+ if(!AUTHED){w.style.display='';w.innerHTML='დემო-რიგი. რეალური მონაცემისთვის შედი გასაღებით.<button id="sk">შესვლა</button>';
+  el('sk').onclick=askKey; draw(); return}
+ let d=null;
+ try{const r=await fetch('/api/mod',{cache:'no-store'});
+  if(r.status===401){AUTHED=false;w.style.display='';w.innerHTML='სესია დასრულდა.<button id="sk">შესვლა</button>';el('sk').onclick=askKey;draw();return}
+  if(r.ok)d=await r.json();
+ }catch(e){}
+ if(!d){w.style.display='';w.innerHTML='<code>/api/mod</code> ჯერ არ მუშაობს — ატვირთე <code>functions/</code> და მიაბი D1.';draw();return}
+ LIVE=true; w.style.display='none';
+ ALL={pending:{lst:d.lst||[],req:d.req||[]},active:{lst:d.lst_ok||[],req:d.req_ok||[]}};
+ /* ⚠️ 2026-08-25: George-ის მოთხოვნით — lst_ok/req_ok (და pending
+    მასივებიც) სერვერზე LIMIT-ითაა შემოსაზღვრული, ამიტომ .length
+    ბეჯებისთვის აღარ გამოგვადგება: 50-ზე მეტი ჩანაწერის შემთხვევაში
+    ყოველთვის 50-ზე ჩერდებოდა. /api/mod ახლა ცალკე, LIMIT-ის გარეშე
+    ნამდვილ COUNT(*)-ებსაც აბრუნებს (*_total ველები) — ესენი ვინახოთ
+    და ბეჯებში სწორედ ესენი გამოვიყენოთ, თვითონ ჩამონათვალი კი
+    კვლავ შემოსაზღვრული დარჩება (გვერდის დატვირთვის დასაცავად). */
+ TOT={
+  pending:{lst:d.lst_pending_total||0, req:d.req_pending_total||0},
+  active:{lst:d.lst_ok_total||0, req:d.req_ok_total||0}
+ };
+ cur=0; draw();
+}
+
+function counts(){
+ el('n-lst').textContent=TOT[SEC].lst;
+ el('n-req').textContent=TOT[SEC].req;
+ el('n-pending').textContent=TOT.pending.lst+TOT.pending.req;
+ el('n-active').textContent=TOT.active.lst+TOT.active.req;
+}
+
+/* ---------- ბარათი ---------- */
+function draw(){
+ counts();
+ const list=Q(), w=el('wrap');
+ if(cur>=list.length)cur=Math.max(0,list.length-1);
+
+ if(!list.length){
+  w.innerHTML='<div class="done"><div class="ring">✓</div>'+
+   '<h2>ყველა განცხადება<br>განხილულია!</h2>'+
+   '<p>ახლა სიაში არ არის დასადასტურებელი ჩანაწერი.</p>'+
+   '<button class="rf" id="rfr">↻ განახლება</button></div>';
+  el('rfr').onclick=load; el('act').style.display='none'; return;
+ }
+ el('act').style.display='';
+ el('bOk').style.display=SEC==='active'?'none':'';
+ /* წაშლა — მხოლოდ უკვე დადასტურებულ (active) ჩანაწერებზე. დასადასტურებელზე
+    ("no"/უარი) ისედაც ხურავს ჩანაწერს — ცალკე წაშლა იქ ზედმეტია. */
+ el('bDel').style.display=SEC==='active'?'':'none';
+
+ const o=list[cur], isReq=TAB==='req', ph=o.photos||[];
+ /* ⚠️ 2026-08-26, George-ის მოთხოვნით: მაძიებლის მოთხოვნას (req)
+    ფოტო არასდროს ახლავს (ფორმას ასეთი ველი საერთოდ არა აქვს) —
+    ამიტომ req-ისთვის "ფოტო არ არის" პლეისჰოლდერიც კი აღარ ჩანს,
+    მთელი ეს მონაკვეთი უბრალოდ არ იტვირთება. */
+ const thumbs=ph.length
+  ? ph.slice(0,3).map((p,i)=>'<div class="th" data-i="'+i+'"><img src="'+p+'" alt="">'+
+      (i===2&&ph.length?'<span class="cnt">1/'+ph.length+'</span>':'')+'</div>').join('')
+  : (isReq?'':'<div class="no">ფოტო არ არის</div>');
+
+ const facts=isReq
+  ? '<div class="fr"><i>▤</i><span>ბიუჯეტი</span><b>$'+fmt(o.price_min)+' – $'+fmt(o.price_max)+'</b></div>'+
+    '<div class="fr"><i>◱</i><span>ფართობი</span><b>'+fmt(o.area_min)+' – '+fmt(o.area_max)+' მ²</b></div>'+
+    '<div class="fr"><i>◎</i><span>არეალი</span><b>'+(o.radius>=1000?(o.radius/1000)+' კმ':o.radius+' მ')+'</b></div>'
+  : '<div class="fr"><i>◱</i><span>ფართობი</span><b>'+fmt(o.area)+' მ²</b></div>'+
+    '<div class="fr"><i>▤</i><span>კატეგორია</span><b>'+(CAT[o.cat]||o.cat)+'</b></div>'+
+    (o.cad?'<div class="fr"><i>▦</i><span>საკადასტრო კოდი</span><b><a href="https://maps.gov.ge" target="_blank" rel="noopener">'+o.cad+'</a></b></div>':'')+
+    '<div class="fr"><i>◉</i><span>მისამართი</span><b>'+(o.addr||o.loc||'')+'</b></div>'+
+    '<div class="fr"><i>✆</i><span>კონტაქტი</span><b>'+(o.tel||'')+'</b></div>';
+
+ const u=o.user||{};
+ const risk=(u.rejected>=2)||(u.total>=5&&!u.comp_ok);
+
+ const left=
+  '<div class="hd">'+
+   '<span class="tag '+(isReq?'req':'new')+'">'+(isReq?'მოთხოვნა':'განცხადება')+'</span>'+
+   (isReq?'':'<div class="pr"><b>$'+fmt(o.price)+'</b><span>$'+fmt(o.price/(o.area||1))+'/მ²</span></div>')+
+   '<h1>'+(o.ttl||('ვეძებ '+(CAT[o.cat]||'')+' — '+DEAL[o.deal]))+'</h1>'+
+   '<div class="loc"><i>◉</i>'+(o.loc||'')+(o.reg?', '+o.reg:'')+'</div>'+
+  '</div>'+
+  '<div class="facts">'+facts+'</div>'+
+  (o.dsc?'<div class="dsc">'+o.dsc+'</div>':'');
+
+ const right=
+  '<div class="mapbox"><div id="map"></div><button class="exp" id="mexp" title="გადიდება">⤢</button></div>'+
+  '<div class="who">'+
+   '<div class="av">◍</div>'+
+   '<div class="i"><div class="nm">'+(u.name||'—')+'</div>'+
+    '<div class="em">'+(u.email||'')+'</div>'+
+    '<div class="st">რეგისტრაცია: '+(u.created||'—')+'<br>'+(u.total||0)+' განცხადება · '+(u.rejected||0)+' უარი</div></div>'+
+   /* ⚠️ 2026-08-26, George-ის მოთხოვნით: comp_ok ნიშნავს "ადმინის
+      მიერ დამტკიცებული ულიმიტო" — ეს შეიძლება ეხებოდეს კომპანიასაც
+      და ფიზიკურ პირსაც (მაგ. George-ის საკუთარი სატესტო ანგარიში,
+      იხ. task #99). ადრე ეს badge ყოველთვის "✓ კომპანია" წერდა,
+      მაშინაც კი, როცა u.who==='ind' — ახლა ტექსტი who-ზეა დამოკიდებული. */
+   (u.comp_ok?('<span class="badge">✓ '+(u.who==='co'?'კომპანია':'ულიმიტო')+'</span>')
+             :(risk?'<span class="badge warn">⚠ ეჭვი</span>':''))+
+  '</div>'+
+  (o.flag?'<div class="flagbox"><span>⚠</span><span>'+o.flag+'</span></div>':'');
+
+ const wide=window.matchMedia('(min-width:900px)').matches;
+ w.innerHTML=
+  '<div class="prog">'+(cur+1)+' / '+list.length+
+   '<div class="bar"><i style="width:'+((cur+1)/list.length*100)+'%"></i></div></div>'+
+  (isReq?'':'<div class="ph" id="ph">'+thumbs+'</div>')+
+  (wide?'<div class="cols"><div>'+left+'</div><div>'+right+'</div></div>'
+       :left+right);
+
+ el('main').scrollTop=0;
+ w.querySelectorAll('.ph .th').forEach(t=>t.onclick=()=>{
+  el('lbxI').src=ph[+t.dataset.i]; el('lbx').classList.add('on')});
+ drawMap(o,isReq);
+}
+
+/* ---------- რუკა ---------- */
+function drawMap(o,isReq){
+ const box=el('map'); if(!box||!window.maplibregl)return;
+ box.innerHTML='';
+ map=new maplibregl.Map({container:box,attributionControl:false,
+  style:{version:8,sources:{sat:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:18}},
+   layers:[{id:'sat',type:'raster',source:'sat'}]},
+  center:[o.lng,o.lat],zoom:isReq?12:15.5});
+ map.on('load',()=>{
+  if(isReq&&o.radius){
+   const pts=[],R=o.radius/6378137*(180/Math.PI);
+   for(let i=0;i<=64;i++){const a=i/64*2*Math.PI;
+    pts.push([o.lng+R*Math.cos(a)/Math.cos(o.lat*Math.PI/180),o.lat+R*Math.sin(a)])}
+   map.addSource('c',{type:'geojson',data:{type:'Feature',geometry:{type:'Polygon',coordinates:[pts]}}});
+   map.addLayer({id:'cf',type:'fill',source:'c',paint:{'fill-color':'#C8873A','fill-opacity':.2}});
+   map.addLayer({id:'cl',type:'line',source:'c',paint:{'line-color':'#C8873A','line-width':2}});
+  }else{
+   const m=document.createElement('div');
+   m.style.cssText='width:16px;height:16px;border-radius:50%;background:#0F6B4F;border:3px solid #fff;box-shadow:0 2px 9px rgba(0,0,0,.4)';
+   new maplibregl.Marker({element:m}).setLngLat([o.lng,o.lat]).addTo(map);
+  }
+ });
+ const e=el('mexp'); if(e)e.onclick=()=>{
+  const b=el('map'); b.style.height=b.style.height==='420px'?'':'420px';
+  setTimeout(()=>{try{map.resize()}catch(x){}},80);
+ };
+}
+
+/* ---------- ქმედებები ---------- */
+function act(kind,reason){
+ const list=Q(); if(!list.length)return;
+ const o=list[cur];
+ LAST={sec:SEC,tab:TAB,index:cur,item:o,kind};
+ list.splice(cur,1);
+ if(cur>=list.length)cur=Math.max(0,list.length-1);
+ el('sheet').classList.remove('on');
+ draw();
+ showUndo(kind==='ok'?'დადასტურდა':kind==='hold'?'ჰოლდზეა':kind==='delete'?'წაშლილია':'უარყოფილია');
+ if(LIVE)send(o.id,LAST.tab,kind,reason);
+}
+async function send(id,kind,action,reason){
+ try{
+  const r=await fetch('/api/mod',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({kind,id,action,reason:reason||''})});
+  if(!r.ok)throw 0;
+ }catch(e){ alert('შენახვა ვერ მოხერხდა — ჩანაწერი რიგში ბრუნდება.'); el('undoB').click(); }
+}
+function showUndo(t){
+ el('undoT').textContent=t+' · გაუქმება შესაძლებელია 5 წამში';
+ const u=el('undo'); u.classList.add('on');
+ const b=el('undoBar'); b.style.transition='none'; b.style.width='100%';
+ requestAnimationFrame(()=>{b.style.transition='width 5s linear';b.style.width='0%'});
+ clearTimeout(uT); uT=setTimeout(()=>{u.classList.remove('on');LAST=null},5000);
+}
+el('undoB').onclick=()=>{
+ if(!LAST)return;
+ ALL[LAST.sec][LAST.tab].splice(LAST.index,0,LAST.item);
+ SEC=LAST.sec; TAB=LAST.tab; cur=LAST.index; LAST=null;
+ el('undo').classList.remove('on'); clearTimeout(uT);
+ el('secs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.s===SEC));
+ el('tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===TAB));
+ draw();
+};
+
+el('bOk').onclick=()=>act('ok');
+el('bHd').onclick=()=>act('hold');
+el('bDel').onclick=()=>{
+ const list=Q(); if(!list.length)return;
+ const t=TAB==='req'?'მოთხოვნა':'განცხადება';
+ if(confirm('წავშალო ეს '+t+'? საიტიდან მაშინვე გაქრება.'))act('delete');
+};
+el('bNo').onclick=()=>el('sheet').classList.add('on');
+el('rcancel').onclick=()=>el('sheet').classList.remove('on');
+el('sheet').onclick=e=>{if(e.target===el('sheet'))el('sheet').classList.remove('on')};
+el('reasons').innerHTML=REASONS.map((r,i)=>
+ '<button class="r"><em>'+(i+1)+'.</em>'+r+'<s></s></button>').join('');
+el('reasons').querySelectorAll('button').forEach((b,i)=>b.onclick=()=>act('no',REASONS[i]));
+
+/* ---------- კორექტირება ----------
+   2026-08-26, George-ის დავალება (task #136): მოდერატორმა უნდა
+   შეძლოს ველების ხელით გასწორება დადასტურებამდე — ცალკე ღილაკი,
+   რომელიც status-ს არ ცვლის; დადასტურება ცალკე, შემდეგ ბიჯზეა. */
+const escHtml=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function editFieldsHtml(o,isReq){
+ if(isReq)return(
+  '<div class="ef"><label>აღწერა</label><textarea id="e_note">'+escHtml(o.dsc)+'</textarea></div>'+
+  '<div class="efrow">'+
+   '<div class="ef"><label>ბიუჯეტი — მინ, $</label><input id="e_price_min" type="number" value="'+(o.price_min||'')+'"></div>'+
+   '<div class="ef"><label>ბიუჯეტი — მაქს, $</label><input id="e_price_max" type="number" value="'+(o.price_max||'')+'"></div>'+
+  '</div>'+
+  '<div class="efrow">'+
+   '<div class="ef"><label>ფართობი — მინ, მ²</label><input id="e_area_min" type="number" value="'+(o.area_min||'')+'"></div>'+
+   '<div class="ef"><label>ფართობი — მაქს, მ²</label><input id="e_area_max" type="number" value="'+(o.area_max||'')+'"></div>'+
+  '</div>'
+ );
+ return(
+  '<div class="ef"><label>სათაური</label><input id="e_ttl" value="'+escHtml(o.ttl)+'"></div>'+
+  '<div class="efrow">'+
+   '<div class="ef"><label>ფასი, $</label><input id="e_price" type="number" value="'+(o.price||'')+'"></div>'+
+   '<div class="ef"><label>ფართობი, მ²</label><input id="e_area" type="number" value="'+(o.area||'')+'"></div>'+
+  '</div>'+
+  '<div class="ef"><label>მისამართი</label><input id="e_loc" value="'+escHtml(o.loc)+'"></div>'+
+  '<div class="ef"><label>ტელეფონი</label><input id="e_tel" value="'+escHtml(o.tel)+'"></div>'+
+  '<div class="ef"><label>აღწერა</label><textarea id="e_dsc">'+escHtml(o.dsc)+'</textarea></div>'
+ );
+}
+function openEdit(){
+ const list=Q(); if(!list.length)return;
+ const o=list[cur], isReq=TAB==='req';
+ el('efields').innerHTML=editFieldsHtml(o,isReq);
+ el('esheet').classList.add('on');
+}
+async function saveEdit(){
+ const list=Q(); if(!list.length)return;
+ const o=list[cur], isReq=TAB==='req';
+ const btn=el('esave'); btn.disabled=true; btn.textContent='ინახება…';
+ const fields=isReq?{
+  note:el('e_note').value,
+  price_min:el('e_price_min').value, price_max:el('e_price_max').value,
+  area_min:el('e_area_min').value, area_max:el('e_area_max').value
+ }:{
+  ttl:el('e_ttl').value, price:el('e_price').value, area:el('e_area').value,
+  loc:el('e_loc').value, tel:el('e_tel').value, dsc:el('e_dsc').value
+ };
+ if(LIVE){
+  try{
+   const r=await fetch('/api/mod',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({kind:TAB,id:o.id,action:'edit',fields})});
+   if(!r.ok)throw 0;
+  }catch(e){
+   btn.disabled=false; btn.textContent='შენახვა';
+   alert('შენახვა ვერ მოხერხდა — სცადე ხელახლა.'); return;
+  }
+ }
+ /* ⚠️ ლოკალურ ობიექტსაც ვანახლებთ — რომ ბარათმა დაუყოვნებლივ
+    ასახოს ცვლილება, გვერდის ხელახლა ჩატვირთვის გარეშე. */
+ if(isReq){
+  o.dsc=fields.note;
+  o.price_min=+fields.price_min||0; o.price_max=+fields.price_max||0;
+  o.area_min=+fields.area_min||0; o.area_max=+fields.area_max||0;
+ }else{
+  o.ttl=fields.ttl; o.price=+fields.price||0; o.area=+fields.area||0;
+  o.loc=fields.loc; o.tel=fields.tel; o.dsc=fields.dsc;
+ }
+ btn.disabled=false; btn.textContent='შენახვა';
+ el('esheet').classList.remove('on');
+ draw();
+}
+el('bEdit').onclick=openEdit;
+el('esave').onclick=saveEdit;
+el('ecancel').onclick=()=>el('esheet').classList.remove('on');
+el('esheet').onclick=e=>{if(e.target===el('esheet'))el('esheet').classList.remove('on')};
+
+/* ---------- გადართვა ---------- */
+el('secs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+ el('secs').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on'); SEC=b.dataset.s; cur=0;
+ el('secs').classList.toggle('amber',SEC==='active'); draw();
+});
+el('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+ el('tabs').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on'); TAB=b.dataset.k; cur=0; draw();
+});
+
+/* ---------- ჟესტები ---------- */
+let tx=0,ty=0,t0=0;
+el('main').addEventListener('touchstart',e=>{
+ if(e.touches.length!==1)return;
+ tx=e.touches[0].clientX; ty=e.touches[0].clientY; t0=Date.now();
+},{passive:true});
+el('main').addEventListener('touchend',e=>{
+ const t=e.changedTouches[0]; if(!t)return;
+ const ax=t.clientX-tx, ay=t.clientY-ty, list=Q();
+ if(Date.now()-t0<600&&Math.abs(ax)>64&&Math.abs(ax)>Math.abs(ay)*1.8&&list.length>1){
+  cur=(cur+(ax<0?1:-1)+list.length)%list.length; draw();
+ }
+},{passive:true});
+
+/* ---------- კლავიატურა ---------- */
+addEventListener('keydown',e=>{
+ /* ⚠️ 2026-08-26: კორექტირების ველებში ტექსტის აკრეფისას ("ავეჯით",
+    "ჰოლი" და მისთ.) ეს იგივე ასოები predetermined-ცნობებად არ უნდა
+    ავიღოთ — თორემ ტექსტის შეყვანისას ჩანაწერი შემთხვევით
+    დადასტურდებოდა/ჰოლდზე გადავიდოდა. */
+ if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){
+  if(e.key==='Escape')el('esheet').classList.remove('on');
+  return;
+ }
+ if(el('lbx').classList.contains('on')){el('lbx').classList.remove('on');return}
+ const k=e.key.toLowerCase(), list=Q();
+ if(k==='a'){e.preventDefault();if(SEC!=='active')act('ok')}
+ else if(k==='r'){e.preventDefault();el('sheet').classList.add('on')}
+ else if(k==='h'){e.preventDefault();act('hold')}
+ else if(k==='e'){e.preventDefault();openEdit()}
+ else if(e.key==='ArrowRight'&&list.length){cur=(cur+1)%list.length;draw()}
+ else if(e.key==='ArrowLeft'&&list.length){cur=(cur-1+list.length)%list.length;draw()}
+ else if(e.key==='Escape'){el('sheet').classList.remove('on');el('esheet').classList.remove('on')}
+});
+el('lbx').onclick=()=>el('lbx').classList.remove('on');
+addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(draw,220)});
+
+/* ⚠️ ადრე ეს გვერდი მონაცემს მხოლოდ ერთხელ, პირველ ჩატვირთვაზე
+   იღებდა — თუ ადმინი მეილიდან რომელიმე განცხადებას დაადასტურებდა
+   (ან სხვა ჩანართიდან/მოწყობილობიდან), უკვე ღია მოდერაციის ჩანართი
+   ამას ვერ ხედავდა, სანამ მთლიან გვერდს არ განაახლებდა — და
+   ჩანდა, თითქოს დადასტურება "არ იმუშავა", თუმცა სინამდვილეში
+   ბაზა უკვე სწორად იყო განახლებული. ახლა: (1) ხელით განახლების
+   ღილაკი ყოველთვის ხელმისაწვდომია თავში, (2) ჩანართში დაბრუნებისას
+   (tab/window ისევ გააქტიურდება) თავისით ახლდება სია. */
+el('rfrTop').onclick=load;
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden)load(); });
+addEventListener('focus',()=>{ if(!document.hidden)load(); });
+
+load();
+</script>
+</body>
+</html>

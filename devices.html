@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>MyMamuli.ge — მოწყობილობების გადამრთველი</title>
+<style>
+:root{
+ --bg:#0d1117; --panel:#161b22; --line:#262d36; --ink:#e6edf3; --ink2:#8b949e;
+ --amber:#e3a008; --ok:#2ea043;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
+ -webkit-font-smoothing:antialiased}
+
+/* ---------- ზედა ზოლი ---------- */
+.bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;
+ padding:10px 16px;background:rgba(13,17,23,.86);backdrop-filter:blur(14px);
+ border-bottom:1px solid var(--line);flex-wrap:wrap}
+.logo{font-weight:700;letter-spacing:-.2px;font-size:14.5px;white-space:nowrap}
+.logo span{color:var(--amber)}
+.sep{width:1px;height:20px;background:var(--line)}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{appearance:none;border:1px solid var(--line);background:transparent;color:var(--ink2);
+ padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;
+ transition:.15s;font-family:inherit;white-space:nowrap}
+.chip:hover{color:var(--ink);border-color:#3a434f}
+.chip.on{background:var(--ink);color:#0d1117;border-color:var(--ink)}
+.chip small{display:block;font-size:10px;font-weight:500;opacity:.6;margin-top:1px}
+.chip.on small{opacity:.55}
+
+.right{margin-left:auto;display:flex;gap:6px;align-items:center}
+.btn{appearance:none;border:1px solid var(--line);background:transparent;color:var(--ink2);
+ width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:15px;transition:.15s;
+ display:grid;place-items:center;font-family:inherit}
+.btn:hover{color:var(--ink);border-color:#3a434f}
+.btn.on{background:var(--amber);border-color:var(--amber);color:#0d1117}
+
+/* ---------- სცენა ---------- */
+.stage{padding:26px 20px 60px;display:flex;gap:32px;align-items:flex-start;
+ justify-content:center;flex-wrap:nowrap;overflow-x:auto}
+.stage.wrap{flex-wrap:wrap}
+
+.dev{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:9px}
+.lbl{font-size:11.5px;color:var(--ink2);font-weight:600;letter-spacing:.2px}
+.lbl b{color:var(--ink);font-weight:600}
+.lbl u{text-decoration:none;opacity:.55;font-weight:500}
+
+/* ტელეფონის კორპუსი */
+.frame{position:relative;background:#1c2128;border:1px solid #2f3742;
+ box-shadow:0 18px 50px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.03);
+ overflow:hidden;transition:width .22s,height .22s,border-radius .22s}
+.frame.phone{border-radius:34px;padding:9px}
+.frame.tablet{border-radius:22px;padding:11px}
+.frame.laptop{border-radius:10px;padding:0;border-width:1px}
+
+/* დინამიური კუნძული / ჩანაჭერი */
+.notch{position:absolute;top:15px;left:50%;transform:translateX(-50%);
+ width:74px;height:20px;background:#0a0d11;border-radius:12px;z-index:3;pointer-events:none}
+.frame.tablet .notch,.frame.laptop .notch{display:none}
+.bar-home{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+ width:110px;height:4px;border-radius:3px;background:rgba(255,255,255,.32);z-index:3;pointer-events:none}
+.frame.tablet .bar-home,.frame.laptop .bar-home{display:none}
+
+.screen{width:100%;height:100%;border:0;display:block;background:#fff;
+ border-radius:26px;overflow:hidden}
+.frame.tablet .screen{border-radius:13px}
+.frame.laptop .screen{border-radius:9px}
+iframe{width:100%;height:100%;border:0;display:block}
+
+/* ლეპტოპის ფეხი */
+.foot{width:118%;height:11px;background:linear-gradient(#20262e,#151a21);
+ border:1px solid #2f3742;border-top:0;border-radius:0 0 12px 12px}
+
+.hint{text-align:center;color:var(--ink2);font-size:12px;padding:0 20px 40px;line-height:1.7}
+.hint code{background:var(--panel);border:1px solid var(--line);padding:1px 6px;
+ border-radius:5px;font-size:11.5px;color:var(--ink)}
+
+.scale-note{font-size:10.5px;color:var(--amber);opacity:.85}
+</style>
+</head>
+<body>
+
+<div class="bar">
+ <div class="logo">MyMamuli<span>.ge</span> · მოწყობილობები</div>
+ <div class="sep"></div>
+ <div class="chips" id="pages"></div>
+ <div class="sep"></div>
+ <div class="chips" id="chips"></div>
+ <div class="right">
+  <button class="btn" id="rot"  title="გადაბრუნება (ლანდშაფტი)">⟳</button>
+  <button class="btn" id="all"  title="ყველა ერთად">▦</button>
+  <button class="btn" id="rel"  title="განახლება">↻</button>
+ </div>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<div class="hint">
+ თითოეული ჩარჩო ნამდვილი ბრაუზერის ფანჯარაა — შეგიძლია დააჭირო, გადაასრიალო რუკა, გახსნა ბარათი.<br>
+ <code>▦</code> ყველა ზომას ერთდროულად აჩვენებს · <code>⟳</code> ტელეფონს ლანდშაფტში აბრუნებს · <code>↻</code> ყველას თავიდან ტვირთავს.
+</div>
+
+<script>
+/* ==================================================================
+   მოწყობილობების ჩამონათვალი — რეალური CSS ზომები (device-independent px)
+   ================================================================== */
+const PAGES=[['index.html','რუკა'],['form.html','ფორმები'],['mod.html','მოდერაცია'],['admin.html','სტატისტიკა']];
+let SRC=(location.hash||'#index.html').slice(1);
+if(!PAGES.some(p=>p[0]===SRC))SRC='index.html';
+const DEVICES=[
+ {id:'se',   n:'iPhone SE',        s:'375 × 667',   w:375,  h:667,  k:'phone'},
+ {id:'i15',  n:'iPhone 15 Pro',    s:'393 × 852',   w:393,  h:852,  k:'phone'},
+ {id:'max',  n:'iPhone 15 Pro Max',s:'430 × 932',   w:430,  h:932,  k:'phone'},
+ {id:'a55',  n:'Galaxy A55',       s:'360 × 800',   w:360,  h:800,  k:'phone'},
+ {id:'mini', n:'iPad mini',        s:'744 × 1133',  w:744,  h:1133, k:'tablet'},
+ {id:'ipad', n:'iPad Pro 11"',     s:'834 × 1194',  w:834,  h:1194, k:'tablet'},
+ {id:'mb',   n:'MacBook Air',      s:'1440 × 900',  w:1440, h:900,  k:'laptop'}
+];
+
+let cur='i15', land=false, showAll=false;
+const MAXH=760;                    /* ეკრანზე დასატევი მაქსიმალური სიმაღლე */
+
+const el=id=>document.getElementById(id);
+
+/* ---------- ჩიპები ---------- */
+el('pages').innerHTML=PAGES.map(p=>
+ '<button class="chip'+(p[0]===SRC?' on':'')+'" data-p="'+p[0]+'">'+p[1]+'</button>').join('');
+el('pages').addEventListener('click',e=>{
+ const b=e.target.closest('.chip'); if(!b)return;
+ SRC=b.dataset.p; location.hash=SRC;
+ el('pages').querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x.dataset.p===SRC));
+ draw();
+});
+
+el('chips').innerHTML=DEVICES.map(d=>
+ '<button class="chip'+(d.id===cur?' on':'')+'" data-d="'+d.id+'">'+d.n+
+ '<small>'+d.s+'</small></button>').join('');
+
+el('chips').addEventListener('click',e=>{
+ const b=e.target.closest('.chip'); if(!b)return;
+ cur=b.dataset.d; showAll=false; el('all').classList.remove('on');
+ draw();
+});
+
+/* ---------- ღილაკები ---------- */
+el('rot').onclick=()=>{land=!land;el('rot').classList.toggle('on',land);draw()};
+el('all').onclick=()=>{showAll=!showAll;el('all').classList.toggle('on',showAll);draw()};
+el('rel').onclick=()=>document.querySelectorAll('iframe').forEach(f=>f.src=f.src);
+
+/* ---------- ერთი მოწყობილობის აგება ---------- */
+function build(d){
+ /* ლანდშაფტი მხოლოდ ტელეფონსა და ტაბზე */
+ const rot = land && d.k!=='laptop';
+ const w = rot? d.h : d.w;
+ const h = rot? d.w : d.h;
+
+ /* თუ არ ეტევა — ვამცირებთ, მაგრამ შიგნით CSS პიქსელები უცვლელი რჩება */
+ const sc = Math.min(1, MAXH/(h+40));
+
+ const wrap=document.createElement('div');
+ wrap.className='dev';
+ wrap.innerHTML=
+  '<div class="lbl"><b>'+d.n+'</b> <u>'+w+' × '+h+'</u>'+
+    (sc<1?' <span class="scale-note">'+Math.round(sc*100)+'%</span>':'')+'</div>'+
+  '<div class="frame '+d.k+'" style="width:'+w+'px;height:'+h+'px">'+
+    '<div class="notch"></div>'+
+    '<div class="bar-home"></div>'+
+    '<iframe class="screen" src="'+SRC+'" loading="lazy" '+
+      'allow="geolocation" title="'+d.n+'"></iframe>'+
+  '</div>'+
+  (d.k==='laptop'?'<div class="foot"></div>':'');
+
+ /* მასშტაბი გარე კონტეინერზე — iframe-ის შიგნით layout არ ირღვევა */
+ if(sc<1){
+  const f=wrap.querySelector('.frame');
+  f.style.transform='scale('+sc+')';
+  f.style.transformOrigin='top center';
+  f.style.marginBottom=(-(h*(1-sc)))+'px';
+  const ft=wrap.querySelector('.foot');
+  if(ft){ft.style.transform='scale('+sc+')';ft.style.transformOrigin='top center'}
+ }
+ return wrap;
+}
+
+/* ---------- რენდერი ---------- */
+function draw(){
+ const st=el('stage');
+ st.innerHTML='';
+ st.classList.toggle('wrap',showAll);
+ const list = showAll? DEVICES : DEVICES.filter(d=>d.id===cur);
+ list.forEach(d=>st.appendChild(build(d)));
+ document.querySelectorAll('.chip').forEach(c=>
+   c.classList.toggle('on',!showAll&&c.dataset.d===cur));
+}
+draw();
+
+/* ---------- კლავიატურა: ←/→ მოწყობილობებს შორის ---------- */
+addEventListener('keydown',e=>{
+ if(showAll)return;
+ const i=DEVICES.findIndex(d=>d.id===cur);
+ if(e.key==='ArrowRight'){cur=DEVICES[(i+1)%DEVICES.length].id;draw()}
+ if(e.key==='ArrowLeft') {cur=DEVICES[(i-1+DEVICES.length)%DEVICES.length].id;draw()}
+});
+</script>
+</body>
+</html>

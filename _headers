@@ -1,0 +1,33 @@
+# ⚠️ TZ-1 უსაფრთხოების ჰედერები — Cloudflare Pages _headers ფაილი.
+#
+# გადახრა George-ის სპეციფიკაციისგან (დოკუმენტირებული, არა შემთხვევითი):
+#   spec ითხოვდა X-Frame-Options: DENY და frame-ancestors 'none'.
+#   ეს ორივე დაბლოკავდა საიტის საკუთარ .mfrm iframe-ს (index.html თავად
+#   ტვირთავს form.html-ს იგივე-origin iframe-ში „განათავსე"/„ვეძებ"
+#   ფორმებისთვის — იხ. index.html-ში `<iframe class="mfrm" src="form.html...">`).
+#   DENY/none ნიშნავს — არცერთ საიტს, თვითონ საკუთარსაც კი, არ შეუძლია
+#   ამ გვერდის frame-ში ჩასმა, რაც ფორმის submit-ის მთელ ნაკადს გატეხდა.
+#   SAMEORIGIN / frame-ancestors 'self' იგივე დაცვას იძლევა გარეშე საიტების
+#   მიმართ (clickjacking), მაგრამ საკუთარ იგივე-origin გამოყენებას არ არღვევს.
+#
+# img-src/connect-src-ში დამატებულია gpv0.napr.gov.ge და maps.gov.ge —
+# spec-ის სიაში არ იყო, მაგრამ საკადასტრო ფენა (WMS overlay, index.html:1509-1510)
+# და საკადასტრო კოდის ძებნა (GOV fetch, index.html:2880) სწორედ ამ დომენებზეა
+# დამოკიდებული — მათ გარეშე რუკაზე ნაკვეთის კონტური და ძებნა გატყდებოდა.
+#
+# worker-src/child-src 'self' blob: დამატებულია — maplibre-gl თავის
+# tile-decoding worker-ს blob: URL-იდან ქმნის; ამის გარეშე CSP დაბლოკავდა
+# რუკის ინიციალიზაციას მთლიანად.
+#
+# 2026-08-25: script-src/connect-src/img-src-ში დამატებულია
+# www.googletagmanager.com და *.google-analytics.com — index.html-ში ახლად
+# ჩასმულ GA4 (gtag.js) tag-ს სჭირდება, თორემ ეს CSP-ი მას საკუთარ თავს
+# დაუბლოკავდა (script-src-ს gtag.js-ის ჩატვირთვაზე, connect-src-ს კი
+# ანალიტიკის მოვლენების გაგზავნაზე).
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Permissions-Policy: geolocation=(self), camera=(), microphone=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com https://tile.openstreetmap.org https://gpv0.napr.gov.ge https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://maps.gov.ge https://gpv0.napr.gov.ge https://tile.openstreetmap.org https://server.arcgisonline.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'

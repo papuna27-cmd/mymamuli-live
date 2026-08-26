@@ -69,7 +69,7 @@ gtag('config', 'G-N30XKZCDCT');
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.26-1970';
+window.MM_BUILD = '2026.08.26-1980';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1218,11 +1218,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.26-1970">
+<footer data-build="2026.08.26-1980">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-1970</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-1980</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -1608,7 +1608,12 @@ map.addControl(new maplibregl.GeolocateControl({trackUserLocation:false}),'botto
 /* =================================================================
    6. მარკერები / ტაბები
    ================================================================= */
-let cur='land', mk=[], active=null;
+/* ⚠️ 2026-08-26: George-ის მოთხოვნით — საიტის ძირითადი მიმართულებაა
+   „ვეძებ" (მოთხოვნების შეგროვება), ამიტომ პირველივე ჩატვირთვისას
+   რუკაზე დეფოლტად მოთხოვნები ჩანს („ვეძებ"), არა განცხადებები
+   („იყიდება"). ღილაკების ზოლი (იყიდება/ვეძებ) და მისი გადართვის
+   ფუნქცია ხელუხლებელია — უბრალოდ საწყისი მდგომარეობა შეიცვალა. */
+let cur='req', mk=[], active=null;
 const fmt=n=>new Intl.NumberFormat('ka-GE').format(Math.round(n));
 /* ⚠️ 2026-08-26: George-ის მოთხოვნით — მაძიებლის თავისუფალი ტექსტი
    (r.note) ახლა innerHTML-ში ჩაისმევა (openReq). ეს არის მომხმარებლის
@@ -2795,7 +2800,9 @@ const CATN={}; CAT.forEach(c=>CATN[c.t]=c.n);
    ქვედა რიგი — კატეგორია. ღილაკი მხოლოდ მაშინ ჩნდება, როცა იმ
    კატეგორიაში რეალურად რაღაც არის — ცარიელ თაროს არ ვაჩვენებთ.
    ================================================================= */
-let MODE='sell';
+/* ⚠️ 2026-08-26: cur='req'-თან შესაბამისობაში — საწყისად „ვეძებ"
+   ღილაკი ჩანს გამორჩეული (ისევე, როგორც აქამდე „იყიდება" იყო). */
+let MODE='seek';
 const CBFIT='<span class="cbdiv"></span><button class="cbfit" id="cbfit" title="მთელი რუკა" aria-label="მთელი რუკა"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M9 3.2H4.6A1.4 1.4 0 0 0 3.2 4.6V9M15 3.2h4.4a1.4 1.4 0 0 1 1.4 1.4V9M9 20.8H4.6a1.4 1.4 0 0 1-1.4-1.4V15M15 20.8h4.4a1.4 1.4 0 0 0 1.4-1.4V15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>';
 
 function subCats(){
@@ -2897,6 +2904,10 @@ function bindCatbar(){
  });
 }
 paintCatbar();
+/* ⚠️ 2026-08-26: cur='req'-ის შესაბამისი UI (probar/reqcta და სხვ.)
+   საწყისადვე უნდა ჩანდეს — ესეც ისეთივეა, რასაც „ვეძებ" ღილაკზე
+   ხელით დაჭერისას ვაკეთებთ სხვაგან (body.req-mode). */
+document.body.classList.add('req-mode');
 
 const fitAll=()=>{
  closeCard(false); closePanel(); AREA=null; areaMoved=false; PRE_VIEW=null;
@@ -4441,19 +4452,8 @@ el('mdx').onclick=closeModal;
 el('mask').onclick=e=>{if(e.target===el('mask'))closeModal()};
 addEventListener('keydown',e=>{if(e.key==='Escape'&&el('mask').classList.contains('on'))closeModal()});
 document.querySelectorAll('[data-modal]').forEach(a=>a.onclick=e=>{e.preventDefault();openModal(a.dataset.modal)});
-/* #main / #sell ... — პირდაპირი ბმულები.
-   ⚠️ 2026-08-26: George-ის მოთხოვნით — საიტის ძირითადი მიმართულებაა
-   „ვეძებ" (მოთხოვნების შეგროვება), ამიტომ ცარიელი hash-ის შემთხვევაში
-   (პირველი ვიზიტი, უბრალოდ mymamuli.ge) დეფოლტად ვხსნით „ვეძებ" ფორმას
-   მაშინვე, მაგრამ მხოლოდ მაშინ, როცა hash ნამდვილად ცარიელია — თუ
-   იქ სხვა რამეა (მაგ. #/r/req_id გაზიარების ბმული, #sell, #buy და ა.შ.),
-   არაფერს ვცვლით და ძველებურად ვმუშაობთ. Fullscreen ღილაკს, რუკის
-   ვეძებ-ფილტრს და დანარჩენ ყველა ფუნქციას ეს ცვლილება არ ეხება. */
-(function(){
- const h=location.hash.replace('#','');
- if(PAGES[h])openModal(h);
- else if(!h)openModal('want');
-})();
+/* #main / #sell ... — პირდაპირი ბმულები */
+(function(){const h=location.hash.replace('#','');if(PAGES[h])openModal(h)})();
 /* form.html (iframe შიგნით — ბიჯი 4-ის „წესებსა და პირობებს" ბმული) გვთხოვს
    მოდალის გახსნას postMessage-ით, რადგან iframe-ში ცალკე ფანჯარა ვიწროა. */
 addEventListener('message',e=>{

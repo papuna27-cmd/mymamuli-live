@@ -215,19 +215,27 @@ body.bare .mdb{padding:2px 2px 8px}
 /* ფოტოს ატვირთვა — ყველა კატეგორიისთვის, მაქს. 10, პირველი = ქავერი */
 .phw{margin-top:18px}
 .phw>label{display:block;font-size:12.5px;font-weight:600;color:var(--mute);margin-bottom:9px;letter-spacing:-.1px}
-.phdrop{border:1.5px dashed var(--line);border-radius:14px;padding:20px;text-align:center;cursor:pointer;
+/* ⚠️ 2026-08-26: George-ის მოთხოვნით — ერთი დაფარებული „დააჭირე/გადმოთრიე"
+   ყუთის ნაცვლად, 5 ცალკე ვიზუალური ჩარჩო (ცარიელი სლოტები), მაგრამ
+   მთელი ეს არეალი (ჩარჩოები + მინიშნება) ერთი საერთო კლიკ/drop-არეალია —
+   იხ. #lf-drop, რომელიც ახლა #lf-grid-საც შეიცავს. */
+.phdrop{border:1.5px dashed var(--line);border-radius:14px;padding:14px;cursor:pointer;
  transition:border-color .15s,background .15s}
 .phdrop:hover,.phdrop.drag{border-color:var(--brand);background:#F1F7F4}
 .phdrop.bad{border-color:var(--down);background:#FEF5F4}
-.phdrop b{display:block;font-size:14px;font-weight:600;color:var(--ink)}
-.phdrop span{display:block;font-size:12.5px;color:var(--mute);margin-top:4px}
+.phdrop-hint{text-align:center;margin-bottom:12px}
+.phdrop-hint b{display:block;font-size:14px;font-weight:600;color:var(--ink)}
+.phdrop-hint span{display:block;font-size:12.5px;color:var(--mute);margin-top:4px}
 .phbusy{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);padding:10px 2px}
 .spin{width:15px;height:15px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--brand);
  animation:sp .7s linear infinite;flex:0 0 auto}
 @keyframes sp{to{transform:rotate(360deg)}}
-.phgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:9px;margin-top:12px}
+.phgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:9px}
 .phi{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--sand)}
 .phi img{width:100%;height:100%;object-fit:cover;display:block}
+/* ცარიელი ჩარჩო — სანამ ფოტო არ აიტვირთება, ადგილი ვიზუალურად ჩანს */
+.phi.empty{background:transparent;border:1.5px dashed var(--line);display:flex;
+ align-items:center;justify-content:center;color:var(--mute);font-size:26px;font-weight:300}
 .phi .cvtag{position:absolute;left:5px;top:5px;background:var(--brand);color:#fff;font-size:10px;font-weight:700;
  padding:2px 7px;border-radius:999px;letter-spacing:.2px}
 .phi .rm{position:absolute;right:5px;top:5px;width:22px;height:22px;border-radius:50%;border:0;
@@ -716,37 +724,51 @@ function paneObj(){
 /* ================= ფოტოები — ყველა კატეგორია, მაქს. 10, ქავერის არჩევით ================= */
 const PH_MAX=10, PH_EDGE=1600, PH_Q=0.82, PH_TARGET=520*1024;
 
+/* ⚠️ 2026-08-26: George-ის მოთხოვნით — #lf-grid ახლა #lf-drop-ის შიგნითაა
+   (და არა მის გვერდით), ანუ 5 ჩარჩო + მინიშნება ერთი საერთო
+   კლიკ/drop-არეალია. ცალკეული ჩარჩოს „წაშლა"/„ქავერად დაყენება" ღილაკები
+   e.stopPropagation()-ს იძახებენ, რომ არ გამოიწვიონ საერთო არეალის კლიკიც
+   (იხ. paintPhotos, bindPhotos). */
+const PH_MIN_SLOTS=5;
 function photoHTML(){
  return '<div class="phw" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)" id="fph">'+
   '<label for="lf-ph">ფოტოები <i>*</i></label>'+
   '<div class="phdrop" id="lf-drop">'+
-   '<b>ფოტოს არჩევა ან გადმოთრევა</b>'+
-   '<span>'+PH_MAX+'-მდე სურათი · ავტომატურად შეიკუმშება საიტისთვის ოპტიმალურ ზომაზე</span>'+
+   '<div class="phdrop-hint"><b>ფოტოს არჩევა ან გადმოთრევა</b>'+
+    '<span>'+PH_MAX+'-მდე სურათი · დააჭირე ნებისმიერ ჩარჩოს · ავტომატურად შეიკუმშება</span></div>'+
+   '<div class="phgrid" id="lf-grid"></div>'+
   '</div>'+
   '<input id="lf-ph" type="file" accept="image/jpeg,image/png,image/webp,image/heic" multiple hidden>'+
-  '<div class="phgrid" id="lf-grid"></div>'+
   '<div class="phnote" id="lf-phnote"></div>'+
  '</div>';
 }
 
 function paintPhotos(){
  const g=el('lf-grid'), n=el('lf-phnote'); if(!g)return;
- g.innerHTML=S.photos.map((p,i)=>
-  '<div class="phi'+(p.up?' up':'')+'">'+
+ const slots=Math.max(PH_MIN_SLOTS,S.photos.length);
+ let html='';
+ for(let i=0;i<slots;i++){
+  const p=S.photos[i];
+  if(!p){ html+='<div class="phi empty">+</div>'; continue; }
+  html+='<div class="phi'+(p.up?' up':'')+'">'+
    (p.url?'<img src="'+p.url+'">':'')+
    (p.up?'<div class="upspin"><span class="spin"></span></div>':'')+
    (i===0?'<span class="cvtag">ქავერი</span>':'')+
    '<button type="button" class="rm" data-rm="'+i+'" aria-label="წაშლა">✕</button>'+
    (i===0||p.up?'':'<button type="button" class="cb" data-cov="'+i+'">ქავერად დაყენება</button>')+
-  '</div>').join('');
+  '</div>';
+ }
+ g.innerHTML=html;
  n.textContent=S.photos.length
   ? S.photos.length+'/'+PH_MAX+' · პირველი სურათი ქავერია'
   : '';
  n.classList.remove('bad');
- g.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{
+ g.querySelectorAll('[data-rm]').forEach(b=>b.onclick=e=>{
+  e.stopPropagation();
   const i=+b.dataset.rm; S.photos.splice(i,1); paintPhotos(); validate();
  });
- g.querySelectorAll('[data-cov]').forEach(b=>b.onclick=()=>{
+ g.querySelectorAll('[data-cov]').forEach(b=>b.onclick=e=>{
+  e.stopPropagation();
   const i=+b.dataset.cov; S.photos.unshift(S.photos.splice(i,1)[0]); paintPhotos();
  });
  const drop=el('lf-drop'); if(drop)drop.classList.remove('bad');

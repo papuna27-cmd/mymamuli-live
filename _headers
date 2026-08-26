@@ -19,6 +19,15 @@
 # tile-decoding worker-ს blob: URL-იდან ქმნის; ამის გარეშე CSP დაბლოკავდა
 # რუკის ინიციალიზაციას მთლიანად.
 #
+# 2026-08-26: George-ის მოთხოვნით — ნაპოვნია და გასწორებულია კრიტიკული
+# რეგრესია: img-src-ს blob: არ ჰქონდა დამატებული, ამიტომ form.html-ის
+# ფოტოს კომპრესია (compress(), img.src=URL.createObjectURL(file)) CSP-ის
+# მიერ ჩუმად იბლოკებოდა — ყოველი ფოტოს ატვირთვა (ფორმატის მიუხედავად)
+# წარუმატებლად სრულდებოდა, რის გამოც განცხადების დამატება საერთოდ
+# შეუძლებელი იყო (ფოტო სავალდებულოა). დადასტურებულია production-ზე
+# securitypolicyviolation მოვლენით (blockedURI:"blob", violatedDirective:
+# "img-src") — ეს არ არის ვარაუდი.
+#
 # 2026-08-25: script-src/connect-src/img-src-ში დამატებულია
 # www.googletagmanager.com და *.google-analytics.com — index.html-ში ახლად
 # ჩასმულ GA4 (gtag.js) tag-ს სჭირდება, თორემ ეს CSP-ი მას საკუთარ თავს
@@ -30,4 +39,4 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Permissions-Policy: geolocation=(self), camera=(), microphone=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com https://tile.openstreetmap.org https://gpv0.napr.gov.ge https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://maps.gov.ge https://gpv0.napr.gov.ge https://tile.openstreetmap.org https://server.arcgisonline.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://server.arcgisonline.com https://tile.openstreetmap.org https://gpv0.napr.gov.ge https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://maps.gov.ge https://gpv0.napr.gov.ge https://tile.openstreetmap.org https://server.arcgisonline.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'

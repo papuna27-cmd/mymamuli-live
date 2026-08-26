@@ -1,3 +1,11 @@
 .wrangler/
 .DS_Store
 node_modules/
+
+# secrets — never commit
+.env
+.env.*
+.dev.vars
+
+# local editor/agent settings
+.claude/settings.local.json

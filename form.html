@@ -392,6 +392,13 @@ function detectCountry(){
  return 'GE';
 }
 const dialOf=c=>{const x=COUNTRIES.find(k=>k[0]===c);return x?x[2]:'995'};
+/* ⚠️ 2026-08-26: George-ის მოთხოვნით — დალოგინებულის ტელეფონის
+   პრეფილისთვის საჭირო შებრუნებული ძებნა: ვიცით სრული ნომერი ("+995
+   555123456" ფორმატში, იხ. submit.js-ის phone_full), მაგრამ ცალკე
+   უნდა გამოვყოთ სატელეფონო კოდი (ჩამრთველისთვის) და ნომერი. ერთსა
+   და იმავე კოდზე რამდენიმე ქვეყანა შეიძლება იდგეს (მაგ. +1) — მაინც
+   არჩევანს არ ვცდით ვისი იყო ზუსტად, პირველივე დამთხვევა კმარა. */
+const ccOfDial=dial=>{const x=COUNTRIES.find(k=>k[2]===dial);return x?x[0]:''};
 
 /* დემო-განცხადებები — ცოცხალი მთვლელისთვის */
 /* ⚠️ ლაივზე გასვლისას გასუფთავდა — ადრე აქ იყო სადემონსტრაციო წერტილები
@@ -627,6 +634,9 @@ function paneMap(){
 function paneReqWhere(){
  const c=catOf(S.cat);
  S.radius=c.d;
+ /* ⚠️ 2026-08-26: George-ის მოთხოვნით — ტელეფონიც იბლოკება, თუ
+    სესიიდან რეალურად შემოვიდა (და არა შემთხვევით ცარიელია). */
+ const phoneLocked=!!(SESSION&&S.phone);
  return '<div class="pane on">'+
   '<div class="stitle">ბიჯი 2 / 2</div>'+
   '<div class="sh">სად ეძებ?</div>'+
@@ -661,11 +671,11 @@ function paneReqWhere(){
   '</div>':'')+
   '<div class="row" style="margin-top:12px">'+
    '<div class="f"><label>ტელეფონი</label><div style="display:flex;gap:8px">'+
-    '<select id="cc" data-noi18n style="width:auto;min-width:150px;flex:0 0 auto">'+
+    '<select id="cc" data-noi18n style="width:auto;min-width:150px;flex:0 0 auto"'+(phoneLocked?' disabled':'')+'>'+
      COUNTRIES.map(cc=>'<option value="'+cc[0]+'"'+(S.cc===cc[0]?' selected':'')+'>'+((typeof LANG!=='undefined'&&LANG==='en')?cc[3]:cc[1])+'  +'+cc[2]+'</option>').join('')+
     '</select>'+
-    '<input id="phone" inputmode="tel" value="'+S.phone+'" placeholder="'+(S.cc==='GE'?'5xx xx xx xx':'ნომერი კოდის გარეშე')+'">'+
-   '</div></div>'+
+    '<input id="phone" inputmode="tel" value="'+S.phone+'" placeholder="'+(S.cc==='GE'?'5xx xx xx xx':'ნომერი კოდის გარეშე')+'"'+(phoneLocked?' readonly':'')+'>'+
+   '</div>'+(phoneLocked?'<div class="hint">შენს ანგარიშზე უკვე დაფიქსირებული ნომერია.</div>':'')+'</div>'+
    /* ⚠️ 2026-08-26: SESSION-ის შემთხვევაში პაროლის ველი საერთოდ არ
       ჩანს — მომხმარებელი უკვე შესულია, ხელახლა „შესვლა" (= პაროლის
       მითითება) აზრს კარგავს. submit.js ასეთ მოთხოვნას პაროლის გარეშეც
@@ -1582,6 +1592,15 @@ fetch('/api/auth',{cache:'no-store'}).then(r=>r.json()).then(d=>{
   SESSION=d.user;
   if(!S.name)S.name=d.user.name||'';
   if(!S.email)S.email=d.user.email||'';
+  /* ⚠️ 2026-08-26: George-ის მოთხოვნით — ტელეფონიც ისე ავტომატურად
+     ჯდება, როგორც სახელი და მეილი. phone_full ფორმატია "+<კოდი> <ნომერი>". */
+  if(!S.phone && d.user.tel){
+   const m=String(d.user.tel).match(/^\+(\d+)\s*(.*)$/);
+   if(m){
+    const cc=ccOfDial(m[1]);
+    if(cc){ S.cc=cc; S.phone=m[2]; }
+   }
+  }
   render();
  }
 }).catch(()=>{});

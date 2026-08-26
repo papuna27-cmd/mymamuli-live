@@ -60,13 +60,19 @@ export async function whoami(request, env) {
   const c = cookie(request);
   if (!c || !env.DB) return null;
   const row = await env.DB.prepare(
-    `SELECT t.user_id, t.expires, t.used, u.email, u.name, u.status
+    `SELECT t.user_id, t.expires, t.used, u.email, u.name, u.phone_full, u.status
        FROM token t JOIN users u ON u.id = t.user_id
       WHERE t.id = ?1 AND t.kind = 'user'`
   ).bind(await sha('u:' + c)).first();
   if (!row || row.used || row.expires < now()) return null;
   if (row.status === 'blocked') return null;
-  return { id: row.user_id, email: row.email, name: row.name };
+  /* ⚠️ 2026-08-26: George-ის მოთხოვნით — ტელეფონიც (არა მხოლოდ
+     სახელი/ელფოსტა) უნდა შეივსოს ავტომატურად ფორმაში, თუ მომხმარებელი
+     უკვე შესულია. phone_full საკუთარ თავზეა და ესაა ერთადერთი ადგილი,
+     სადაც ის ჩვეულებრივ (არა-ადმინ) endpoint-იდან ბრუნდება — ესეც
+     უსაფრთხოა, რადგან მხოლოდ საკუთარ, cookie-ით დამტკიცებულ ანგარიშზე
+     ვაბრუნებთ, არავის სხვისზე. */
+  return { id: row.user_id, email: row.email, name: row.name, tel: row.phone_full || '' };
 }
 
 export async function onRequestGet({ request, env }) {

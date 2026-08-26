@@ -69,7 +69,7 @@ gtag('config', 'G-N30XKZCDCT');
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.26-2020';
+window.MM_BUILD = '2026.08.26-2030';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1223,11 +1223,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.26-2020">
+<footer data-build="2026.08.26-2030">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-2020</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-2030</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -1391,9 +1391,17 @@ const TN={land:'მიწის ნაკვეთი',house:'სახლი / 
    როცა ტრაფიკი საკმარისი იქნება — monetize:true და ყველაფერი ეშვება.
    ================================================================= */
 const LAUNCH={monetize:false, buyerOpen:false, stats:true,
- /* ეტაპობრივი გაშვება — თავიდან მხოლოდ მიწა და „ვეძებ".
-    შემდეგი ეტაპი: დაამატე 'house', მერე 'comm', მერე 'invest'. */
- cats:['land','req'],
+ /* ⚠️ 2026-08-26: George-ის მოთხოვნით — ეტაპობრივი გაშვება დასრულებულია.
+    აქამდე cats:['land','req']-ს ჰქონდა დარჩენილი მხოლოდ მიწა (ძველი,
+    „მხოლოდ მიწიდან დაწყების" ეტაპიდან — იხ. task #29), მაშინ როცა
+    form.html დიდი ხანია იღებს ყველა კატეგორიის განცხადებას (ბინა,
+    სახლი, კომერციული, საინვესტიციო, ავტოფარეხი და სხვ.). შედეგად
+    ასეთი განცხადებები D1-ში active/cad_ok იწერებოდა, /api/geo-იც
+    აბრუნებდა, მაგრამ საიტზე (რუკაზე, კატეგორიების ტაბებში) საერთოდ
+    არ ჩანდა — subCats()/render()-ის LAUNCH.cats.includes(t) ფილტრი
+    სიჩუმეში აგდებდა. ახლა CATS-ის (form.html) ყველა რეალური კოდი
+    ემატება — ყველა კატეგორია ერთდროულად ეშვება. */
+ cats:['land','flat','house','cottage','office','comm','hotel','resto','base','invest','garage','req'],
  /* ინტერესის პირობითი დონე — ლაივზე false, როცა /api/views ამუშავდება */
   demoInterest:true,
  /* სატესტო გალერეა — ლაივზე false */

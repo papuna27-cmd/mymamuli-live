@@ -69,7 +69,7 @@ gtag('config', 'G-N30XKZCDCT');
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.26-2000';
+window.MM_BUILD = '2026.08.26-2010';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1189,7 +1189,12 @@ body.foot-min .fslim{display:flex}
 <button class="rb" data-p="filter" aria-label="ფილტრი" title="ფილტრი"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M20 5h-6M9.5 5H4M20 12h-8.5M7 12H4M20 19h-3.5M12 19H4"/><path d="M11.5 3.1v3.8M9 10.1v3.8M14.5 17.1v3.8"/></svg></span><span class="lbl">ფილტრი</span><span class="lbs">ფილტრი</span><i class="dot" id="fdot"></i></button>
 <button class="rb" data-p="layers" aria-label="ფენები" title="ფენები"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2.9 2.9 7.4 12 11.9l9.1-4.5L12 2.9Z"/><path d="m2.9 12.6 9.1 4.5 9.1-4.5"/><path d="m2.9 17.2 9.1 4.5 9.1-4.5" opacity=".45"/></svg></span><span class="lbl">ფენები</span><span class="lbs">ფენები</span></button>
 <button class="rb" data-p="tools" aria-label="გაზომვა" title="გაზომვა"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M14.9 2.4 21.6 9a1.3 1.3 0 0 1 0 1.9L10.9 21.6a1.3 1.3 0 0 1-1.9 0L2.4 15a1.3 1.3 0 0 1 0-1.9L13.1 2.4a1.3 1.3 0 0 1 1.8 0Z"/><path d="m6.4 12.4 2 2M9.4 9.4l2 2M12.4 6.4l2 2"/></svg></span><span class="lbl">გაზომვა</span><span class="lbs">გაზომვა</span></button>
-<button class="rb" data-p="list" aria-label="სია" title="განცხადებების სია"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M4.4 6.5h.01M4.4 12h.01M4.4 17.5h.01" stroke-width="2.6"/></svg></span><span class="lbl">სია</span><span class="lbs">სია</span></button>
+<!-- ⚠️ 2026-08-26: George-ის მოთხოვნით — „სია" ღილაკი და პანელი დროებით
+     დამალულია (style="display:none"). ბევრი ხარვეზი აღმოჩნდა და საჭიროებს
+     კომპლექსურ, ერთიან მიდგომას — არ წაშლილა, მხოლოდ დამალულია, რომ
+     ადვილად დაბრუნდეს. JS ლოგიკა (paintList, PAINT.list) უცვლელად რჩება,
+     ღილაკის გარეშე ვერავინ გახსნის ამ პანელს. -->
+<button class="rb" data-p="list" aria-label="სია" title="განცხადებების სია" style="display:none"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M4.4 6.5h.01M4.4 12h.01M4.4 17.5h.01" stroke-width="2.6"/></svg></span><span class="lbl">სია</span><span class="lbs">სია</span></button>
     <button class="rb" data-p="info" aria-label="ინფორმაცია" title="ინფორმაცია"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9.1"/><path d="M12 11.2v5.4"/><path d="M12 7.7h.01" stroke-width="2.6"/></svg></span><span class="lbl">ინფორმაცია</span><span class="lbs">ინფო</span></button>
 <button class="rb" id="rb-clear" aria-label="ნანახის გასუფთავება" title="ნანახის გასუფთავება"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 6.4h16.8"/><path d="M9.4 6.4V4.6a1.2 1.2 0 0 1 1.2-1.2h2.8a1.2 1.2 0 0 1 1.2 1.2v1.8"/><path d="M18.2 6.4 17.4 19a1.6 1.6 0 0 1-1.6 1.5H8.2A1.6 1.6 0 0 1 6.6 19L5.8 6.4"/><path d="M10.4 10.6v5.6M13.6 10.6v5.6" opacity=".5"/></svg></span><span class="lbl">ნანახის გასუფთავება</span><span class="lbs">წაშლა</span></button>
   </nav>
@@ -1218,11 +1223,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.26-2000">
+<footer data-build="2026.08.26-2010">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-2000</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-2010</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>

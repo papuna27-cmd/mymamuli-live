@@ -36,6 +36,14 @@ export async function onRequestGet({ request, env }) {
     areaUnit: r.areaUnit || null,
     landType: r.landType || null, /* „ნაკვეთის ტიპი" — 2026-08-25, ავტო-შევსებისთვის */
     why: r.why || '',
-    src: r.src || null
+    src: r.src || null,
+    /* ⚠️ 2026-08-26: George-ის მოთხოვნით — თუ lat/lng საერთოდ არ გამოგზავნილა
+       (ახალი ნაკადი: კოდი შედის ჯერ, ნიშნული ხელით არ იდგმება) და კოდს
+       გეომეტრია ახლავს, lookupCad() თვითონ ითვლის ნაკვეთის ცენტრს და
+       აბრუნებს lat/lng-ს, `auto:true`-ით — ფორმას შეუძლია ეს პირდაპირ
+       გამოიყენოს ნიშნულის ავტომატურად დასასმელად. */
+    lat: r.lat != null ? r.lat : null,
+    lng: r.lng != null ? r.lng : null,
+    auto: !!r.auto
   });
 }

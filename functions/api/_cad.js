@@ -174,6 +174,17 @@ function segDist(plat, plng, alat, alng, blat, blng) {
   return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
 }
 
+/* ნაკვეთის „საშუალო" წერტილი — მარტივი არითმეტიკული ცენტროიდი.
+   ზუსტი გეომეტრიული ცენტრი არ არის (ღრმად ჩაზნექილ ფორმებზე შეიძლება
+   ოდნავ გადაიხაროს), მაგრამ საკმარისად კარგია ავტომატური ნიშნულისთვის —
+   inRing()-ით მაინც ვამოწმებთ, ნამდვილად ნაკვეთშია თუ არა. */
+function ringCentroid(ring) {
+  if (!ring || !ring.length) return null;
+  let sx = 0, sy = 0;
+  for (const [x, y] of ring) { sx += x; sy += y; }
+  return [sx / ring.length, sy / ring.length]; /* [lng, lat] */
+}
+
 /* ბოლო წერტილი პირველს ემთხვევა? — ფართობი მოსახერხებლად */
 export function ringAreaM2(ring) {
   let s = 0;
@@ -389,22 +400,52 @@ export async function lookupCad(env, codeRaw, lat, lng) {
   };
 
   /* --- დონე 2: გეომეტრია --- */
-  if (reg.ring && geoOk(lat, lng)) {
+  if (reg.ring) {
     const ring = reg.ring;
     out.poly = ring;
     if (out.area == null) out.area = Math.round(ringAreaM2(ring));
-    if (inRing(ring, +lat, +lng)) {
-      out.cad_ok = 2; out.why = 'პინი ნაკვეთის საზღვრებშია';
+
+    if (geoOk(lat, lng)) {
+      if (inRing(ring, +lat, +lng)) {
+        out.cad_ok = 2; out.why = 'პინი ნაკვეთის საზღვრებშია';
+        return out;
+      }
+      const d = Math.round(ringDist(ring, +lat, +lng));
+      if (d <= TOL_M) {
+        out.cad_ok = 2; out.why = `პინი საზღვრიდან ${d} მ-შია`;
+        return out;
+      }
+      out.cad_ok = 0;
+      out.why = `პინი ნაკვეთს არ ემთხვევა — ${d > 1000 ? Math.round(d / 100) / 10 + ' კმ' : d + ' მ'} დაშორებით`;
       return out;
     }
-    const d = Math.round(ringDist(ring, +lat, +lng));
-    if (d <= TOL_M) {
-      out.cad_ok = 2; out.why = `პინი საზღვრიდან ${d} მ-შია`;
+
+    /* ⚠️ 2026-08-26: George-ის მოთხოვნით — თუ ნიშნული საერთოდ არ არის
+       მოწოდებული (ახალი გამარტივებული ნაკადი: მომხმარებელი ჯერ კოდს
+       წერს, ნიშნულს ხელით საერთოდ არ სვამს), მაგრამ გეომეტრია რეესტრიდან
+       გვაქვს — ვთავაზობთ ნაკვეთის ცენტროიდს ავტომატურ ნიშნულად. ეს
+       cad_ok=2-ის იგივე დონის სანდოობაა (გეომეტრიულად გარანტირებული),
+       უბრალოდ წყარო ხელით დასმა კი არა, ავტომატური შემოთავაზებაა
+       (`out.auto=true` — ფორმას შეუძლია ამის მიხედვით სხვა ტექსტი
+       აჩვენოს). თუ კოდს გეომეტრია არ ახლავს (მხოლოდ ტექსტური მისამართი,
+       იხ. ქვემოთ დონე 1), ავტომატური განთავსება ტექნიკურად შეუძლებელია —
+       იქ ფორმა კვლავ ხელით დასმას ითხოვს. */
+    const c = ringCentroid(ring);
+    if (c && inRing(ring, c[1], c[0])) {
+      out.lat = c[1]; out.lng = c[0];
+      out.cad_ok = 2; out.auto = true;
+      out.why = 'ნიშნული ავტომატურად დაისვა ნაკვეთის ცენტრში';
       return out;
     }
-    out.cad_ok = 0;
-    out.why = `პინი ნაკვეთს არ ემთხვევა — ${d > 1000 ? Math.round(d / 100) / 10 + ' კმ' : d + ' მ'} დაშორებით`;
-    return out;
+    /* ცენტროიდი ღრმად ჩაზნექილ ფორმაზე ზოგჯერ თვითონ ნაკვეთს გარეთ
+       მოხვდება — ბოლო საშველად პირველივე წვეროს ვიღებთ, ის ყოველთვის
+       ზუსტად საზღვარზეა. */
+    if (ring[0]) {
+      out.lat = ring[0][1]; out.lng = ring[0][0];
+      out.cad_ok = 2; out.auto = true;
+      out.why = 'ნიშნული ავტომატურად დაისვა ნაკვეთის საზღვარზე';
+      return out;
+    }
   }
 
   /* --- დონე 1: მისამართი --- */

@@ -238,7 +238,17 @@ async function fromMaps(code) {
   const gl = hit.details && hit.details.geometry_link;
   let glFetch = null;
   if (!ring && gl) {
-    const g = await grab(gl + (gl.includes('?') ? '&' : '?') + 'lang=ka&bbox=' + GE_BBOX);
+    /* ⚠️ 2026-08-26 — ROOT CAUSE: geometry_link maps.gov.ge-დან *ფარდობითი*
+       ბილიკია (მაგ. "/lr/bo/mg/getinfo.alpha?lbl=..."), არა სრული URL.
+       fetch() Worker-ში (ბრაუზერისგან განსხვავებით) ფარდობით URL-ს ვერ
+       ხსნის — "Invalid URL" გამონაკლისს აგდებდა ჩუმად (grab()-ის catch
+       ბლოკში), ამიტომ ring ყოველთვის null-ი ბრუნდებოდა, მისამართის
+       წარმატებული პოვნის მიუხედავად. fromMapsInfo()-ში იგივე ბმული სწორად
+       "https://maps.gov.ge"-ს ერთვის — აქ ეს პრეფიქსი უბრალოდ გამორჩენოდა.
+       დადასტურებულია დიაგნოსტიკური ჩანაწერით (D1 `cad` ცხრილი):
+       glFetch.err === "TypeError: Invalid URL: /lr/bo/mg/getinfo...". */
+    const glUrl = gl.startsWith('http') ? gl : ('https://maps.gov.ge' + gl);
+    const g = await grab(glUrl + (glUrl.includes('?') ? '&' : '?') + 'lang=ka&bbox=' + GE_BBOX);
     if (!g.err) {
       ring = wktRing(g.text);
       glFetch = { len: (g.text || '').length, sample: (g.text || '').slice(0, 220), parsed: !!ring };
@@ -246,13 +256,11 @@ async function fromMaps(code) {
       glFetch = { err: g.err };
     }
   }
-  /* ⚠️ 2026-08-26, დროებითი დიაგნოსტიკა (George-ის მოთხოვნით) — ვცდილობთ
-     გავარკვიოთ, რატომ არ ბრუნდება geometry (ring) რეალურ კოდებზე, თუმცა
-     მისამართი (addr) ყოველთვის სწორად მოიძებნება. ეს ველი ქეშშიც შედის
-     (cachePut ამ მთელ ობიექტს ინახავს), ასე რომ D1-ის `cad` ცხრილიდან
-     პირდაპირ ჩანს, hit-ს რეალურად რა ველები ჰქონდა. საჯარო API-ს
-     (/api/cad) პასუხში ეს არ გადის — მხოლოდ შიდა დიაგნოსტიკისთვისაა.
-     ამოსაშლელია, როცა root cause გამოირკვევა. */
+  /* ⚠️ 2026-08-26, დიაგნოსტიკური ჩანაწერი (George-ის მოთხოვნით) — ზემოთ
+     root cause-ის საპოვნელად დაემატა, root cause უკვე ნაპოვნია და
+     გასწორებულია (იხ. ზემოთ). ველი ისევ ქეშში ჩაიწერება (უვნებელია,
+     მხოლოდ D1-ში ჩანს, საჯარო /api/cad პასუხს არ ეხება) — მომავალშიც
+     გამოსადეგია, თუ registry-ის ფორმატი ისევ შეიცვალა. */
   const _debug = {
     hitKeys: Object.keys(hit || {}),
     hasShapeWkt: !!hit.shape_wkt,

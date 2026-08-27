@@ -115,24 +115,6 @@ export async function onRequestGet({ request, env }) {
     out.gsc = gscTotals;
     out.gscQueries = gscQ;
 
-    /* ⚠️ 2026-08-27 — დროებითი დიაგნოსტიკა: ავტორიზაცია შეიძლება
-       წარმატებული იყოს (token მოვიდა), მაგრამ ცალკეულმა API-მოთხოვნამ
-       მაინც შეიძლება ცარიელი/null დააბრუნოს (არასწორი property ID,
-       ჯერ არ გააქტიურებული წვდომა, ცარიელი მონაცემი და ა.შ.) — ეს
-       admin.html-ში ერთნაირად „ყველგან 0"-ად გამოჩნდება, error ველის
-       გარეშე. counts ველი გვიჩვენებს ზუსტად რომელ მოთხოვნას რა
-       დაუბრუნდა, რომ ბრმად აღარ ვცადოთ. */
-    out.diag = {
-      ga: overview ? (overview.rows ? overview.rows.length : 'no-rows') : 'null',
-      gaPrev: overviewPrev ? (overviewPrev.rows ? overviewPrev.rows.length : 'no-rows') : 'null',
-      events: events ? (events.rows ? events.rows.length : 'no-rows') : 'null',
-      pages: pages ? (pages.rows ? pages.rows.length : 'no-rows') : 'null',
-      sources: sources ? (sources.rows ? sources.rows.length : 'no-rows') : 'null',
-      devices: devices ? (devices.rows ? devices.rows.length : 'no-rows') : 'null',
-      gsc: gscTotals ? (gscTotals.rows ? gscTotals.rows.length : 'no-rows') : 'null',
-      gscQueries: gscQ ? (gscQ.rows ? gscQ.rows.length : 'no-rows') : 'null'
-    };
-
     if (!overview && !gscTotals) { out.error = 'auth-failed'; out.debug = lastAuthError(); }
   } catch (e) {
     out.error = 'fetch-failed';

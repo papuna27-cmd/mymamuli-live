@@ -99,6 +99,7 @@ main{max-width:1180px;margin:0 auto;padding:18px 16px 40px}
 .vt .lv.l1 i:nth-child(-n+2){background:var(--amber)}
 .vt .lv.l2 i{background:var(--down)}
 .vempty{padding:22px 12px;text-align:center;color:var(--mute);font-size:13px;line-height:1.6}
+.sech{font-size:12.5px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.4px;margin:6px 2px 10px}
 </style>
 </head>
 <body>
@@ -130,6 +131,43 @@ main{max-width:1180px;margin:0 auto;padding:18px 16px 40px}
 <div class="warn" id="warn" style="display:none"></div>
 
 <main>
+  <!-- ⚠️ 2026-08-27, George-ის მოთხოვნით — ეს სექცია რეალურ Google Analytics
+       4 (property 551076700, G-N30XKZCDCT) და Search Console
+       (sc-domain:mymamuli.ge) მონაცემს აჩვენებს /api/ga-stats-იდან.
+       ქვემოთ დარჩენილი ყველაფერი (რეგიონები, ქალაქები, ტოპ-100...)
+       საიტის საკუთარ D1 ბაზაზეა აგებული (/api/stats, /api/views) —
+       ეს ორი წყარო ცალკეა და ერთმანეთს არ ცვლის. -->
+  <div class="sech">Google Analytics 4 & Search Console — რეალური საიტის ტრაფიკი</div>
+  <div class="kpis" id="gaKpis"></div>
+  <div class="note" id="gaNote" style="margin:-6px 2px 18px"></div>
+
+  <div class="row">
+    <div class="card">
+      <div class="ch"><h2>საიდან მოდიან (GA4 არხი)</h2></div>
+      <div class="cb" id="gaSources"></div>
+      <div class="note">GA4-ის ტრაფიკის არხების მიხედვით — Organic Search, Direct, Referral და ა.შ.</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h2>მოწყობილობა (GA4)</h2></div>
+      <div class="cb"><div class="don" id="gaDevices"></div></div>
+      <div class="note">სესიების წილი დესკტოპზე, მობილურსა და ტაბლეტზე.</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <div class="ch"><h2>ყველაზე ნანახი გვერდები (GA4)</h2></div>
+      <div class="cb" id="gaPages"></div>
+      <div class="note">გვერდის მისამართი (pagePath) და ნახვების რაოდენობა არჩეულ პერიოდში.</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h2>Search Console — საძიებო მოთხოვნები</h2><span id="sub-gsc"></span></div>
+      <div class="cb" id="gscTbl"></div>
+      <div class="note">Google-ის ძიებაში რომელ სიტყვებზე გამოჩნდა საიტი და რამდენჯერ დააჭირეს.</div>
+    </div>
+  </div>
+
+  <div class="sech" style="margin-top:22px">MyMamuli.ge-ის საკუთარი ანალიტიკა</div>
   <div class="kpis" id="kpis"></div>
 
   <div class="row">
@@ -250,6 +288,111 @@ function donut(rows){
  return '<svg width="128" height="128" viewBox="0 0 128 128">'+segs+'</svg><div class="leg">'+leg+'</div>';
 }
 
+/* ═══════ Google Analytics 4 / Search Console — რეალური მონაცემი ═══════
+   2026-08-27, George-ის მოთხოვნით. rows/donutG იმეორებს bars()/donut()-ის
+   ვიზუალურ ენას, უბრალოდ სვეტ-პროცენტის ნაცვლად ნედლ რიცხვს (GA4
+   raw counts) აჩვენებს — GA-ს მონაცემი უკვე ისედაც პროცენტულად
+   არაა მოცემული ისე, როგორც D1-ის საკუთარი bars() ელოდება. */
+function rawBars(rows){
+ if(!rows||!rows.length)return '<div class="empty">ჯერ არაფერია.</div>';
+ const max=Math.max(...rows.map(r=>r[1]))||1;
+ return rows.map((r,i)=>
+  '<div class="bar"><span class="n">'+(i+1)+'</span>'+
+  '<span class="t">'+r[0]+'</span>'+
+  '<span class="g"><i style="width:'+(r[1]/max*100).toFixed(1)+'%"></i></span>'+
+  '<span class="p">'+fmt(r[1])+'</span></div>').join('');
+}
+function donutG(rows,nameMap,colMap){
+ if(!rows||!rows.length)return '<div class="empty">ჯერ არაფერია.</div>';
+ const total=rows.reduce((s,r)=>s+r[1],0)||1;
+ const pct=rows.map(([k,v])=>[k,v/total*100]);
+ const R=52,C=2*Math.PI*R; let off=0;
+ const segs=pct.map(([k,v])=>{
+  const len=C*v/100, s='<circle cx="64" cy="64" r="'+R+'" fill="none" stroke="'+(colMap[k]||'#999')+
+   '" stroke-width="21" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+
+   '" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 64 64)"/>';
+  off+=len; return s;}).join('');
+ const leg=pct.map(([k,v])=>'<div><i style="background:'+(colMap[k]||'#999')+'"></i>'+(nameMap[k]||k)+'<b>'+v.toFixed(1)+'%</b></div>').join('');
+ return '<svg width="128" height="128" viewBox="0 0 128 128">'+segs+'</svg><div class="leg">'+leg+'</div>';
+}
+const DEV_TN={desktop:'დესკტოპი',mobile:'მობილური',tablet:'ტაბლეტი'};
+const DEV_COL={desktop:'#0F6B4F',mobile:'#C8873A',tablet:'#7A6BA8'};
+
+async function loadGA(){
+ const box=el('gaNote');
+ if(!AUTHED){
+  el('gaKpis').innerHTML='';el('gaSources').innerHTML='';el('gaDevices').innerHTML='';
+  el('gaPages').innerHTML='';el('gscTbl').innerHTML='';el('sub-gsc').textContent='';box.innerHTML='';
+  return;
+ }
+ let d=null;
+ try{
+  const r=await fetch('/api/ga-stats?days='+days,{cache:'no-store'});
+  if(r.ok)d=await r.json();
+  else if(r.status===401){AUTHED=false;paintAuth();return}
+ }catch(e){}
+ if(!d){
+  el('gaKpis').innerHTML='';el('gaSources').innerHTML='';el('gaDevices').innerHTML='';el('gaPages').innerHTML='';el('gscTbl').innerHTML='';
+  box.innerHTML='<div class="vempty"><code>/api/ga-stats</code> ჯერ არ მუშაობს.</div>';
+  return;
+ }
+ if(d.error==='no-credentials'){
+  el('gaKpis').innerHTML='';el('gaSources').innerHTML='';el('gaDevices').innerHTML='';el('gaPages').innerHTML='';el('gscTbl').innerHTML='';
+  box.innerHTML='<div class="vempty">Google-ის წვდომა ჯერ არ დგას — <code>GOOGLE_SA_EMAIL</code>/<code>GOOGLE_SA_PRIVATE_KEY</code> Cloudflare secrets ვერ ვიპოვე.</div>';
+  return;
+ }
+ box.innerHTML = d.error==='auth-failed'
+  ? '<div class="vempty">Google-თან ავტორიზაცია ვერ მოხერხდა — შეამოწმე service account-ის წვდომა GA4/Search Console-ზე.</div>'
+  : d.error==='fetch-failed'
+  ? '<div class="vempty">Google-ის API-დან მონაცემი ვერ წამოვიდა — სცადე მოგვიანებით.</div>'
+  : '';
+
+ const gm=(resp,i)=>Number((resp&&resp.rows&&resp.rows[0]&&resp.rows[0].metricValues&&resp.rows[0].metricValues[i]&&resp.rows[0].metricValues[i].value)||0);
+ const users=gm(d.ga,0), sessions=gm(d.ga,1), views=gm(d.ga,2);
+ const pUsers=gm(d.gaPrev,0), pSessions=gm(d.gaPrev,1), pViews=gm(d.gaPrev,2);
+
+ const evMap={};
+ ((d.events&&d.events.rows)||[]).forEach(r=>{ evMap[r.dimensionValues[0].value]=Number(r.metricValues[0].value||0) });
+
+ const gscRow=(d.gsc&&d.gsc.rows&&d.gsc.rows[0])||null;
+ const gscClicks=gscRow?Math.round(gscRow.clicks||0):0;
+ const gscImpr=gscRow?Math.round(gscRow.impressions||0):0;
+ const gscPos=gscRow&&gscRow.position?gscRow.position.toFixed(1):null;
+
+ el('gaKpis').innerHTML=
+  kpi('მომხმარებელი (GA4)',users,pUsers)+
+  kpi('სესია (GA4)',sessions,pSessions)+
+  kpi('გვერდის ნახვა (GA4)',views,pViews)+
+  kpi('მოთხოვნის დატოვება',evMap.qualify_lead||0)+
+  kpi('განცხადების დადება',evMap.close_convert_lead||0)+
+  kpi('რეგისტრაცია',evMap.sign_up||0)+
+  kpi('GSC დაწკაპუნება',gscClicks)+
+  kpi('GSC გამოჩენა',gscImpr);
+
+ const srcRows=((d.sources&&d.sources.rows)||[]).map(r=>[r.dimensionValues[0].value,Number(r.metricValues[0].value||0)]);
+ el('gaSources').innerHTML=rawBars(srcRows);
+
+ const devRows=((d.devices&&d.devices.rows)||[]).map(r=>[r.dimensionValues[0].value,Number(r.metricValues[0].value||0)]);
+ el('gaDevices').innerHTML=donutG(devRows,DEV_TN,DEV_COL);
+
+ const pageRows=((d.pages&&d.pages.rows)||[]).map(r=>[r.dimensionValues[0].value,Number(r.metricValues[0].value||0)]);
+ el('gaPages').innerHTML=rawBars(pageRows);
+
+ const qRows=(d.gscQueries&&d.gscQueries.rows)||[];
+ el('sub-gsc').textContent=qRows.length?('საშ. პოზ. '+(gscPos||'—')):'';
+ el('gscTbl').innerHTML = qRows.length
+  ? '<table class="vt"><thead><tr><th>#</th><th>მოთხოვნა</th><th>დაწკაპუნება</th><th>გამოჩენა</th><th>CTR</th><th>პოზ.</th></tr></thead><tbody>'+
+    qRows.map((r,i)=>{
+     const q=(r.keys&&r.keys[0])||'';
+     const cl=Math.round(r.clicks||0), im=Math.round(r.impressions||0);
+     const ctr=im?((cl/im)*100).toFixed(1):'0.0';
+     const pos=(r.position||0).toFixed(1);
+     return '<tr><td class="num" style="color:var(--mute)">'+(i+1)+'</td><td>'+q+'</td>'+
+      '<td class="num">'+cl+'</td><td class="num">'+im+'</td><td class="num">'+ctr+'%</td><td class="num">'+pos+'</td></tr>';
+    }).join('')+'</tbody></table>'
+  : '<div class="vempty">მონაცემი ჯერ არ არის.</div>';
+}
+
 /* ═══════ ადმინის სესია ═══════
    გასაღები აღარ ინახება localStorage-ში და აღარ მიდის URL-ში.
    ერთხელ იგზავნება POST-ის სხეულში; სანაცვლოდ HttpOnly cookie გაიცემა,
@@ -364,11 +507,12 @@ async function load(){
   el('kpis').innerHTML='<div class="empty" style="grid-column:1/-1;padding:40px 16px">🔒 ეს გვერდი მხოლოდ ადმინისთვისაა. დააჭირე ზემოთ „შესვლა"-ს.</div>';
   el('regs').innerHTML='';el('cities').innerHTML='';el('types').innerHTML='';el('beh').innerHTML='';el('evb').innerHTML='';
   ['sub-reg','sub-typ','sub-city','sub-beh','sub-ev'].forEach(i=>el(i).textContent='');
-  loadViews();loadEvents();
+  loadViews();loadEvents();loadGA();
   return;
  }
  loadViews();
  loadEvents();
+ loadGA();
  let d=null;
  try{
   const r=await fetch('/api/stats?days='+days,{cache:'no-store'});

@@ -64,7 +64,12 @@ gtag('config', 'G-N30XKZCDCT');
 <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" integrity="sha384-MinO0mNliZ3vwppuPOUnGa+iq619pfMhLVUXfC4LHwSCvF9H+6P/KO4Q7qBOYV5V" crossorigin="anonymous">
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" integrity="sha384-SYKAG6cglRMN0RVvhNeBY0r3FYKNOJtznwA0v7B5Vp9tr31xAHsZC0DqkQ/pZDmj" crossorigin="anonymous"></script>
-<script src="i18n.js"></script>
+<!-- ⚠️ 2026-08-26: George-ის დეპლოის შემდეგ i18n.js-ის ახალი თარგმანები
+     (FAQ ტაბი) ზოგ ბრაუზერში არ ჩანდა — root cause: ეს ფაილი ვერსიის
+     query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
+     რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
+     ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
+<script src="i18n.js?v=2026.08.26-2031"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
@@ -1260,7 +1265,6 @@ body.foot-min .fslim{display:flex}
     <a href="/how-it-works" data-modal="how">როგორ მუშაობს</a>
     <a href="#want" data-modal="want">ვეძებ</a>
     <div class="sp">
-      <a href="/faq" data-modal="faq">კითხვები</a>
       <a href="/terms" data-modal="terms">წესები</a>
       <a href="/privacy" data-modal="priv">კონფიდენციალურობა</a>
       <a href="mailto:info@mymamuli.ge">info@mymamuli.ge</a>
@@ -1290,7 +1294,6 @@ body.foot-min .fslim{display:flex}
       <h5>საიტი</h5>
       <a href="/how-it-works" data-modal="main">მთავარი</a>
       <a href="/how-it-works" data-modal="how">როგორ მუშაობს</a>
-      <a href="/faq" data-modal="faq">კითხვები</a>
       <a href="#want" data-modal="want">ვეძებ<i class="fnew">ახალი</i></a>
     </div>
     <!-- 2026-08-25: George-ის მოთხოვნით — ეს ბმულები აღარ ჩანს ვიზუალურად
@@ -1314,7 +1317,7 @@ body.foot-min .fslim{display:flex}
         <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
         <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C20.9 8.65 22 11.1 22 14.5V21h-4v-5.8c0-1.38-.03-3.15-1.92-3.15-1.93 0-2.22 1.5-2.22 3.05V21H9z"/></svg></a>
       </span>
-      <span class="m"><a href="/faq" data-modal="faq">კითხვები</a><span class="dv">·</span><a href="/terms" data-modal="terms">წესები</a><span class="dv">·</span><a href="/privacy" data-modal="priv">კონფიდენციალურობა</a></span>
+      <span class="m"><a href="/terms" data-modal="terms">წესები</a><span class="dv">·</span><a href="/privacy" data-modal="priv">კონფიდენციალურობა</a></span>
       <span class="m cp"><span class="onl" id="live"><span class="dt"></span><b>—</b> ონლაინ</span><span class="dv">·</span>© 2026 MyMamuli.ge</span>
     </div>
     <div class="hot" id="hot"></div>

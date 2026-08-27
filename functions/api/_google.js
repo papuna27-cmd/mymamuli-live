@@ -33,7 +33,17 @@ const b64urlStr = s => b64url(new TextEncoder().encode(s));
    PKCS8 ფორმატია საჭირო — service account-ის JSON-ის private_key
    ველი ზუსტად ამ ფორმატშია. */
 async function importPrivateKey(pem) {
+  /* ⚠️ 2026-08-27 — თუ George-მა Cloudflare-ის secret-ში PEM ჩააკოპირა
+     პირდაპირ service account-ის .json ფაილიდან (ტექსტ-რედაქტორში
+     ღიად), private_key ველში ხაზების გამყოფი ნამდვილი ახალი ხაზის
+     ნაცვლად ლიტერალური `\n` (უკუხაზი + ასო n, ორი ცალკე სიმბოლო)
+     შეიძლება აღმოჩნდეს — JSON-ის ესქეიპინგი მხოლოდ JSON.parse-ის
+     დროს იშლება, უბრალო კოპირება-ჩასმისას კი ტექსტადვე რჩება.
+     ეს არავითარ whitespace-სტრიპვას არ ემორჩილება და atob()-ს
+     ამტვრევს, ამიტომ პირველ რიგში პირდაპირ ვცვლით ნამდვილ ხაზის
+     გადატანად. */
   const clean = String(pem || '')
+    .replace(/\\n/g, '\n')
     .replace(/-----BEGIN PRIVATE KEY-----/, '')
     .replace(/-----END PRIVATE KEY-----/, '')
     .replace(/\s+/g, '');
@@ -53,8 +63,19 @@ async function importPrivateKey(pem) {
    იშვიათად იძახება, და გამარტივება (ყოველ მოთხოვნაზე ახალი ხელმოწერა)
    მეტი საიმედოობის ღირს, ვიდრე KV-ში ტოკენის შენახვის დამატებითი
    სირთულე. */
+/* ⚠️ 2026-08-27 — ცალკე ვინახავთ ბოლო წარუმატებლობის მიზეზს (secret
+   არ არსებობს / PEM ვერ დაიპარსა / Google-მა token უარყო), რომ
+   admin.html-ს, `error:'auth-failed'`-ის დაჭერისას, შეეძლოს ეს
+   კონკრეტული, უსაფრთხო (არავითარი გასაღების მასალის გარეშე) დეტალი
+   აჩვენოს — წინააღმდეგ შემთხვევაში ყოველი წარუმატებლობა ერთნაირად
+   ბუნდოვანი „auth-failed"-ივით გამოიყურება და დიაგნოსტიკა ბრმა
+   ცდა-შეცდომად იქცევა. */
+let LAST_AUTH_ERR = null;
+export function lastAuthError() { return LAST_AUTH_ERR; }
+
 async function getAccessToken(env, scopes) {
-  if (!env.GOOGLE_SA_EMAIL || !env.GOOGLE_SA_PRIVATE_KEY) return null;
+  LAST_AUTH_ERR = null;
+  if (!env.GOOGLE_SA_EMAIL || !env.GOOGLE_SA_PRIVATE_KEY) { LAST_AUTH_ERR = 'no-secrets'; return null }
   const now = Math.floor(Date.now() / 1000);
   const header = { alg: 'RS256', typ: 'JWT' };
   const claim = {
@@ -67,10 +88,11 @@ async function getAccessToken(env, scopes) {
   const unsigned = b64urlStr(JSON.stringify(header)) + '.' + b64urlStr(JSON.stringify(claim));
   let key;
   try { key = await importPrivateKey(env.GOOGLE_SA_PRIVATE_KEY) }
-  catch (_) { return null }
-  const sig = await crypto.subtle.sign(
-    'RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(unsigned)
-  );
+  catch (e) { LAST_AUTH_ERR = 'key-import-failed: ' + (e && e.message ? e.message : String(e)); return null }
+  let sig;
+  try {
+    sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(unsigned));
+  } catch (e) { LAST_AUTH_ERR = 'sign-failed: ' + (e && e.message ? e.message : String(e)); return null }
   const jwt = unsigned + '.' + b64url(sig);
 
   const r = await fetch(TOKEN_URL, {
@@ -79,9 +101,14 @@ async function getAccessToken(env, scopes) {
     body: 'grant_type=' + encodeURIComponent('urn:ietf:params:oauth:grant-type:jwt-bearer') +
           '&assertion=' + jwt
   });
-  if (!r.ok) return null;
+  if (!r.ok) {
+    const t = await r.text().catch(() => '');
+    LAST_AUTH_ERR = 'token-endpoint-' + r.status + ': ' + t.slice(0, 200);
+    return null;
+  }
   const j = await r.json().catch(() => null);
-  return j && j.access_token ? j.access_token : null;
+  if (!j || !j.access_token) { LAST_AUTH_ERR = 'no-access-token-in-response'; return null }
+  return j.access_token;
 }
 
 /* GA4 Data API — POST properties/{id}:runReport

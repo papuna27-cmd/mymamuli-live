@@ -23,7 +23,7 @@
  *    აჩვენოს, გატეხილი გვერდის ნაცვლად.
  */
 import { J, authed, denied } from './_util.js';
-import { gaRunReport, gscQuery } from './_google.js';
+import { gaRunReport, gscQuery, lastAuthError } from './_google.js';
 
 const GA_PROPERTY = '551076700';
 const GSC_SITE = 'sc-domain:mymamuli.ge';
@@ -115,9 +115,10 @@ export async function onRequestGet({ request, env }) {
     out.gsc = gscTotals;
     out.gscQueries = gscQ;
 
-    if (!overview && !gscTotals) out.error = 'auth-failed';
-  } catch (_) {
+    if (!overview && !gscTotals) { out.error = 'auth-failed'; out.debug = lastAuthError(); }
+  } catch (e) {
     out.error = 'fetch-failed';
+    out.debug = String((e && e.message) || e).slice(0, 200);
   }
 
   return J(out, 200, { 'cache-control': 'private, max-age=120' });

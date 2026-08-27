@@ -342,9 +342,9 @@ async function loadGA(){
   return;
  }
  box.innerHTML = d.error==='auth-failed'
-  ? '<div class="vempty">Google-თან ავტორიზაცია ვერ მოხერხდა — შეამოწმე service account-ის წვდომა GA4/Search Console-ზე.</div>'
+  ? '<div class="vempty">Google-თან ავტორიზაცია ვერ მოხერხდა — შეამოწმე service account-ის წვდომა GA4/Search Console-ზე.'+(d.debug?'<br><code style="font-size:11px;opacity:.7">'+d.debug+'</code>':'')+'</div>'
   : d.error==='fetch-failed'
-  ? '<div class="vempty">Google-ის API-დან მონაცემი ვერ წამოვიდა — სცადე მოგვიანებით.</div>'
+  ? '<div class="vempty">Google-ის API-დან მონაცემი ვერ წამოვიდა — სცადე მოგვიანებით.'+(d.debug?'<br><code style="font-size:11px;opacity:.7">'+d.debug+'</code>':'')+'</div>'
   : '';
 
  const gm=(resp,i)=>Number((resp&&resp.rows&&resp.rows[0]&&resp.rows[0].metricValues&&resp.rows[0].metricValues[i]&&resp.rows[0].metricValues[i].value)||0);

@@ -213,8 +213,11 @@ export async function onRequestGet({ params, request, env }) {
   const catNomKa = CATN[l.cat] || l.cat;
   const catNom = lang === 'en' ? (CATN_EN[l.cat] || catNomKa) : catNomKa;
   const title = l.ttl || catNomKa + ' — ' + [l.loc, l.reg].filter(Boolean).join(', ');
-  const priceTxt = l.price ? '$' + num(l.price) : '';
-  const perM2 = (l.price && l.area) ? '$' + Math.round(l.price / l.area) + (lang === 'en' ? ' / m²' : ' / მ²') : '';
+  /* ⚠️ 2026-08-27, George-ის მოთხოვნით — ეს იგივე ბაგი იყო, რაც
+     index.html-ის ბარათებზე გავასწორეთ: ქირაზე ფასის მ²-ზე დაშლას
+     აზრი არა აქვს — მთლიან ფასს ვაჩვენებთ, პერიოდის აღნიშვნით. */
+  const priceTxt = l.price ? '$' + num(l.price) + (l.deal === 'rent' ? (l.period === 'year' ? t.perYear : t.perMonth) : '') : '';
+  const perM2 = (l.deal !== 'rent' && l.price && l.area) ? '$' + Math.round(l.price / l.area) + (lang === 'en' ? ' / m²' : ' / მ²') : '';
   const locTxt = [l.loc, l.reg].filter(Boolean).join(', ');
   const desc = lang === 'ka'
     ? ([l.dsc, locTxt, l.cad ? ('საკადასტრო კოდი ' + l.cad) : '']

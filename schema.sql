@@ -99,6 +99,7 @@ CREATE TABLE IF NOT EXISTS lst (
   attrs  TEXT,
   tel TEXT, contact_name TEXT,
   decl     TEXT,                                -- გამყიდველის დეკლარაცია (JSON) — მტკიცებულება
+  visibility TEXT NOT NULL DEFAULT 'public',    -- public|private — 2026-08-26, დამალვა საერთო რუკიდან
   status   TEXT NOT NULL DEFAULT 'pending',     -- pending|active|rejected|expired
   reject   TEXT,
   src_req  TEXT,

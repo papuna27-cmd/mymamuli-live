@@ -179,7 +179,7 @@ export async function onRequestGet({ params, request, env }) {
   if (!/^l_[a-z0-9]+$/.test(id)) return redirectHome();
 
   const l = await env.DB.prepare(
-    `SELECT id,cat,deal,period,cad,addr,lat,lng,loc,reg,area,price,ttl,dsc,photos,attrs,tel,contact_name,created,expires
+    `SELECT id,cat,deal,period,cad,addr,lat,lng,loc,reg,area,price,ttl,dsc,photos,attrs,tel,contact_name,visibility,created,expires
        FROM lst WHERE id=?1 AND status='active'`
   ).bind(id).first();
 
@@ -258,6 +258,7 @@ export async function onRequestGet({ params, request, env }) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(fullTitle)} | MyMamuli.ge</title>
 <meta name="description" content="${esc(desc)}">
+${l.visibility === 'private' ? '<meta name="robots" content="noindex,nofollow">' : ''}
 <link rel="canonical" href="${esc(url)}">
 <meta property="og:type" content="product">
 <meta property="og:site_name" content="MyMamuli.ge">

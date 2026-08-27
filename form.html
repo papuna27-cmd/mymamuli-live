@@ -548,7 +548,7 @@ let TAB='req', step=0, map=null;
    ხელახალი render, მაგ. კატეგორიის არჩევისას) — მხოლოდ ნამდვილ
    გადასვლაზე ვაგზავნით სქროლის თავში დაბრუნების მოთხოვნას. */
 let __rStep=null, __rTab=null;
-const S={terms:false,sub:true,d1:false,d2:false,d3:false,d4:false,cat:'',deal:'buy',period:'month',lat:null,lng:null,radius:0,
+const S={terms:false,sub:true,priv:false,d1:false,d2:false,d3:false,d4:false,cat:'',deal:'buy',period:'month',lat:null,lng:null,radius:0,
  amin:'',amax:'',pmax:'',pmin:'',rooms:'',note:'',pass:'',
  who:'ind',name:'',email:'',phone:'',cc:'',comp:'',cid:'',
  cad:'',cadAddr:'',price:'',area:'',
@@ -975,8 +975,29 @@ function paneWho(){
      ცალკე მონიშნული პასუხისმგებლობა უფრო რეალურად აღიქმება და
      დავის შემთხვევაშიც ცხადია, კონკრეტულად რას დაეთანხმა.
      მაძიებელს ერთი პუნქტი ჰყოფნის — ის ხომ ვალდებულებას არ იღებს. */
-  declaration()+subscribeBox()+
+  declaration()+privacyBox()+subscribeBox()+
  '</div>';
+}
+
+
+/* ================= ხილვადობა (საჯარო/დაფარული) =================
+   ⚠️ 2026-08-26, George-ის მოთხოვნით — გამყიდველს/გამქირავებელს
+   შეუძლია განცხადება დამალოს საერთო რუკიდან და დატოვოს ხილული
+   მხოლოდ იმ მაძიებლისთვის, ვისი მოთხოვნაც არეალში/ფასში/ფართობში
+   მოხვდება (დამთხვევის შემთხვევაში წერილს mod.js უკვე უგზავნის —
+   იხ. /api/geo.js-ის visibility ფილტრი საჯარო რუკისთვის). მხოლოდ
+   TAB==='lst'-ზე აქტუალურია — მაძიებლის მოთხოვნა თავიდანვე დაცულია
+   (საკონტაქტო მონაცემები არავის უჩანს), დამალვის საჭიროება არ აქვს.
+   დეფოლტად ჩამრთველი გამორთულია — ანუ ხილვადობა ყველასთვის. */
+function privacyBox(){
+ if(TAB!=='lst')return '';
+ return '<label class="tbox" id="fpriv">'+
+  '<input type="checkbox" id="privchk"'+(S.priv?' checked':'')+'>'+
+  '<span><b>დამალვა საერთო რუკიდან</b><br>'+
+  'განცხადება ჩვეულებრივ ყველასთვის ხილულია. ჩართე, თუ გინდა, რომ ის ჩანდეს '+
+  'მხოლოდ იმ მაძიებლისთვის, ვისი მოთხოვნაც ამ არეალს, ფასსა და ფართობს ემთხვევა — '+
+  'დანარჩენებისთვის საერთო რუკაზე უხილავი დარჩება.'+
+  '</span></label>';
 }
 
 
@@ -1076,6 +1097,7 @@ function bind(){
  const chk=el('chk'); if(chk)chk.onclick=checkCad;
  const tb=el('terms');
  const sb=el('sub'); if(sb)sb.onchange=()=>{S.sub=sb.checked};
+ const pv=el('privchk'); if(pv)pv.onchange=()=>{S.priv=pv.checked};
  document.querySelectorAll('.dchk').forEach(c=>{
   c.onchange=()=>{S[c.dataset.d]=c.checked;
    const f=el('ftrm'); if(f)f.classList.remove('bad'); validate()};
@@ -1562,13 +1584,14 @@ el('next').onclick=async()=>{
   terms:(TAB==='req'?!!S.terms:!!(S.d1&&S.d2&&S.d3&&S.d4)),
   decl:(TAB==='req'?null:{d1:!!S.d1,d2:!!S.d2,d3:!!S.d3,d4:!!S.d4}),
   sub:!!S.sub,
+  visibility:(TAB==='lst'&&S.priv)?'private':'public',
   src_req:(TAB==='lst'&&S.srcReq)?S.srcReq:undefined};
  try{
   const r=await fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},
    body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));
   if(r.status===409&&j.error==='phone-taken'){alert(T('ეს ტელეფონის ნომერი უკვე სხვა ანგარიშზეა რეგისტრირებული.'));btn.disabled=false;btn.textContent=T('გაგზავნა');return}
-  if(r.status===409){alert(T('ლიმიტი ამოწურულია: ')+j.cap+T(' აქტიური.'));btn.disabled=false;btn.textContent=T('გაგზავნა');return}
+  if(r.status===409&&j.error==='limit'){alert(T('უფასო ლიმიტი ამოწურულია — მაქსიმუმ ')+j.cap+T(' აქტიური ')+(TAB==='req'?T('მოთხოვნა.'):T('განცხადება.'))+' '+T('ამის ზემოთ განთავსება ფასიანი გახდება — ეს ფუნქცია მალე ჩაირთვება.'));btn.disabled=false;btn.textContent=T('გაგზავნა');return}
   if(r.status===429){alert(T('ძალიან ბევრი მცდელობა. სცადე მოგვიანებით.'));btn.disabled=false;btn.textContent=T('გაგზავნა');return}
   /* ⚠️ 2026-08-26: George-ის მოთხოვნით დამატებული პაროლის ლოგიკის
      შეცდომები — თუ ეს მეილი უკვე რეგისტრირებულია და პაროლი არ ემთხვევა,

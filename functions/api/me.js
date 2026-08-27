@@ -42,7 +42,7 @@ export async function onRequestGet({ request, env }) {
 
   const lst = await env.DB.prepare(
     `SELECT l.id, l.ttl, l.dsc, l.tel, l.contact_name, l.cat, l.deal, l.price, l.area, l.loc, l.reg,
-            l.status, l.created, l.expires, l.photos, l.cad_ok,
+            l.status, l.created, l.expires, l.photos, l.cad_ok, l.visibility,
             COALESCE(v.total,0) AS views,
             COALESCE((SELECT n FROM view_day d WHERE d.id=l.id AND d.day=?2),0)        AS today,
             COALESCE((SELECT SUM(n) FROM view_day d WHERE d.id=l.id AND d.day>=?3),0)  AS week,

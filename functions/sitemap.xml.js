@@ -35,8 +35,11 @@ export async function onRequestGet({ env }) {
   let rows = [];
   if (env.DB) {
     try {
+      /* ⚠️ 2026-08-26: visibility='private' განცხადებები sitemap-შიც არ
+         ხვდება — საერთო რუკიდან დამალული ობიექტის URL საძიებო სისტემას
+         არც უნდა შესთავაზო. */
       const r = await env.DB.prepare(
-        `SELECT id, cat, deal, loc, reg, created FROM lst WHERE status='active' ORDER BY created DESC LIMIT 5000`
+        `SELECT id, cat, deal, loc, reg, created FROM lst WHERE status='active' AND visibility != 'private' ORDER BY created DESC LIMIT 5000`
       ).all();
       rows = r.results || [];
     } catch (_) { /* ცარიელი sitemap ჯობია გატეხილს */ }

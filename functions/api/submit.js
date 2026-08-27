@@ -130,6 +130,15 @@ function clean(b, kind) {
     o.loc = str(b.loc, 120) || null;
     o.reg = str(b.reg, 80) || null;
 
+    /* ⚠️ 2026-08-26, George-ის მოთხოვნით — გამყიდველს/გამქირავებელს
+       შეუძლია განცხადება დამალოს საერთო რუკიდან და დატოვოს ხილული
+       მხოლოდ იმ მაძიებლისთვის, ვისი მოთხოვნაც არეალს/ფასს/ფართობს
+       ემთხვევა (mod.js-ის დამთხვევის ლოგიკა ამას ისედაც პატივს სცემს —
+       lst.status='active' მაინც უნდა იყოს, visibility-ზე არ არის
+       დამოკიდებული; მხოლოდ /api/geo.js-ის საჯარო feed-ი და
+       sitemap.xml.js გამორიცხავს). დეფოლტად საჯაროა. */
+    o.visibility = b.visibility === 'private' ? 'private' : 'public';
+
     /* ფოტოები: მხოლოდ ჩვენი R2-ის ბმულები ან საკუთარი დომენი.
        თორემ განცხადებაში სხვისი სერვერის სურათი ჩაისმება. */
     const ph = Array.isArray(b.photos) ? b.photos : [];
@@ -333,8 +342,13 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
-  /* --- ლიმიტები: 2 მოთხოვნა / 5 განცხადება --- */
-  const cap = kind === 'req' ? 2 : 5;
+  /* --- ლიმიტები: 2 მოთხოვნა / 3 განცხადება ---
+     ⚠️ 2026-08-26, George-ის მოთხოვნით — გაყიდვა/გაქირავების ლიმიტი
+     5-დან 3-ზე დაწიეს (მოთხოვნის 2 უცვლელი რჩება). ამის ზემოთ
+     გადახდა იქნება საჭირო — გადახდის მექანიზმი ჯერ არ არის აქტიური
+     (task #154), ამიტომ დღეს ზღვარს მიღწეულს უბრალოდ ვბლოკავთ
+     (limit) — ისევე, როგორც აქამდე. */
+  const cap = kind === 'req' ? 2 : 3;
   const used = await env.DB.prepare(
     `SELECT COUNT(*) AS n FROM ${kind === 'req' ? 'req' : 'lst'}
       WHERE user_id=?1 AND status IN ('draft','pending','active','hold')`
@@ -378,8 +392,8 @@ export async function onRequestPost({ request, env }) {
     const poly = o.poly || cadPoly;
     await env.DB.prepare(
       `INSERT INTO lst (id,user_id,cat,deal,period,cad,addr,cad_ok,lat,lng,poly,loc,reg,
-                        area,price,ttl,dsc,photos,attrs,tel,contact_name,decl,status,src_req,created,expires)
-       VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?25,'draft',?22,?23,?24)`
+                        area,price,ttl,dsc,photos,attrs,tel,contact_name,decl,visibility,status,src_req,created,expires)
+       VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?25,?26,'draft',?22,?23,?24)`
     ).bind(id, u.id, o.cat, o.deal, o.period,
            o.cad || null,
            cadAddr,                                   /* ← რეესტრიდან, არა ფორმიდან */
@@ -389,7 +403,7 @@ export async function onRequestPost({ request, env }) {
            o.loc, o.reg, o.area, o.price, o.ttl, o.dsc,
            JSON.stringify(o.photos), JSON.stringify(o.attrs),
            telShown, str(b.name, 90) || null,
-           str(b.src_req, 40) || null, t, exp, declJson).run();
+           str(b.src_req, 40) || null, t, exp, declJson, o.visibility).run();
   }
 
   /* --- დადასტურების კოდი / ავტო-დადასტურება (comp_ok) ---

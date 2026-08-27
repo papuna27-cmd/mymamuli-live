@@ -24,9 +24,13 @@ export async function onRequestGet({ env }) {
 
   const [lstRows, reqRows] = await Promise.all([
     env.DB.prepare(
+      /* ⚠️ 2026-08-26, George-ის მოთხოვნით — visibility='private' განცხადება
+         საერთო რუკიდან გამორიცხულია. ის მაინც რჩება 'active' და მისი
+         დამთხვევის/შეტყობინების ლოგიკა (mod.js) ამაზე არ არის დამოკიდებული —
+         მხოლოდ ეს, საჯარო feed, არ აჩვენებს. */
       `SELECT id, cat, deal, cad, lat, lng, poly, loc, reg, area, price, ttl, dsc,
               photos, attrs, tel, created
-         FROM lst WHERE status='active' ORDER BY created DESC LIMIT 500`
+         FROM lst WHERE status='active' AND visibility != 'private' ORDER BY created DESC LIMIT 500`
     ).all(),
     env.DB.prepare(
       `SELECT id, cat, deal, lat, lng, radius, bn, bs, be, bw,

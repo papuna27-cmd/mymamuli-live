@@ -66,6 +66,9 @@ export async function onRequestGet({ env }) {
     `<url><loc>${SITE}/terms</loc><lastmod>${iso(Date.now())}</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`,
     `<url><loc>${SITE}/privacy</loc><lastmod>${iso(Date.now())}</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`,
     `<url><loc>${SITE}/how-it-works</loc><lastmod>${iso(Date.now())}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>`,
+    `<url><loc>${SITE}/sell</loc><lastmod>${iso(Date.now())}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>`,
+    `<url><loc>${SITE}/buy</loc><lastmod>${iso(Date.now())}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>`,
+    `<url><loc>${SITE}/faq</loc><lastmod>${iso(Date.now())}</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>`,
     ...rows.map(l =>
       `<url><loc>${SITE}/g/${esc(l.id)}/</loc><lastmod>${iso(l.created)}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`
     ),

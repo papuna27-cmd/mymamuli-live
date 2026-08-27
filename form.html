@@ -1684,6 +1684,16 @@ function done(){
     პოზიციაზე რჩება და მომხმარებელს ეს ეკრანი საერთოდ ცარიელი ჩანს. */
  postH();
  try{parent.postMessage({mm:'top'},'*')}catch(e){}
+ /* ⚠️ 2026-08-27, George-ის მოთხოვნით — GA4 key events. done() ზუსტად
+    ის წერტილია, სადაც მოთხოვნა/განცხადება რეალურად სრულდება (ან
+    ავტო-დადასტურებით, ან ელფოსტის კოდის შემდეგ) — არა ღილაკზე ჭერისას,
+    როცა ჯერ კიდევ მოსალოდნელია ვერიფიკაცია. gtag თვითონ form.html-ში
+    არ ტვირთულობს (იხ. ზემოთ postMessage-ის კომენტარი) — მშობელი
+    (index.html) ისმენს {mm:'ga'}-ს და თვითონ იძახებს gtag('event',...). */
+ try{
+  parent.postMessage({mm:'ga', name: TAB==='req'?'qualify_lead':'close_convert_lead'}, '*');
+  if(SIGNUP_NEW)parent.postMessage({mm:'ga', name:'sign_up'}, '*');
+ }catch(e){}
 }
 el('next').onclick=async()=>{
  if(step<lastStep()){step++;render();return}
@@ -1729,6 +1739,12 @@ el('next').onclick=async()=>{
    btn.disabled=false;btn.textContent=T('გაგზავნა');return;
   }
   if(j&&j.devCode)DEV_CODE=j.devCode;
+  /* ⚠️ 2026-08-27, George-ის მოთხოვნით — GA4 `sign_up` key event: submit.js
+     დროშად აბრუნებს, ეს ნამდვილად ახალი ანგარიშია თუ უკვე არსებულის
+     მორიგი გაგზავნაა. done()-ში (გარიგების რეალურად დასრულების წერტილში)
+     ვიყენებთ — არა აქ, რომ ერთხელაც არ ამოვარდეს autoVerified-ის გარეშე
+     ნაკადში (კოდის დადასტურებამდე ჯერ არაფერი დასრულებულა). */
+  if(j&&j.isNewUser)SIGNUP_NEW=true;
   /* ⚠️ comp_ok („ულიმიტო") ანგარიშისთვის სერვერი კოდის გარეშე პირდაპირ
      ადასტურებს draft→pending-ს (იხ. submit.js) — ასეთ შემთხვევაში
      ვერიფიკაციის ეკრანი საერთოდ არ სჭირდება, პირდაპირ done()-ზე გადავდივართ. */
@@ -1736,7 +1752,7 @@ el('next').onclick=async()=>{
  }catch(e){}
  btn.disabled=false; paneVerify();
 };
-let DEV_CODE='';
+let DEV_CODE='', SIGNUP_NEW=false;
 el('back').onclick=()=>{if(step){step--;render()}};
 el('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
  el('tabs').querySelectorAll('button').forEach(x=>x.classList.remove('on'));

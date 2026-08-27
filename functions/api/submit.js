@@ -270,6 +270,11 @@ export async function onRequestPost({ request, env }) {
 
   /* --- მომხმარებელი --- */
   let u = await env.DB.prepare(`SELECT * FROM users WHERE email_norm=?1`).bind(email).first();
+  /* ⚠️ 2026-08-27, George-ის მოთხოვნით — GA4 `sign_up` key event-ისთვის
+     კლიენტმა უნდა იცოდეს, ეს ნამდვილად ახალი ანგარიშია თუ უკვე
+     არსებულის მორიგი განცხადება/მოთხოვნა. `u` ქვემოთ ორივე შემთხვევაში
+     დასახლდება, ამიტომ დროშა წინასწარ ვინახავთ. */
+  const isNewUser = !u;
 
   if (!u) {
     /* ერთი ნომერი = ერთი ანგარიში. ჰეშით ვამოწმებთ, ღია ნომრით არა. */
@@ -470,7 +475,7 @@ export async function onRequestPost({ request, env }) {
     await env.DB.batch(stmts);
     if (sessUser && !compOk) await kickMail(env);
     return J({
-      ok: true, id, autoVerified: true,
+      ok: true, id, autoVerified: true, isNewUser,
       cad: o.cad ? { ok: cadOk, addr: cadAddr, why: cadWhy } : undefined
     });
   }
@@ -489,7 +494,7 @@ export async function onRequestPost({ request, env }) {
   await kickMail(env);
 
   return J({
-    ok: true, id,
+    ok: true, id, isNewUser,
     cad: o.cad ? { ok: cadOk, addr: cadAddr, why: cadWhy } : undefined,
     /* ⚠️ სატესტო რეჟიმი. ლაივზე SHOW_CODE ცვლადი უნდა წაიშალოს. */
     devCode: env.SHOW_CODE === '1' ? code : undefined

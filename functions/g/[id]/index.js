@@ -281,6 +281,10 @@ export async function onRequestGet({ params, request, env }) {
 <html lang="${lang}">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(fullTitle)} | MyMamuli.ge</title>
 <meta name="description" content="${esc(desc)}">
@@ -474,6 +478,10 @@ async function requestPage(id, env, lang, bot) {
 <html lang="${lang}">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(fullTitle)} | MyMamuli.ge</title>
 <meta name="description" content="${esc(desc)}">

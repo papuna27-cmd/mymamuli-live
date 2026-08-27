@@ -26,7 +26,20 @@ gtag('config', 'G-N30XKZCDCT');
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="MyMamuli">
 <meta name="format-detection" content="telephone=no">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230F6B4F'/%3E%3Cpath d='M40 132V64l50-30 50 30v68' stroke='white' stroke-width='12' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M40 132h100' stroke='white' stroke-width='12' stroke-linecap='round'/%3E%3Cpath d='M74 132V98h32v34' stroke='%23F2C88A' stroke-width='12' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
+<!-- ⚠️ 2026-08-27, George-ის მოთხოვნით — საიტს ტაბზე favicon საერთოდ არ
+     ჰქონდა (მხოლოდ apple-touch-icon იყო, inline SVG-ით — ეს ტაბის
+     ხატულაზე არ მოქმედებს, მხოლოდ iOS-ის "Add to Home Screen"-ზე).
+     დამატებულია რეალური PNG/ICO ფაილები, თან ლოგოს "სახლის" გლიფი
+     გადიდებულია და ჩარჩოს ზღვარამდე მიყვანილია (root cause: icons/-ის
+     ორიგინალი ვერსია ხატულის ~62%-ს იკავებდა, პატარა ზომაზე თითქმის
+     არ ჩანდა) — მსგავსად Facebook-ის მუქი, კიდემდე მისული ხატულისა. */
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>MyMamuli.ge — მიწა, სახლები და კომერციული ფართები რუკაზე</title>
 <meta name="description" content="იპოვე გასაყიდი მიწის ნაკვეთი, სახლი ან კომერციული ფართი პირდაპირ რუკაზე. ოფიციალური საკადასტრო საზღვრები საჯარო რეესტრიდან. შუამავლების გარეშე.">
 <link rel="canonical" href="https://mymamuli.ge/">
@@ -69,12 +82,12 @@ gtag('config', 'G-N30XKZCDCT');
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.08.27-1920"></script>
+<script src="i18n.js?v=2026.08.27-1930"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.27-1920';
+window.MM_BUILD = '2026.08.27-1930';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1269,11 +1282,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.27-1920">
+<footer data-build="2026.08.27-1930">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.27-1920</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.27-1930</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>

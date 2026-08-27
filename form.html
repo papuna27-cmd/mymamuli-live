@@ -1175,6 +1175,14 @@ function placePin(lat,lng){
  d.style.cssText='width:20px;height:20px;border-radius:50%;background:#0F6B4F;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.45);cursor:grab';
  marker=new maplibregl.Marker({element:d,draggable:true}).setLngLat([lng,lat]).addTo(map);
  marker.on('dragend',()=>{const p=marker.getLngLat();S.lat=p.lat;S.lng=p.lng;drawCircle();countStock();validate()});
+ /* ⚠️ 2026-08-26: cadFirst ავტომატური განთავსებისას (checkCad→placePin)
+    რუკა ჯერ კიდევ დეფოლტ (თბილისის ცენტრის) ხედშია — თუ აქ არ
+    გადავფრინდებით ახალ წერტილზე, ნიშნული ეკრანს გარეთ რჩება და
+    მომხმარებელს საერთოდ არაფერი უჩანს, თუმცა S.lat/lng და მარკერი
+    სინამდვილეში სწორადაა დაყენებული. "req" tab-ისთვის ამის შემდეგ
+    drawCircle() თავად აკეთებს fitBounds-ს, ამიტომ იქ ორმაგი გადაფრენა
+    არ გვჭირდება — მხოლოდ "lst"-ზე (გაყიდვა/გაქირავება) ვამატებთ. */
+ if(TAB==='lst') map.flyTo({center:[lng,lat], zoom:Math.max(map.getZoom(),17.4), duration:700});
  gate();
  drawCircle(); countStock(); validate();
 }

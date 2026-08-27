@@ -548,7 +548,7 @@ let TAB='req', step=0, map=null;
    ხელახალი render, მაგ. კატეგორიის არჩევისას) — მხოლოდ ნამდვილ
    გადასვლაზე ვაგზავნით სქროლის თავში დაბრუნების მოთხოვნას. */
 let __rStep=null, __rTab=null;
-const S={terms:false,sub:true,priv:false,d1:false,d2:false,d3:false,d4:false,cat:'',deal:'buy',period:'month',lat:null,lng:null,radius:0,
+const S={terms:false,sub:true,priv:false,anon:false,d1:false,d2:false,d3:false,d4:false,cat:'',deal:'buy',period:'month',lat:null,lng:null,radius:0,
  amin:'',amax:'',pmax:'',pmin:'',rooms:'',note:'',pass:'',
  who:'ind',name:'',email:'',phone:'',cc:'',comp:'',cid:'',
  cad:'',cadAddr:'',price:'',area:'',
@@ -975,7 +975,7 @@ function paneWho(){
      ცალკე მონიშნული პასუხისმგებლობა უფრო რეალურად აღიქმება და
      დავის შემთხვევაშიც ცხადია, კონკრეტულად რას დაეთანხმა.
      მაძიებელს ერთი პუნქტი ჰყოფნის — ის ხომ ვალდებულებას არ იღებს. */
-  declaration()+privacyBox()+subscribeBox()+
+  declaration()+privacyBox()+anonBox()+subscribeBox()+
  '</div>';
 }
 
@@ -997,6 +997,22 @@ function privacyBox(){
   'განცხადება ჩვეულებრივ ყველასთვის ხილულია. ჩართე, თუ გინდა, რომ ის ჩანდეს '+
   'მხოლოდ იმ მაძიებლისთვის, ვისი მოთხოვნაც ამ არეალს, ფასსა და ფართობს ემთხვევა — '+
   'დანარჩენებისთვის საერთო რუკაზე უხილავი დარჩება.'+
+  '</span></label>';
+}
+
+/* ================= სახელის დამალვა (ანონიმური განცხადება) =================
+   ⚠️ 2026-08-26, George-ის მოთხოვნით — გამყიდველს/გამქირავებელს შეუძლია
+   საკუთარი სახელი დამალოს განცხადებაზე: ჩართვისას, ბარათზე „გამყიდველის"
+   ველში კონკრეტული სახელის ნაცვლად წერია „ვიზიტორი". ტელეფონი და
+   საკონტაქტო არხი უცვლელი რჩება — მხოლოდ საჯარო ჩვენებული სახელია
+   დაფარული. დეფოლტად გამორთულია, ანუ სახელი ჩვეულებრივად ჩანს. */
+function anonBox(){
+ if(TAB!=='lst')return '';
+ return '<label class="tbox" id="fanon">'+
+  '<input type="checkbox" id="anonchk"'+(S.anon?' checked':'')+'>'+
+  '<span><b>ჩემი სახელის დამალვა</b><br>'+
+  'ბარათზე შენი სახელის ნაცვლად უბრალოდ „ვიზიტორი" დაიწერება. ტელეფონი და '+
+  'დანარჩენი მონაცემები ამას არ ეხება.'+
   '</span></label>';
 }
 
@@ -1098,6 +1114,7 @@ function bind(){
  const tb=el('terms');
  const sb=el('sub'); if(sb)sb.onchange=()=>{S.sub=sb.checked};
  const pv=el('privchk'); if(pv)pv.onchange=()=>{S.priv=pv.checked};
+ const av=el('anonchk'); if(av)av.onchange=()=>{S.anon=av.checked};
  document.querySelectorAll('.dchk').forEach(c=>{
   c.onchange=()=>{S[c.dataset.d]=c.checked;
    const f=el('ftrm'); if(f)f.classList.remove('bad'); validate()};
@@ -1585,6 +1602,7 @@ el('next').onclick=async()=>{
   decl:(TAB==='req'?null:{d1:!!S.d1,d2:!!S.d2,d3:!!S.d3,d4:!!S.d4}),
   sub:!!S.sub,
   visibility:(TAB==='lst'&&S.priv)?'private':'public',
+  anon:!!(TAB==='lst'&&S.anon),
   src_req:(TAB==='lst'&&S.srcReq)?S.srcReq:undefined};
  try{
   const r=await fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},

@@ -1191,7 +1191,17 @@ const I18N = {
 "რუკაზე მონიშნავ არეალს, ბიუჯეტსა და ფართობს — შესაბამისი განცხადება ავტომატურად მოგივა, ჯერ ყველა დანარჩენზე ადრე, ხელახლა ძებნის გარეშე. დაწვრილებით:": "You mark an area, budget and size on the map — a matching listing comes to you automatically, before anyone else sees it, with no need to search again. Details:",
 "როგორ ვიყიდო უძრავი ქონება": "How to buy property",
 "ვინ არის MyMamuli.ge — შუამავალი ხართ?": "Who is MyMamuli.ge — are you a broker?",
-"არა. ჩვენ ვართ საინფორმაციო პლატფორმა — გარიგება პირდაპირ ხდება მყიდველსა და გამყიდველს შორის, საკომისიოს გარეშე. დაწვრილებით:": "No. We are an information platform — the deal happens directly between buyer and seller, with no commission. Details:"
+"არა. ჩვენ ვართ საინფორმაციო პლატფორმა — გარიგება პირდაპირ ხდება მყიდველსა და გამყიდველს შორის, საკომისიოს გარეშე. დაწვრილებით:": "No. We are an information platform — the deal happens directly between buyer and seller, with no commission. Details:",
+
+/* ⚠️ 2026-08-26, George-ის მოთხოვნით — გასაყიდი/გასაქირავებელი
+   განცხადების ბარათი: აღწერის ბლოკი, კატეგორიის მიხედვით სათაური,
+   ანონიმური "ვიზიტორი" და მდებარეობის fallback. */
+"აღწერა": "Description",
+"განცხადების დეტალები": "Listing details",
+"ვიზიტორი": "Visitor",
+"მდებარეობა არ არის მითითებული": "Location not specified",
+"ჩემი სახელის დამალვა": "Hide my name",
+"ბარათზე შენი სახელის ნაცვლად უბრალოდ „ვიზიტორი\" დაიწერება. ტელეფონი და დანარჩენი მონაცემები ამას არ ეხება.": "Instead of your name, the card will simply say \"Visitor.\" Your phone number and other details are unaffected."
 };
 
 /* პარამეტრიანი ფრაზები (ციფრები შიგნით) */

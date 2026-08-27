@@ -139,6 +139,13 @@ function clean(b, kind) {
        sitemap.xml.js გამორიცხავს). დეფოლტად საჯაროა. */
     o.visibility = b.visibility === 'private' ? 'private' : 'public';
 
+    /* ⚠️ 2026-08-26, George-ის მოთხოვნით — გამყიდველს შეუძლია სახელი
+       განცხადებაზე დამალოს: მაშინ საჯარო ბარათზე კონკრეტული სახელის
+       ნაცვლად უბრალოდ „ვიზიტორი" ჩანს. ეს მხოლოდ საჯარო ჩვენებას
+       ეხება — ანგარიშზე რეალური სახელი (users.name) და დადასტურების
+       ელფოსტა/ტელეფონი უცვლელად რჩება, ადმინსაც ისინი მაინც უჩანს. */
+    o.anon = b.anon === true || b.anon === 1 || b.anon === 'on';
+
     /* ფოტოები: მხოლოდ ჩვენი R2-ის ბმულები ან საკუთარი დომენი.
        თორემ განცხადებაში სხვისი სერვერის სურათი ჩაისმება. */
     const ph = Array.isArray(b.photos) ? b.photos : [];
@@ -402,7 +409,7 @@ export async function onRequestPost({ request, env }) {
            poly ? JSON.stringify(poly) : null,
            o.loc, o.reg, o.area, o.price, o.ttl, o.dsc,
            JSON.stringify(o.photos), JSON.stringify(o.attrs),
-           telShown, str(b.name, 90) || null,
+           telShown, o.anon ? 'ვიზიტორი' : (str(b.name, 90) || null),
            str(b.src_req, 40) || null, t, exp, declJson, o.visibility).run();
   }
 

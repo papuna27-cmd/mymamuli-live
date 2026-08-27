@@ -29,7 +29,7 @@ export async function onRequestGet({ env }) {
          დამთხვევის/შეტყობინების ლოგიკა (mod.js) ამაზე არ არის დამოკიდებული —
          მხოლოდ ეს, საჯარო feed, არ აჩვენებს. */
       `SELECT id, cat, deal, cad, lat, lng, poly, loc, reg, area, price, ttl, dsc,
-              photos, attrs, tel, created
+              photos, attrs, tel, contact_name, created
          FROM lst WHERE status='active' AND visibility != 'private' ORDER BY created DESC LIMIT 500`
     ).all(),
     env.DB.prepare(
@@ -48,7 +48,7 @@ export async function onRequestGet({ env }) {
       lat: l.lat, lng: l.lng, poly,
       loc: l.loc, reg: l.reg, a: l.area, p: l.price,
       ttl: l.ttl, desc: l.dsc, photos, img: photos[0] || null,
-      attrs, tel: l.tel, days: days(l.created)
+      attrs, tel: l.tel, own: l.contact_name || null, days: days(l.created)
     };
   });
 

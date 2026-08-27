@@ -656,37 +656,49 @@ function paneCat(){
 /* ================= ბიჯი 2 — რუკა (მოთხოვნა) ================= */
 function paneMap(){
  const c=catOf(S.cat), sell=TAB==='lst';
- /* ⚠️ 2026-08-26: George-ის მოთხოვნით — გაყიდვისას საკადასტრო კოდი ისედაც
-    სავალდებულოა (ბიჯი 3-ზე), ამიტომ ხელით ნიშნულის დასმა ორმაგი სამუშაოა.
-    აქ, ჯერ კიდევ მდებარეობის ბიჯზე, ვთავაზობთ მალსახმობს: კოდის შემოწმებამ
-    (თუ გეომეტრია რეესტრში მოიძებნა) თვითონ დასვას ნიშნული — ხელით რუკაზე
-    დაჭერა საერთოდ აღარ დასჭირდება. ვისაც კოდი არ ახსოვს ან ჯერ არ იცის,
-    კვლავ შეუძლია ძველებურად, ხელით მონიშვნა — ეს გზაც ხელუხლებელია. */
+ /* ⚠️ 2026-08-27, George-ის მოთხოვნით — საკადასტრო კოდი აღარ არის
+    სავალდებულო არც ერთ ეტაპზე (ადრე გაყიდვისას აუცილებელი იყო ბიჯი
+    3-ზე, validate()-ში — ეს მოთხოვნა მოიხსნა). აქ, მდებარეობის ბიჯზე,
+    კვლავ ვთავაზობთ მალსახმობს (კოდის შემოწმებამ, თუ გეომეტრია
+    რეესტრში მოიძებნა, თვითონ დასვას ნიშნული) — მაგრამ ეს წმინდა
+    კომფორტის მიზნით არსებული, არჩევითი ვარიანტია, არა ვალდებულება.
+    ვისაც კოდი არ სურს/არ ახსოვს, შეუძლია ან სრული მისამართით მოძებნოს
+    (ქვემოთ, ახალი addrbox), ან უბრალოდ ხელით დასვას ნიშნული რუკაზე —
+    სამივე გზა ბოლომდე თანაბარია. ცრუ/არასწორ განცხადებებს George
+    ხელით მოდერაციაზე გაასწორებს/უარყოფს, ეს ავტომატური ვალიდაციის
+    მაგივრობას არ საჭიროებს. */
  const cadFirst=sell&&S.deal!=='rent';
  S.radius=c.d;                       /* რადიუსი ფიქსირებულია კატეგორიაზე */
  return '<div class="pane on">'+
   '<div class="stitle">ბიჯი '+(step+1)+' / 4</div>'+
   '<div class="sh">'+(sell?'სად მდებარეობს?':'სად ეძებ?')+'</div>'+
   '<div class="ssub">'+(sell
-    ?(cadFirst?'შეიყვანე საკადასტრო კოდი — ნიშნული ავტომატურად დაისმება. ან დასვი ხელით, ქვემოთ.'
+    ?(cadFirst?'დასვი ნიშნული რუკაზე ხელით, ან ქვემოთ მოძებნე მისამართით/საკადასტრო კოდით — ორივე არჩევითია.'
               :'მიუახლოვდი და დასვი ნიშნული ზუსტად შენს ობიექტზე.')
     :'მიუახლოვდი რუკას და დასვი ნიშნული ზუსტად იმ ადგილას, სადაც გინდა.')+
     (S.lat?' ადგილის შესაცვლელად გადაათრიე ნიშნული ან დააჭირე ღილაკს ხელახლა.':'')+'</div>'+
   (cadFirst?
    '<div class="f'+(S.cadAddr?' good':'')+'" id="fcad" style="margin-bottom:18px">'+
-    '<label>საკადასტრო კოდი <i>*</i></label>'+
+    '<label>საკადასტრო კოდი <span style="text-transform:none;font-weight:400;color:var(--mute)">— არჩევითია</span></label>'+
     '<div style="display:flex;gap:8px"><input id="cad" placeholder="01.10.06.010.030.01.01.1006" value="'+S.cad+'">'+
      '<button class="btn pri" id="chk" style="height:42px;white-space:nowrap">შემოწმება</button></div>'+
-    '<div class="hint">გეომეტრიის მოძებნისთანავე ნიშნული ავტომატურად დაისმება ქვემოთ რუკაზე.</div>'+
+    '<div class="hint">თუ გინდა, რომ მყიდველმა ზუსტად ნახოს შენი უძრავი ქონება რუკაზე — ჩაწერე საკადასტრო კოდი, ნიშნული ავტომატურად დაისმება.</div>'+
     '<div class="err" id="caderr">კოდი რეესტრში ვერ მოიძებნა.</div>'+
     '<div class="ok" id="cadok"></div></div>'+
-   '<div class="ssub" style="margin:-4px 0 14px;font-size:13px">— ან ჯერ არ იცი კოდი? დასვი ნიშნული ხელით ქვემოთ, კოდს შემდეგ ბიჯზე შეიყვან —</div>'
+   '<div class="ssub" style="margin:-4px 0 14px;font-size:13px">— ან ჯერ არ იცი კოდი? მოძებნე მისამართით ქვემოთ, ან დასვი ნიშნული ხელით —</div>'
    :'')+
   '<div class="citysearch">'+
    '<input id="citybox" type="text" autocomplete="off" placeholder="'+T('ჩაწერე ქალაქი — მაგ. თბილისი, ბათუმი…')+'">'+
    '<div class="cityres" id="cityres"></div>'+
   '</div>'+
   cityChipsHTML()+
+  (sell?
+   '<div class="citysearch" style="margin-top:10px">'+
+    '<input id="addrbox" type="text" autocomplete="off" placeholder="'+T('სრული მისამართი — არჩევითი (მაგ. ი. ჭავჭავაძის გამზ. 15, თბილისი)')+'">'+
+    '<div class="cityres" id="addrres"></div>'+
+   '</div>'+
+   '<div class="ssub" style="margin:-4px 0 14px;font-size:13px">მისამართის არჩევისას ნიშნული ავტომატურად დაისმება — შემდეგ გინდა და ხელით დააზუსტე.</div>'
+   :'')+
   '<div class="mapwrap"><div id="map"></div>'+
    '<div class="xhair" id="xh"></div>'+
    '<div class="zgate" id="zg">მიუახლოვდი, რომ ზუსტად დასვა<span>რამდენიმე მეტრსაც აქვს მნიშვნელობა</span></div>'+
@@ -765,9 +777,9 @@ function paneObj(){
  return '<div class="pane on">'+
   '<div class="stitle">ბიჯი '+(step+1)+' / 4</div>'+
   '<div class="sh">ობიექტი</div>'+
-  '<div class="ssub">საკადასტრო კოდით რეესტრიდან ავტომატურად ჩამოვწერთ მისამართს.</div>'+
+  '<div class="ssub">საკადასტრო კოდით რეესტრიდან ავტომატურად ჩამოვწერთ მისამართს — არჩევითია.</div>'+
   '<div class="f'+(S.cadAddr?' good':'')+'" id="fcad"><label>საკადასტრო კოდი'+
-    (S.deal==='rent'?' <span style="text-transform:none;font-weight:400;color:var(--mute)">— ქირაზე არჩევითია</span>':'')+'</label>'+
+    ' <span style="text-transform:none;font-weight:400;color:var(--mute)">— არჩევითია</span></label>'+
    '<div style="display:flex;gap:8px"><input id="cad" placeholder="01.10.06.010.030.01.01.1006" value="'+S.cad+'">'+
     '<button class="btn pri" id="chk" style="height:42px;white-space:nowrap">შემოწმება</button></div>'+
    '<div class="hint">ბინაზე სრული კოდი ჩაწერე — ჩვენ ავტომატურად ვამოკლებთ კორპუსამდე.</div>'+
@@ -778,7 +790,12 @@ function paneObj(){
    '<div class="f"><label>ფასი, $'+(S.deal==='rent'?' / '+(S.period==='month'?'თვე':'წელი'):'')+'</label>'+
      '<input id="price" type="number" value="'+S.price+'" placeholder="'+(S.deal==='rent'?'850':'95000')+'"></div>'+
   '</div>'+
-  (S.deal==='rent'?'<div class="note">ქირაზე საკადასტრო კოდი სავალდებულო არ არის — ბევრ მესაკუთრეს არ სურს ქონების საჯარო იდენტიფიცირება. ამ შემთხვევაში განცხადებას რეესტრის ნიშანი არ ექნება.</div>':'')+
+  /* ⚠️ 2026-08-27, George-ის მოთხოვნით — საკადასტრო კოდი ყველგან
+     არჩევითია (ადრე მხოლოდ ქირაზე იყო არასავალდებულო). განცხადება
+     კოდის/მისამართის გარეშეც შეიძლება გამოქვეყნდეს, თუ ნიშნული ხელით
+     დასმულია — ავტომატური ვალიდაციის ნაცვლად George ხელით ამოწმებს
+     მოდერაციაზე და ტყუილს/უზუსტო მონაცემს არ ადასტურებს. */
+  '<div class="note">საკადასტრო კოდის გარეშეც შეგიძლია გამოაქვეყნო განცხადება — საკმარისია რუკაზე ხელით ან მისამართით მონიშნო ადგილი. კოდის მითითება მაინც რეკომენდებულია, რომ მყიდველმა ზუსტად დაინახოს შენი ობიექტი.</div>'+
   '<div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">'+attrHTML()+'</div>'+
   /* ⚠️ 2026-08-27, George-ის მოთხოვნით — გამყიდველის თავისუფალი აღწერა
      (lst.dsc სვეტი, submit.js-ში უკვე მოსალოდნელი იყო, უბრალოდ ფორმას
@@ -1138,6 +1155,7 @@ function render(){
  bind();
  if(b.querySelector('#map'))initMap();
  if(b.querySelector('#citybox'))initCitySearch();
+ if(b.querySelector('#addrbox'))initAddrSearch();
  validate();
  /* ⚠️ ეს ტექსტები ქართულადვე იწერება ზემოთ (მარტივია ასე წაკითხვა) და
     MutationObserver-ს უნდა დაეყრდნო, რომ ინგლისურ რეჟიმში თარგმნოს —
@@ -1288,6 +1306,44 @@ function initCitySearch(){
    if(map)map.flyTo({center:[c[2],c[1]],zoom:12,duration:700});
   };
  });
+}
+/* ================= სრული მისამართით ძებნა (გაყიდვის ფორმა, არჩევითი) =================
+   2026-08-27, George-ის მოთხოვნით — საკადასტრო კოდის ალტერნატივად,
+   ვისაც ეს კოდი არ აქვს/არ იცის, შეუძლია სრული მისამართის ჩაწერით
+   იპოვოს ადგილი და ავტომატურად დაისვას ნიშნული (placePin()) — იგივე
+   მექანიზმი, რასაც checkCad()-ის ავტომატური განთავსება იყენებს.
+   ძებნას /api/geocode აკეთებს (OpenStreetMap Nominatim), საქართველოს
+   ფარგლებში. debounce 400მწ — მისამართის მოთხოვნები ქალაქებზე მეტ
+   ტექსტს შეიცავს, ნაკლებად ხშირად იცვლება საჭიროება. */
+function initAddrSearch(){
+ const box=el('addrbox'), res=el('addrres');
+ if(!box||!res)return;
+ let t=null, seq=0;
+ const close=()=>{res.innerHTML='';res.classList.remove('on');clearTimeout(t)};
+ function draw(list){
+  if(!list.length){ close(); return }
+  res.innerHTML=list.map(x=>'<div class="cityopt">'+x.label+'</div>').join('');
+  res.classList.add('on');
+  res.querySelectorAll('.cityopt').forEach((elx,i)=>elx.onclick=()=>{
+   const x=list[i];
+   box.value=x.label;
+   close();
+   if(map)placePin(x.lat,x.lng);
+  });
+ }
+ box.oninput=()=>{
+  const q=box.value.trim();
+  clearTimeout(t);
+  if(q.length<4){close();return}
+  const my=++seq;
+  t=setTimeout(()=>{
+   fetch('/api/geocode?q='+encodeURIComponent(q)).then(r=>r.ok?r.json():null).then(j=>{
+    if(!j||my!==seq)return;
+    draw(j.results||[]);
+   }).catch(()=>{});
+  },400);
+ };
+ box.onblur=()=>setTimeout(close,150);
 }
 /* ⚠️ ადრე: ნიშნულის დასმის შემდეგ თუ მომხმარებელი ზუმით გამოეცილებოდა
    (17-ზე დაბლა), ღილაკი ჩაითიშებოდა და ტექსტიც "მიუახლოვდი (ზუმი X)"-ზე
@@ -1574,7 +1630,11 @@ function validate(){
      2=ობიექტი. */
   if(step===1)ok=!!S.lat;
   if(step===2){
-   ok=(+S.price>0)&&(+S.area>0)&&(S.deal==='rent'||!!S.cadAddr)&&attrsOK()&&
+   /* ⚠️ 2026-08-27, George-ის მოთხოვნით — საკადასტრო კოდი (S.cadAddr)
+      აღარ ბლოკავს გაგზავნას არც ერთი გარიგების ტიპისთვის (ადრე buy-ს
+      მოეთხოვებოდა). ხელით დასმული ნიშნული (S.lat, ვალიდირებულია
+      წინა ბიჯზე) საკმარისია — George ხელით ამოწმებს მოდერაციაზე. */
+   ok=(+S.price>0)&&(+S.area>0)&&attrsOK()&&
       S.photos.length>0&&!S.photos.some(p=>p.up);
    const n=el('lf-phnote');
    if(n&&!S.photos.length){n.textContent='მინიმუმ 1 ფოტო აუცილებელია.'; n.classList.add('bad')}

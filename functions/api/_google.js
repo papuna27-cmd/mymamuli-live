@@ -124,7 +124,11 @@ export async function gaRunReport(env, propertyId, body) {
       body: JSON.stringify(body)
     }
   );
-  if (!r.ok) return null;
+  if (!r.ok) {
+    const t = await r.text().catch(() => '');
+    LAST_AUTH_ERR = 'ga-api-' + r.status + ': ' + t.slice(0, 200);
+    return null;
+  }
   return r.json();
 }
 
@@ -141,6 +145,10 @@ export async function gscQuery(env, siteUrl, body) {
       body: JSON.stringify(body)
     }
   );
-  if (!r.ok) return null;
+  if (!r.ok) {
+    const t = await r.text().catch(() => '');
+    LAST_AUTH_ERR = 'gsc-api-' + r.status + ': ' + t.slice(0, 200);
+    return null;
+  }
   return r.json();
 }

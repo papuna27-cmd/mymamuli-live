@@ -432,11 +432,14 @@ function circle(lng,lat,r){const p=[],R=r/6378137*(180/Math.PI);
    ================================================================= */
 const ATTRS={
  flat:[
-  {k:'state',n:'მდგომარეობა',t:'one',req:true,v:['მშენებარე','ახალი აშენებული','მეორადი']},
+  /* ⚠️ 2026-08-27, George-ის მოთხოვნით — რიგი და ვარიანტები გასწორდა
+     (ძველი: მშენებარე/ახალი აშენებული/მეორადი). ცალკე „პროექტი" ველი
+     (ახალი/ძველი აშენებული, ხრუშჩოვი, ლენინგრადის, ქალაქური, სხვა)
+     მთლიანად მოიხსნა — ამ „მდგომარეობა"-სთან გადაფარვას ქმნიდა. */
+  {k:'state',n:'მდგომარეობა',t:'one',req:true,v:['ძველი აშენებული','ახალი აშენებული','მშენებარე']},
   {k:'cond', n:'რემონტი',t:'one',v:['ახალი რემონტით','ძველი რემონტით','მიმდინარე რემონტი','სარემონტო','თეთრი კარკასი','შავი კარკასი']},
   {k:'rooms',n:'ოთახები',t:'many',v:['1','2','3','4','5+']},
   {k:'fl',   n:'სართული',t:'num2',a:'სართული',b:'სულ სართული'},
-  {k:'proj', n:'პროექტი',t:'one',v:['ახალი აშენებული','ძველი აშენებული','ხრუშჩოვი','ლენინგრადის','ქალაქური','სხვა']},
   {k:'extra',n:'დამატებით',t:'many',v:['აივანი','ლიფტი','ავეჯი','ცენტრალური გათბობა','ავტოფარეხი','საკუჭნაო']}
  ],
  house:[
@@ -549,7 +552,7 @@ let TAB='req', step=0, map=null;
    გადასვლაზე ვაგზავნით სქროლის თავში დაბრუნების მოთხოვნას. */
 let __rStep=null, __rTab=null;
 const S={terms:false,sub:true,priv:false,anon:false,d1:false,d2:false,d3:false,d4:false,cat:'',deal:'buy',period:'month',lat:null,lng:null,radius:0,
- amin:'',amax:'',pmax:'',pmin:'',rooms:'',note:'',pass:'',
+ amin:'',amax:'',pmax:'',pmin:'',rooms:'',note:'',desc:'',pass:'',
  who:'ind',name:'',email:'',phone:'',cc:'',comp:'',cid:'',
  cad:'',cadAddr:'',price:'',area:'',
  photos:[],   /* {url, name, up} — [0] ყოველთვის ქავერია; up=true სანამ /api/upload მუშაობს */
@@ -735,6 +738,16 @@ function paneObj(){
   '</div>'+
   (S.deal==='rent'?'<div class="note">ქირაზე საკადასტრო კოდი სავალდებულო არ არის — ბევრ მესაკუთრეს არ სურს ქონების საჯარო იდენტიფიცირება. ამ შემთხვევაში განცხადებას რეესტრის ნიშანი არ ექნება.</div>':'')+
   '<div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">'+attrHTML()+'</div>'+
+  /* ⚠️ 2026-08-27, George-ის მოთხოვნით — გამყიდველის თავისუფალი აღწერა
+     (lst.dsc სვეტი, submit.js-ში უკვე მოსალოდნელი იყო, უბრალოდ ფორმას
+     არ ჰქონდა ამის შესაყვანი ველი). ბარათზე ჩვენება (index.html→
+     openCard, "ნომრის ჩვენება" ღილაკის ზემოთ) task #157-ითვე გაკეთდა —
+     უბრალოდ o.desc ყოველთვის ცარიელი მოდიოდა, სანამ აქ არ იყო ველი. */
+  '<div class="f" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">'+
+   '<label>აღწერა — არჩევითი</label>'+
+   '<textarea id="desc" rows="3" placeholder="მაგ.: მზიანი ბინა, ახალი რემონტით, პარკინგით. მეტროსთან ახლოს.">'+S.desc+'</textarea>'+
+   '<div class="hint">ეს ტექსტი ჩანს მყიდველისთვის განცხადების ბარათზე.</div>'+
+  '</div>'+
   photoHTML()+
  '</div>';
 }
@@ -1108,7 +1121,7 @@ function bind(){
  document.querySelectorAll('[data-per]').forEach(x=>x.onclick=()=>{S.period=x.dataset.per;render()});
  document.querySelectorAll('[data-rooms]').forEach(x=>x.onclick=()=>{S.rooms=S.rooms===x.dataset.rooms?'':x.dataset.rooms;render()});
  document.querySelectorAll('[data-who]').forEach(x=>x.onclick=()=>{S.who=x.dataset.who;render()});
- ['amin','amax','pmax','pmin','note','name','email','phone','comp','cid','cad','area','price','pass']
+ ['amin','amax','pmax','pmin','note','desc','name','email','phone','comp','cid','cad','area','price','pass']
   .forEach(k=>{const n=el(k); if(n)n.oninput=()=>{S[k]=n.value;validate()}});
  const chk=el('chk'); if(chk)chk.onclick=checkCad;
  const tb=el('terms');
@@ -1592,7 +1605,7 @@ el('next').onclick=async()=>{
  const autoPmin=S.pmax?Math.round(+S.pmax*0.7):'';
  const body={kind:TAB==='lst'?'lst':'req',cat:S.cat,deal:S.deal,period:S.period,
   lat:S.lat,lng:S.lng,radius:S.radius,
-  amin:'',amax:S.amax,pmin:autoPmin,pmax:S.pmax,note:S.note,
+  amin:'',amax:S.amax,pmin:autoPmin,pmax:S.pmax,note:S.note,dsc:S.desc,
   area:S.area,price:S.price,cad:S.cad,  /* addr აღარ იგზავნება — სერვერი რეესტრიდან იღებს */
   ttl:(catOf(S.cat).n+' · '+(S.cadAddr||'')).slice(0,160),
   name:S.name,email:S.email,tel:S.phone?('+'+dialOf(S.cc)+' '+S.phone):'',

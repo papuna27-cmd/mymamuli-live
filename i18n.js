@@ -1163,7 +1163,35 @@ const I18N = {
 "ბევრი არასწორი მცდელობა — მოითხოვე ახალი კოდი.": "Too many wrong attempts — request a new code.",
 "ელფოსტა ან ტელეფონი": "Email or phone",
 "mail@example.com ან 5xx xx xx xx": "mail@example.com or phone number",
-"ელფოსტაზე დადასტურების კოდს გამოგიგზავნით.": "We'll send a confirmation code to your email."
+"ელფოსტაზე დადასტურების კოდს გამოგიგზავნით.": "We'll send a confirmation code to your email.",
+
+/* ⚠️ 2026-08-26, George-ის მოთხოვნით — "MyMamuli.ge" საინფორმაციო მოდალის
+   ახალი "კითხვები" (FAQ) ტაბი. ტაბის ლეიბლი შეგნებულად "FAQ"-ზეა
+   ნათარგმნი (და არა სრულ "Frequently Asked Questions"-ზე) — ტაბების
+   ზოლოში ადგილს არ იკავებს. სრული ფრაზა (h3-ისთვის) ცალკეა ქვემოთ. */
+"კითხვები": "FAQ",
+"ხშირად დასმული კითხვები": "Frequently Asked Questions",
+"ყველაზე ხშირი კითხვები ერთ ადგილას. თუ პასუხს ვერ პოულობ — მოგვწერე:": "The most common questions, in one place. Can't find an answer — write to us:",
+"რა ღირს განცხადების განთავსება?": "How much does it cost to post a listing?",
+"ეს უფასოა": "It's free",
+"— არც ერთჯერადი გადასახადია, არც თვიური. საკომისიოს არც გაყიდვისას ვიღებთ.": "— no one-time fee, no monthly fee. We take no commission on a sale either.",
+"რატომ მჭირდება საკადასტრო კოდი?": "Why do I need a cadastral code?",
+"კოდით ვადასტურებთ, რომ ობიექტი საჯარო რეესტრში მართლა არსებობს, ვიღებთ ზუსტ საზღვარს, ფართობსა და დანიშნულებას — და ნიშნულიც რუკაზე ავტომატურად დაისმის, ხელით მონიშვნის გარეშე. იხილეთ": "The code lets us confirm the property really exists in the Public Registry, and get its exact boundary, area and designation — the pin is also placed on the map automatically, without you having to mark it by hand. See",
+"რამდენ ხანში ქვეყნდება განცხადება?": "How long until my listing goes live?",
+"გადამოწმების შემდეგ, ჩვეულებრივ": "After verification, usually",
+"ჩანს ჩემი ტელეფონის ნომერი ყველასთვის?": "Is my phone number visible to everyone?",
+"გამყიდველის ბარათზე ტელეფონი ჩანს — ასე მყიდველი პირდაპირ გირეკავს, შუამავლის გარეშე. მაგრამ „ვეძებ\"-ის მოთხოვნებში პირიქითაა: მაძიებლის საკონტაქტო მონაცემები დაცულია და არავის უჩანს, სანამ თვითონ არ გადაწყვეტს პასუხის გაცემას.": "A seller's phone number appears on the listing card, so a buyer can call directly with no middleman. It's the opposite for \"search requests\": a buyer's contact details stay protected and hidden until they decide to respond themselves.",
+"როგორ ვშლი ან ვასწორებ ჩემს განცხადებას?": "How do I edit or delete my listing?",
+"პირად კაბინეტში (\"ჩემი განცხადებები\") შეგიძლია ნახო სტატუსი, შეასწორო ან წაშალო განთავსებული განცხადება.": "In your account (\"My listings\") you can see the status, edit, or delete a published listing.",
+"რა ხდება, თუ ობიექტი უკვე გავყიდე?": "What if I already sold the property?",
+"მოგვწერე ერთი წერილით ან წაშალე კაბინეტიდან — განცხადებას ვხურავთ, რომ აღარავის შეაწუხოს.": "Send us a quick note or delete it from your account — we'll close the listing so it doesn't bother anyone else.",
+"რამდენად სანდოა საკადასტრო მონაცემი?": "How reliable is the cadastral data?",
+"მონაცემი მოწოდებულია სსიპ საჯარო რეესტრის ეროვნული სააგენტოს ღია მონაცემებიდან და საცნობარო დანიშნულებისაა. იურიდიული ძალა მხოლოდ ოფიციალურ ამონაწერს აქვს — გარიგებამდე მისი აღება მაინც სასურველია.": "The data comes from the open data of the LEPL National Agency of Public Registry and is for reference only. Only an official extract carries legal force — getting one before closing a deal is still recommended.",
+"როგორ მუშაობს „ვეძებ\"?": "How does \"Wanted\" work?",
+"რუკაზე მონიშნავ არეალს, ბიუჯეტსა და ფართობს — შესაბამისი განცხადება ავტომატურად მოგივა, ჯერ ყველა დანარჩენზე ადრე, ხელახლა ძებნის გარეშე. დაწვრილებით:": "You mark an area, budget and size on the map — a matching listing comes to you automatically, before anyone else sees it, with no need to search again. Details:",
+"როგორ ვიყიდო უძრავი ქონება": "How to buy property",
+"ვინ არის MyMamuli.ge — შუამავალი ხართ?": "Who is MyMamuli.ge — are you a broker?",
+"არა. ჩვენ ვართ საინფორმაციო პლატფორმა — გარიგება პირდაპირ ხდება მყიდველსა და გამყიდველს შორის, საკომისიოს გარეშე. დაწვრილებით:": "No. We are an information platform — the deal happens directly between buyer and seller, with no commission. Details:"
 };
 
 /* პარამეტრიანი ფრაზები (ციფრები შიგნით) */

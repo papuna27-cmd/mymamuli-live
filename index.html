@@ -69,7 +69,7 @@ gtag('config', 'G-N30XKZCDCT');
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.26-2030';
+window.MM_BUILD = '2026.08.26-2031';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -548,6 +548,16 @@ body.req-mode.peek-on .reqcta,body.drawing .reqcta{display:none}
  font-size:12.5px;line-height:1.55;color:#7A5416}
 .note i{font-style:normal;flex:0 0 auto}
 .mdb ul{margin:0 0 10px 17px;font-size:13px;line-height:1.75;color:var(--ink2)}
+/* ---- FAQ აკორდეონი ---- */
+.qa{border-top:1px solid var(--line);margin-top:4px}
+.qa details{border-bottom:1px solid var(--line)}
+.qa summary{cursor:pointer;list-style:none;padding:13px 2px;font-weight:600;font-size:13.5px;color:var(--ink);
+ display:flex;justify-content:space-between;align-items:center;gap:10px}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::after{content:'+';color:var(--brand);font-size:18px;font-weight:400;flex:0 0 auto}
+.qa details[open] summary::after{content:'–'}
+.qa .a{padding:0 2px 14px;color:var(--ink2);font-size:12.5px;line-height:1.65}
+.qa .a b{color:var(--ink)}
 /* ---- განცხადების ფორმა ---- */
 .frm{border:1px solid var(--line);border-radius:14px;padding:16px 17px;margin:14px 0 4px;background:#fff}
 .frm .fg{display:grid;grid-template-columns:1fr 1fr;gap:11px}
@@ -1237,11 +1247,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.26-2030">
+<footer data-build="2026.08.26-2031">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-2030</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-2031</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -1250,7 +1260,7 @@ body.foot-min .fslim{display:flex}
     <a href="/how-it-works" data-modal="how">როგორ მუშაობს</a>
     <a href="#want" data-modal="want">ვეძებ</a>
     <div class="sp">
-      <a href="/faq">კითხვები</a>
+      <a href="/faq" data-modal="faq">კითხვები</a>
       <a href="/terms" data-modal="terms">წესები</a>
       <a href="/privacy" data-modal="priv">კონფიდენციალურობა</a>
       <a href="mailto:info@mymamuli.ge">info@mymamuli.ge</a>
@@ -1280,7 +1290,7 @@ body.foot-min .fslim{display:flex}
       <h5>საიტი</h5>
       <a href="/how-it-works" data-modal="main">მთავარი</a>
       <a href="/how-it-works" data-modal="how">როგორ მუშაობს</a>
-      <a href="/faq">კითხვები</a>
+      <a href="/faq" data-modal="faq">კითხვები</a>
       <a href="#want" data-modal="want">ვეძებ<i class="fnew">ახალი</i></a>
     </div>
     <!-- 2026-08-25: George-ის მოთხოვნით — ეს ბმულები აღარ ჩანს ვიზუალურად
@@ -1304,7 +1314,7 @@ body.foot-min .fslim{display:flex}
         <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
         <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C20.9 8.65 22 11.1 22 14.5V21h-4v-5.8c0-1.38-.03-3.15-1.92-3.15-1.93 0-2.22 1.5-2.22 3.05V21H9z"/></svg></a>
       </span>
-      <span class="m"><a href="/faq">კითხვები</a><span class="dv">·</span><a href="/terms" data-modal="terms">წესები</a><span class="dv">·</span><a href="/privacy" data-modal="priv">კონფიდენციალურობა</a></span>
+      <span class="m"><a href="/faq" data-modal="faq">კითხვები</a><span class="dv">·</span><a href="/terms" data-modal="terms">წესები</a><span class="dv">·</span><a href="/privacy" data-modal="priv">კონფიდენციალურობა</a></span>
       <span class="m cp"><span class="onl" id="live"><span class="dt"></span><b>—</b> ონლაინ</span><span class="dv">·</span>© 2026 MyMamuli.ge</span>
     </div>
     <div class="hot" id="hot"></div>
@@ -4325,6 +4335,36 @@ const PAGES={
   <h4>წაშლა</h4>
   <p>ერთი წერილი <a href="mailto:${MAIL}">${MAIL}</a>-ზე და შენს განცხადებასა და მონაცემს ვშლით.</p>`}},
 
+ /* ⚠️ 2026-08-26, George-ის მოთხოვნით — „კითხვები" ტაბი ORDER-ში დაემატა,
+    რომ „MyMamuli.ge" საინფორმაციო მოდალის ტაბების ზოლოშიც ჩანდეს (აქამდე
+    /faq მხოლოდ ცალკე გვერდი იყო, ფუტერის პატარა ბმულით — მოდალის შიგნით
+    საერთოდ არ ჩანდა, ამიტომაც ვერ პოულობდა). შიგთავსი იმეორებს
+    functions/faq.js-ის KA_BODY-ს (იგივე 9 კითხვა-პასუხი), რომ /faq-ცა
+    და მოდალიც სინქრონში იყოს. */
+ faq:{t:'კითხვები',h:function(){return `
+  <h3>ხშირად დასმული კითხვები</h3>
+  <p class="lead">ყველაზე ხშირი კითხვები ერთ ადგილას. თუ პასუხს ვერ პოულობ — მოგვწერე: <a href="${mailto('კითხვა')}">${MAIL}</a></p>
+  <div class="qa">
+   <details><summary>რა ღირს განცხადების განთავსება?</summary>
+    <div class="a"><b>ეს უფასოა</b> — არც ერთჯერადი გადასახადია, არც თვიური. საკომისიოს არც გაყიდვისას ვიღებთ.</div></details>
+   <details><summary>რატომ მჭირდება საკადასტრო კოდი?</summary>
+    <div class="a">კოდით ვადასტურებთ, რომ ობიექტი საჯარო რეესტრში მართლა არსებობს, ვიღებთ ზუსტ საზღვარს, ფართობსა და დანიშნულებას — და ნიშნულიც რუკაზე ავტომატურად დაისმის, ხელით მონიშვნის გარეშე. იხილეთ <a href="/sell" data-modal="post">როგორ განვათავსო განცხადება</a>.</div></details>
+   <details><summary>რამდენ ხანში ქვეყნდება განცხადება?</summary>
+    <div class="a">გადამოწმების შემდეგ, ჩვეულებრივ <b>24 საათში</b>.</div></details>
+   <details><summary>ჩანს ჩემი ტელეფონის ნომერი ყველასთვის?</summary>
+    <div class="a">გამყიდველის ბარათზე ტელეფონი ჩანს — ასე მყიდველი პირდაპირ გირეკავს, შუამავლის გარეშე. მაგრამ „ვეძებ"-ის მოთხოვნებში პირიქითაა: მაძიებლის საკონტაქტო მონაცემები დაცულია და არავის უჩანს, სანამ თვითონ არ გადაწყვეტს პასუხის გაცემას.</div></details>
+   <details><summary>როგორ ვშლი ან ვასწორებ ჩემს განცხადებას?</summary>
+    <div class="a">პირად კაბინეტში ("ჩემი განცხადებები") შეგიძლია ნახო სტატუსი, შეასწორო ან წაშალო განთავსებული განცხადება.</div></details>
+   <details><summary>რა ხდება, თუ ობიექტი უკვე გავყიდე?</summary>
+    <div class="a">მოგვწერე ერთი წერილით ან წაშალე კაბინეტიდან — განცხადებას ვხურავთ, რომ აღარავის შეაწუხოს.</div></details>
+   <details><summary>რამდენად სანდოა საკადასტრო მონაცემი?</summary>
+    <div class="a">მონაცემი მოწოდებულია სსიპ საჯარო რეესტრის ეროვნული სააგენტოს ღია მონაცემებიდან და საცნობარო დანიშნულებისაა. იურიდიული ძალა მხოლოდ ოფიციალურ ამონაწერს აქვს — გარიგებამდე მისი აღება მაინც სასურველია.</div></details>
+   <details><summary>როგორ მუშაობს „ვეძებ"?</summary>
+    <div class="a">რუკაზე მონიშნავ არეალს, ბიუჯეტსა და ფართობს — შესაბამისი განცხადება ავტომატურად მოგივა, ჯერ ყველა დანარჩენზე ადრე, ხელახლა ძებნის გარეშე. დაწვრილებით: <a href="/buy" data-modal="buy">როგორ ვიყიდო უძრავი ქონება</a>.</div></details>
+   <details><summary>ვინ არის MyMamuli.ge — შუამავალი ხართ?</summary>
+    <div class="a">არა. ჩვენ ვართ საინფორმაციო პლატფორმა — გარიგება პირდაპირ ხდება მყიდველსა და გამყიდველს შორის, საკომისიოს გარეშე. დაწვრილებით: <a href="/terms" data-modal="terms">გამოყენების წესები</a>.</div></details>
+  </div>`}},
+
  /* ⚠️ 2026-08-26, George-ის მოთხოვნით — პროფილის მენიუს ორი ახალი პუნქტი.
     ორივე შეგნებულად ARIA-ს (ORDER-ის) მიღმაა — ეს ორი მხოლოდ დალოგინებულ
     მომხმარებელს ეხება, ზოგადი "საიტის შესახებ" ტაბების გვერდით აზრი
@@ -4353,13 +4393,36 @@ const PAGES={
   სანამ ეს მზად იქნება, ბალანსთან დაკავშირებულ საკითხზე მოგვწერე: <a href="${mailto('ბალანსის შესახებ')}">${MAIL}</a>.</span></div>`}}
 };
 
-const ORDER=['main','post','want','buy','terms','priv'];
+const ORDER=['main','post','want','buy','terms','priv','faq'];
 let mdlCur='main';
 /* თუ ვინმე „შეთავაზების გაგზავნა"-ს აჭერს კონკრეტულ მოთხოვნაზე (offerForm),
    ეს ინახავს რომელ მოთხოვნაზეა საუბარი — post-ტაბის iframe მას საკუთარ
    src-ში ურთავს (?req=), რომ submit.js-მა src_req-ში ჩაწეროს. ჩვეულებრივი
    openModal(k) გამოძახება (მეორე არგუმენტის გარეშე) ყოველთვის ასუფთავებს. */
 let POST_REQ=null;
+/* ⚠️ 2026-08-26, George-ის მოთხოვნით — მოდალის ყოველ ტაბს (მთავარი/ვყიდი/
+   ვეძებ/მყიდველს/წესები/კონფიდენციალურობა/კითხვები) საკუთარი, უნიკალური,
+   გასაზიარებელი ბმული და <title> უნდა ჰქონდეს — აქამდე ტაბს გადართვისას
+   მისამართების ზოლო არასოდეს იცვლებოდა (ყოველთვის mymamuli.ge რჩებოდა),
+   ამიტომ კონკრეტული ტაბის ბმულის კოპირება/გაზიარება შეუძლებელი იყო. ეს
+   ორი ობიექტი აკავშირებს თითოეულ PAGES-გასაღებს უკვე არსებულ crawlable
+   Pages Function გვერდთან (functions/*.js) — openModal() history.pushState-
+   ით მისამართს ცვლის ამ URL-ზე, closeModal კი "/"-ზე აბრუნებს. ეს მხოლოდ
+   მისამართის ზოლოსა და <title>-ის კოსმეტიკური სინქრონიზაციაა (SPA არ
+   იტვირთება ხელახლა) — რეალურ, საძიებო სისტემისთვის სრულფასოვან HTML-ს
+   ცალკე Function აწვდის, თუ ვინმე ამ ბმულს პირდაპირ გახსნის ან
+   განაახლებს გვერდს. */
+const REAL_URL={main:'/how-it-works',post:'/sell',want:'/want',buy:'/buy',terms:'/terms',priv:'/privacy',faq:'/faq'};
+const REAL_TITLE={
+ main:{ka:'როგორ მუშაობს — MyMamuli.ge',en:'How it works — MyMamuli.ge'},
+ post:{ka:'როგორ გავყიდო უძრავი ქონება — MyMamuli.ge',en:'How to sell your property — MyMamuli.ge'},
+ want:{ka:'როგორ დავტოვო მოთხოვნა — MyMamuli.ge',en:'How to leave a search request — MyMamuli.ge'},
+ buy:{ka:'როგორ ვიყიდო უძრავი ქონება — MyMamuli.ge',en:'How to buy property — MyMamuli.ge'},
+ terms:{ka:'გამოყენების წესები — MyMamuli.ge',en:'Terms of Use — MyMamuli.ge'},
+ priv:{ka:'კონფიდენციალურობა — MyMamuli.ge',en:'Privacy — MyMamuli.ge'},
+ faq:{ka:'ხშირად დასმული კითხვები — MyMamuli.ge',en:'Frequently Asked Questions — MyMamuli.ge'}
+};
+const HOME_TITLE='MyMamuli.ge — მიწა, სახლები და კომერციული ფართები რუკაზე';
 function openModal(k,reqId){
  k=PAGES[k]?k:'main'; mdlCur=k; POST_REQ=reqId||null;
  el('mdt').innerHTML=ORDER.map(x=>'<button data-p="'+x+'"'+(x===k?' class="on"':'')+'>'+PAGES[x].t+'</button>').join('');
@@ -4376,6 +4439,13 @@ function openModal(k,reqId){
  if(k==='account')wireAccount();
  if(k==='balance')wireBalance();
  el('mask').classList.add('on');
+ const url=REAL_URL[k];
+ if(url){
+  const isEn=typeof LANG!=='undefined'&&LANG==='en';
+  const withLang=isEn?url+'?lang=en':url;
+  if(location.pathname+location.search!==withLang) history.pushState({modal:k},'',withLang);
+  const tt=REAL_TITLE[k]; if(tt) document.title=isEn?tt.en:tt.ka;
+ }
  track('page',{p:k});
 }
 /* =================================================================
@@ -4561,13 +4631,28 @@ function wireBalance(){
  }).catch(()=>{});
 }
 
-const closeModal=()=>el('mask').classList.remove('on');
+const closeModal=()=>{
+ el('mask').classList.remove('on');
+ /* ⚠️ 2026-08-26: თუ ღია ტაბს (main/post/want/buy/terms/priv/faq) მისამართის
+    ზოლოზე საკუთარი URL ჰქონდა (იხ. openModal-ის REAL_URL), დახურვისას
+    მისამართს "/"-ზე ვაბრუნებთ და <title>-საც მთავარ გვერდზე. */
+ if(REAL_URL[mdlCur]){
+  if(location.pathname!=='/') history.pushState({modal:null},'','/');
+  const isEn=typeof LANG!=='undefined'&&LANG==='en';
+  document.title=(isEn&&typeof trStr==='function'&&trStr(HOME_TITLE))||HOME_TITLE;
+ }
+};
 el('mdx').onclick=closeModal;
 el('mask').onclick=e=>{if(e.target===el('mask'))closeModal()};
 addEventListener('keydown',e=>{if(e.key==='Escape'&&el('mask').classList.contains('on'))closeModal()});
 document.querySelectorAll('[data-modal]').forEach(a=>a.onclick=e=>{e.preventDefault();openModal(a.dataset.modal)});
 /* #main / #sell ... — პირდაპირი ბმულები */
 (function(){const h=location.hash.replace('#','');if(PAGES[h])openModal(h)})();
+/* უკან/წინ ღილაკები — REAL_URL-ზე pushState-ით გახსნილი ტაბებისთვის */
+addEventListener('popstate',e=>{
+ if(e.state&&e.state.modal&&PAGES[e.state.modal])openModal(e.state.modal);
+ else closeModal();
+});
 /* form.html (iframe შიგნით — ბიჯი 4-ის „წესებსა და პირობებს" ბმული) გვთხოვს
    მოდალის გახსნას postMessage-ით, რადგან iframe-ში ცალკე ფანჯარა ვიწროა. */
 addEventListener('message',e=>{

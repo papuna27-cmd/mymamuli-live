@@ -346,6 +346,16 @@ async function loadGA(){
   : d.error==='fetch-failed'
   ? '<div class="vempty">Google-ის API-დან მონაცემი ვერ წამოვიდა — სცადე მოგვიანებით.'+(d.debug?'<br><code style="font-size:11px;opacity:.7">'+d.debug+'</code>':'')+'</div>'
   : '';
+ /* ⚠️ 2026-08-27 — დროებითი დიაგნოსტიკის ხაზი, სანამ George-ის ნამდვილი
+    GA4/GSC მონაცემი არ დადასტურდება ცოცხლად. თუ ყველგან 0 წერია, ეს
+    გვიჩვენებს ზუსტად რომელი API-მოთხოვნა ბრუნდება ცარიელი/null-ით
+    (auth-failed-ისგან განსხვავებული, "წარმატებული, მაგრამ ცარიელი"
+    შემთხვევა). ერთხელაც რომ ყველაფერი დადასტურდეს, ეს ხაზი
+    მოსაცილებელია. */
+ if(d.diag){
+  box.innerHTML += '<div style="font-size:11px;color:var(--mute);margin-top:6px" title="დროებითი დიაგნოსტიკა">diag: '+
+   Object.entries(d.diag).map(([k,v])=>k+'='+v).join(' · ')+'</div>';
+ }
 
  const gm=(resp,i)=>Number((resp&&resp.rows&&resp.rows[0]&&resp.rows[0].metricValues&&resp.rows[0].metricValues[i]&&resp.rows[0].metricValues[i].value)||0);
  const users=gm(d.ga,0), sessions=gm(d.ga,1), views=gm(d.ga,2);

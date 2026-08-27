@@ -236,11 +236,32 @@ async function fromMaps(code) {
 
   let ring = hit.shape_wkt ? wktRing(hit.shape_wkt) : null;
   const gl = hit.details && hit.details.geometry_link;
+  let glFetch = null;
   if (!ring && gl) {
     const g = await grab(gl + (gl.includes('?') ? '&' : '?') + 'lang=ka&bbox=' + GE_BBOX);
-    if (!g.err) ring = wktRing(g.text);
+    if (!g.err) {
+      ring = wktRing(g.text);
+      glFetch = { len: (g.text || '').length, sample: (g.text || '').slice(0, 220), parsed: !!ring };
+    } else {
+      glFetch = { err: g.err };
+    }
   }
-  return { addr, ring, src: 'maps.gov.ge', infoLink };
+  /* ⚠️ 2026-08-26, დროებითი დიაგნოსტიკა (George-ის მოთხოვნით) — ვცდილობთ
+     გავარკვიოთ, რატომ არ ბრუნდება geometry (ring) რეალურ კოდებზე, თუმცა
+     მისამართი (addr) ყოველთვის სწორად მოიძებნება. ეს ველი ქეშშიც შედის
+     (cachePut ამ მთელ ობიექტს ინახავს), ასე რომ D1-ის `cad` ცხრილიდან
+     პირდაპირ ჩანს, hit-ს რეალურად რა ველები ჰქონდა. საჯარო API-ს
+     (/api/cad) პასუხში ეს არ გადის — მხოლოდ შიდა დიაგნოსტიკისთვისაა.
+     ამოსაშლელია, როცა root cause გამოირკვევა. */
+  const _debug = {
+    hitKeys: Object.keys(hit || {}),
+    hasShapeWkt: !!hit.shape_wkt,
+    shapeWktSample: hit.shape_wkt ? String(hit.shape_wkt).slice(0, 150) : null,
+    detailsKeys: hit.details ? Object.keys(hit.details) : null,
+    geometryLink: gl || null,
+    glFetch
+  };
+  return { addr, ring, src: 'maps.gov.ge', infoLink, _debug };
 }
 
 /* --- maps.gov.ge — ობიექტის „ბარათი" (getinfo.alpha) ---

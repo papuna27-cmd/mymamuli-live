@@ -69,12 +69,12 @@ gtag('config', 'G-N30XKZCDCT');
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.08.26-2130"></script>
+<script src="i18n.js?v=2026.08.27-1000"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.26-2130';
+window.MM_BUILD = '2026.08.27-1000';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -207,6 +207,15 @@ body.drawing .catbar{opacity:.25;pointer-events:none}
 .lngw svg{width:26px;height:17px;border-radius:3px;display:block;box-shadow:inset 0 0 0 1px rgba(14,26,22,.14)}
 @media(max-width:767px){.lngw{gap:3px;padding:2px;margin-left:4px;border-radius:9px}
  .lngw svg{width:22px;height:14.5px}}
+/* ვალუტის გადამრთველი ($/₾) — ენის დროშების იმავე პილულის სტილში,
+   პირდაპირ გვერდით, ჰედერის იმავე კომპაქტურ კუთხეში (2026-08-27). */
+.curw{flex:0 0 auto;display:flex;gap:2px;margin-left:6px;padding:3px;background:var(--sand);border-radius:11px}
+.curw button{border:0;background:none;padding:4px 9px;border-radius:8px;cursor:pointer;
+ font:700 12.5px/1 inherit;color:var(--ink2);opacity:.55;transition:.16s}
+.curw button:hover{opacity:.85}
+.curw button.on{opacity:1;background:#fff;box-shadow:0 1px 3px rgba(14,26,22,.16);color:var(--ink)}
+@media(max-width:767px){.curw{gap:2px;padding:2px;margin-left:4px;border-radius:9px}
+ .curw button{padding:3px 7px;font-size:11.5px}}
 .adwrap{flex:0 0 auto;width:640px;display:flex;justify-content:center;overflow:hidden}
 .admob{display:none}
 .ad{position:relative;border-radius:9px;overflow:hidden;flex:0 0 auto;
@@ -1054,6 +1063,7 @@ body.foot-min .fslim{display:flex}
      ეკრანის ცენტრში/კამერის მიდამოში აღარაფერი ხვდება. */
   .acct{margin-left:auto}
   .lngw{margin-left:4px}
+  .curw{margin-left:4px}
   /* ტიკერს საკუთარი, სრული სიგანის ხაზი ეთმობა — აღარ ეჯახება
      ლოგოს, დროშებსა და კაბინეტის ღილაკს, აღარც იჭრება/იფარება. */
   .tick{order:3;flex:1 1 100%;height:28px;margin-top:2px}
@@ -1252,11 +1262,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.26-2130">
+<footer data-build="2026.08.27-1000">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.26-2130</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.27-1000</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -1670,6 +1680,99 @@ map.addControl(new maplibregl.GeolocateControl({trackUserLocation:false}),'botto
    ფუნქცია ხელუხლებელია — უბრალოდ საწყისი მდგომარეობა შეიცვალა. */
 let cur='req', mk=[], active=null;
 const fmt=n=>new Intl.NumberFormat('ka-GE').format(Math.round(n));
+
+/* =================================================================
+   ვალუტა: $ / ₾ გადამრთველი
+   ⚠️ 2026-08-27, George-ის მოთხოვნით — მაძიებელსაც და გამყიდველსაც
+   (ანუ req-საც და lst-საც) უნდა შეეძლოს ფასის ლარში ნახვა. კურსი
+   ეროვნული ბანკის ოფიციალური API-დან მოდის, სერვერულად ქეშირებული
+   (/api/fx — იხ. functions/api/fx.js), ზუსტად იმ მიზეზით, რის
+   გამოც საკადასტრო შემოწმებაც სერვერზეა: nbg.gov.ge-ს ჩვენი
+   დომენისთვის CORS არ აქვს.
+
+   „საიტზე შემოსვლისთანავე განისაზღვროს" — LANG-ის იგივე ლოგიკით
+   (იხ. i18n.js): ჯერ ?cur=, მერე localStorage, არარსებობისას კი
+   საწყისი გამოცნობა ინტერფეისის ენით (ქართული → ლარი, სხვა → დოლარი).
+   დალოგინებულს არჩევანი ანგარიშზეც ინახება (users.pref_cur, /api/auth
+   {mode:'setcur'}) — სხვა მოწყობილობიდანაც იმავე ვალუტაში დახვდება.
+
+   კონვერტაცია არსებულ DOM ტექსტ-კვანძებზე ხდება — იმავე პრინციპით,
+   რაც i18n.js-ის ინგლისურ თარგმანს აქვს (trNode/mo): სადაც კი "$1,234"
+   ტიპის ტექსტი გამოჩნდება (ბარათი, hover-ი, პიკი, შედარების ცხრილი,
+   სია — ყველგან ერთდროულად), ლარის რეჟიმში ავტომატურად "3,234 ₾"-დ
+   იცვლება, ცალკეული ფუნქციების (hovHTML, openCard, openReq…) ხელახლა
+   წერის გარეშე. */
+let FX=null;                              /* რამდენი ლარი ღირს 1 დოლარი */
+let CURR=(function(){
+ try{
+  const q=new URLSearchParams(location.search).get('cur');
+  if(q==='usd'||q==='gel')return q;
+ }catch(e){}
+ try{
+  const s=localStorage.getItem('mm_cur');
+  if(s==='usd'||s==='gel')return s;
+ }catch(e){}
+ return (typeof LANG!=='undefined'&&LANG==='ka')?'gel':'usd';
+})();
+async function loadFx(){
+ try{
+  const r=await fetch('/api/fx',{cache:'no-store'});
+  const j=await r.json();
+  if(j&&j.usd>0){FX=j.usd; if(CURR==='gel')convNode(document.body)}
+ }catch(e){}
+}
+loadFx();
+const CUR_SKIP={SCRIPT:1,STYLE:1,NOSCRIPT:1};
+const curReplace=s=>s.replace(/\$([\d,]+(?:\.\d+)?)/g,(m,d)=>{
+ const usd=parseFloat(d.replace(/,/g,''));
+ return isNaN(usd)?m:fmt(Math.round(usd*FX))+' ₾';
+});
+function convNode(root){
+ if(CURR!=='gel'||!FX||!root)return;
+ const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{
+  acceptNode:n=>(n.parentNode&&CUR_SKIP[n.parentNode.nodeName])?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+ const list=[]; let n;
+ while(n=w.nextNode())list.push(n);
+ list.forEach(t=>{ if(t.nodeValue.indexOf('$')!==-1) t.nodeValue=curReplace(t.nodeValue) });
+}
+let curQ=null;
+const curMo=new MutationObserver(muts=>{
+ if(CURR!=='gel'||!FX||curQ)return;
+ curQ=requestAnimationFrame(()=>{curQ=null;
+  muts.forEach(m=>{
+   m.addedNodes && m.addedNodes.forEach(n=>{
+    if(n.nodeType===1)convNode(n);
+    else if(n.nodeType===3&&n.nodeValue.indexOf('$')!==-1)n.nodeValue=curReplace(n.nodeValue);
+   });
+  });
+ });
+});
+curMo.observe(document.body,{childList:true,subtree:true});
+/* ⚠️ ვალუტის გადართვა გვერდის reload-ით სრულდება — იმავე ხერხით,
+   რასაც ენის გადამრთველიც იყენებს (mountLangSwitch, ქვემოთ). ასე
+   არ გვჭირდება უკუკონვერტაცია ($-დან ლარზე გადასვლისას DOM უკვე
+   შეცვლილია და პირვანდელი USD ტექსტი დაკარგულია) — გადატვირთვისას
+   ყველაფერი თავიდან იშენება, სწორი ვალუტით პირველივე ჩატვირთვიდან. */
+function setCurr(c){
+ if((c!=='usd'&&c!=='gel')||c===CURR)return;
+ try{localStorage.setItem('mm_cur',c)}catch(e){}
+ track('cur',{c});
+ fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({mode:'setcur',cur:c})}).catch(()=>{});
+ location.reload();
+}
+function paintCurBtn(){
+ document.querySelectorAll('.curw button').forEach(b=>b.classList.toggle('on',b.dataset.c===CURR));
+}
+function mountCurSwitch(){
+ const bar=document.querySelector('header .bar'); if(!bar)return;
+ const w=document.createElement('div');
+ w.className='curw'; w.setAttribute('data-noi18n','');
+ w.innerHTML='<button data-c="usd" title="US Dollar">$</button><button data-c="gel" title="ქართული ლარი">₾</button>';
+ bar.appendChild(w);
+ paintCurBtn();
+ w.querySelectorAll('button').forEach(b=>b.onclick=()=>setCurr(b.dataset.c));
+}
 /* ⚠️ 2026-08-26: George-ის მოთხოვნით — მაძიებლის თავისუფალი ტექსტი
    (r.note) ახლა innerHTML-ში ჩაისმევა (openReq). ეს არის მომხმარებლის
    შეყვანილი ტექსტი, ამიტომ HTML-სპეციალური სიმბოლოები უნდა გავექცეთ —
@@ -4771,6 +4874,17 @@ function mountLangSwitch(){
   if(d&&d.ok&&d.user){
    acc.classList.add('on');
    acc.querySelector('span').textContent=(d.user.name||(LANG==='en'?'Cabinet':'კაბინეტი')).split(' ')[0];
+   /* ⚠️ 2026-08-27, George-ის მოთხოვნით — ვალუტის არჩევანი ანგარიშზეც
+      ინახება (users.pref_cur). თუ დალოგინებულს იქ სხვა ვალუტა აქვს
+      მითითებული, ვიდრე ამ ბრაუზერის localStorage-ში, ანგარიშის
+      არჩევანი იმარჯვებს — სხვა მოწყობილობიდანაც იმავე ვალუტაში
+      დახვდება ფასები, reload-ის გარეშეც. */
+   if((d.user.cur==='usd'||d.user.cur==='gel')&&d.user.cur!==CURR){
+    CURR=d.user.cur;
+    try{localStorage.setItem('mm_cur',CURR)}catch(e){}
+    if(CURR==='gel'&&FX)convNode(document.body);
+    paintCurBtn();
+   }
    const dd=document.createElement('div');
    dd.className='acctdd';
    dd.innerHTML=
@@ -4801,6 +4915,7 @@ function mountLangSwitch(){
  });
 }
 mountLangSwitch();
+mountCurSwitch();
 applyLang();
 mo.observe(document.body,{childList:true,subtree:true});
 /* ფუტერის რეალური სიმაღლე — უჯრა მის თავზე ჯდება */

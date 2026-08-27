@@ -60,7 +60,7 @@ export async function whoami(request, env) {
   const c = cookie(request);
   if (!c || !env.DB) return null;
   const row = await env.DB.prepare(
-    `SELECT t.user_id, t.expires, t.used, u.email, u.name, u.phone_full, u.status, u.balance
+    `SELECT t.user_id, t.expires, t.used, u.email, u.name, u.phone_full, u.status, u.balance, u.pref_cur
        FROM token t JOIN users u ON u.id = t.user_id
       WHERE t.id = ?1 AND t.kind = 'user'`
   ).bind(await sha('u:' + c)).first();
@@ -74,8 +74,15 @@ export async function whoami(request, env) {
      ვაბრუნებთ, არავის სხვისზე.
      ⚠️ 2026-08-26: George-ის მოთხოვნით — პროფილის მენიუში ("ბალანსის
      შევსება") ბალანსის საჩვენებლად, balance-იც აქვე ბრუნდება იმავე
-     უსაფრთხოების პრინციპით (მხოლოდ საკუთარი ანგარიშისთვის). */
-  return { id: row.user_id, email: row.email, name: row.name, tel: row.phone_full || '', balance: row.balance || 0 };
+     უსაფრთხოების პრინციპით (მხოლოდ საკუთარი ანგარიშისთვის).
+     ⚠️ 2026-08-27: George-ის მოთხოვნით — ვალუტის არჩევანიც (pref_cur:
+     null|'usd'|'gel') აქვე ბრუნდება, რომ index.html-მა სხვა
+     მოწყობილობაზეც იმავე ვალუტაში დახვედროს ფასები (localStorage
+     მხოლოდ ერთ ბრაუზერს ახსოვს, ეს კი ანგარიშზეა მიბმული). */
+  return {
+    id: row.user_id, email: row.email, name: row.name, tel: row.phone_full || '',
+    balance: row.balance || 0, cur: row.pref_cur || null
+  };
 }
 
 export async function onRequestGet({ request, env }) {
@@ -149,6 +156,21 @@ export async function onRequestPost({ request, env }) {
     ).bind(u.id, name, '••' + tel.slice(-4), telHash, telFull).run();
 
     return J({ ok: true, name, tel: telFull });
+  }
+
+  /* --- ვალუტის არჩევანი — "$" ან "₾" ---
+     ⚠️ 2026-08-27, George-ის მოთხოვნით — შესულ მომხმარებელს ეს
+     არჩევანი ანგარიშზე ინახება (და არა მხოლოდ localStorage-ში),
+     რომ სხვა ბრაუზერიდან/მოწყობილობიდანაც იმავე ვალუტაში დახვდეს
+     ფასები. index.html localStorage-საც წერს (ანონიმური ვიზიტორისთვის
+     ეს ერთადერთი შესაძლებლობაა), მაგრამ დალოგინებულს orginal-ს
+     ეს, სერვერული, სჯობნის. */
+  if (b.mode === 'setcur') {
+    const u = await whoami(request, env);
+    if (!u) return J({ error: 'unauthorized' }, 401);
+    const cur = b.cur === 'gel' ? 'gel' : 'usd';
+    await env.DB.prepare(`UPDATE users SET pref_cur=?2 WHERE id=?1`).bind(u.id, cur).run();
+    return J({ ok: true, cur });
   }
 
   const ip = request.headers.get('cf-connecting-ip') || '0';

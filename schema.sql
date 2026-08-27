@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
   comp_ok     INTEGER NOT NULL DEFAULT 0,       -- რეესტრში დადასტურდა
   status      TEXT NOT NULL DEFAULT 'active',   -- active | warned | blocked
   lang        TEXT DEFAULT 'ka',
+  pref_cur    TEXT DEFAULT NULL,                -- NULL|usd|gel — 2026-08-27, ფასის ვალუტის მუდმივი არჩევანი
   -- წესებზე თანხმობა: ვინახავთ ვერსიასაც, რომ ვიცოდეთ რას დაეთანხმა
   terms_v     TEXT,
   terms_at    INTEGER,
@@ -145,6 +146,13 @@ CREATE TABLE IF NOT EXISTS rl (
 CREATE TABLE IF NOT EXISTS cad (
   code    TEXT PRIMARY KEY,
   payload TEXT NOT NULL,                          -- JSON: {addr, ring, src}
+  fetched INTEGER NOT NULL
+);
+
+-- ───────── ვალუტის კურსი (ეროვნული ბანკი) — 2026-08-27 ─────────
+CREATE TABLE IF NOT EXISTS fx (
+  code    TEXT PRIMARY KEY,                       -- 'USD'
+  rate    REAL NOT NULL,                          -- რამდენი ლარი ღირს 1 ერთეული
   fetched INTEGER NOT NULL
 );
 

@@ -2971,49 +2971,42 @@ function approxGeo(lat,lng,area){
 /* =================================================================
    7. საკადასტრო API (საჯარო რეესტრი / maps.gov.ge)
    ================================================================= */
-const GOV='https://maps.gov.ge', cache={};
-const GE_BBOX='4452247.87,4943972.31,5341974.88,5417270.39'; /* მთელი საქართველო, EPSG:3857 */
-const wkt2geo=w=>{const m=w.match(/POLYGON\s*\(\((.+?)\)\)/i);if(!m)return null;
- return {type:'Feature',properties:{},geometry:{type:'Polygon',coordinates:[m[1].split(',').map(p=>{const[a,b]=p.trim().split(/\s+/).map(Number);return[a,b]})]}};};
-const merc=(lon,lat)=>[lon*20037508.34/180, Math.log(Math.tan((90+lat)*Math.PI/360))/(Math.PI/180)*20037508.34/180];
+/* ⚠️ 2026-08-26, George-ის მოთხოვნით — root cause: აქ ადრე ბრაუზერი
+   პირდაპირ (client-side fetch) მიმართავდა maps.gov.ge-ს. ეს მუშაობდა
+   მხოლოდ იშვიათად, რადგან gov.ge სერვერი CORS-ის (Access-Control-
+   Allow-Origin) სათაურებს არ აბრუნებს ჩვენი დომენისთვის — ბრაუზერი
+   პასუხს JS-ს არ აძლევდა და fetch() უბრალოდ ცდებოდა ("Failed to
+   fetch"), რაც ქვემოთ, fillCadastre()-ის catch-ში, ზოგად "სერვისი
+   დროებით მიუწვდომელია" შეტყობინებად ჩანდა — მაშინაც კი, როცა კოდი
+   რეესტრში რეალურად არსებობდა (მაგ. $900/$1,300 განცხადებები).
+   ჩვენ უკვე გვაქვს ამავე რეესტრის სწორად მომუშავე, სერვერულ მხარეს
+   გამართული ვერსია (functions/api/_cad.js → /api/cad) — Worker-იდან
+   მიმართვას CORS საერთოდ არ ეხება, აქვს 30-დღიანი D1 ქეში და უკვე
+   გასწორებული აქვს geometry_link-ის ფარდობითი-URL ბაგი (იხ. task
+   #148/#149). ამიტომ აქაც იმავე ენდფოინთზე გადავრთეთ, dublirebuli
+   client-side scraping-ის მაგივრად. */
+const cache={};
 
-/* ადგილობრივი საზღვრები — რეესტრზე დამოკიდებულების გარეშე.
+/* ადგილობრივი საზღვრები — რეესტრზე დამოკიდებულების გარეშე, ხელით
+   გადაფარვისთვის, თუ კონკრეტული ნაკვეთისთვის საჭირო გახდება.
    ფორმატი: CAD_GEO['72.07.05.816'] = [[lng,lat],…] */
 const CAD_GEO={};
 async function cadastre(code,lat,lng){
  if(cache[code])return cache[code];
- const r=await fetch(GOV+'/map/portal/search',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'keyword='+encodeURIComponent(code)});
+ const q='/api/cad?code='+encodeURIComponent(code)+(lat!=null&&lng!=null?'&lat='+lat+'&lng='+lng:'');
+ const r=await fetch(q,{cache:'no-store'});
  const j=await r.json();
- if(!j.status||!j.result||!j.result.length)throw new Error('not found');
- const d=j.result[0], det=d.details;
- /* ⚠️ 2026 — რეესტრმა geometry_link და info_link დახურა („Access Denied").
-    მისამართი კვლავ მოდის, ამიტომ ერთის ჩავარდნა დანარჩენს არ აგდებს.
-    როცა წვდომა აღდგება ან ოფიციალურს მივიღებთ, საზღვარი თავისით დაბრუნდება. */
- let shape=null, txt='';
- try{
-  const gr=await fetch(GOV+det.geometry_link+'&lang=ka&bbox='+GE_BBOX);
-  const gt=await gr.text();
-  if(!gt.trim().startsWith('<')){const g=JSON.parse(gt); shape=g.data&&g.data[0]?g.data[0].shape:null}
- }catch(e){}
- try{
-  const ir=await fetch(GOV+det.info_link+'&lang=ka');
-  const it=await ir.text();
-  if(!/Access Denied/i.test(it)){
-   const box=document.createElement('div'); box.innerHTML=it;
-   txt=box.innerText.replace(/\s+/g,' ').trim();
-  }
- }catch(e){}
- const gv=re=>{const m=txt.match(re);return m?m[1].trim():''};
- const parts=[...new Set((d.descript||'').split(/\s*[;,]\s*/).map(x=>x.trim()).filter(Boolean))];
+ if(!j.ok)throw new Error(j.why||'not found');
+ const cg=CAD_GEO[code];
  const out={code,
-  addr:parts.join(', '),
-  status:/რეგისტრირებულია/.test(txt)?'რეგისტრირებული':'—',
-  area:gv(/ფართობი[:\s]+([\d\s.,]+კვ\.მ\.)/),
-  kind:gv(/ნაკვეთის ტიპი[:\s]+([^\d]+?)(?:მისამართი|საკუთრებ|$)/),
+  addr:j.addr||'',
+  status:j.cad_ok>=1?'რეგისტრირებული':'—',
+  area:j.area?(j.area+' '+(j.areaUnit||'კვ.მ.')):'',
+  kind:j.landType||'',
   own:DEMO_OWNER,
-  geo: shape?wkt2geo(shape)
-      : (CAD_GEO[code]?{type:'Feature',properties:{},geometry:{type:'Polygon',coordinates:[CAD_GEO[code]]}}:null),
-  exact: !!shape || !!CAD_GEO[code]};
+  geo: cg?{type:'Feature',properties:{},geometry:{type:'Polygon',coordinates:[cg]}}
+      : (j.poly&&j.poly.length>=3)?{type:'Feature',properties:{},geometry:{type:'Polygon',coordinates:[j.poly]}}:null,
+  exact: !!cg || j.cad_ok===2};
  cache[code]=out; return out;
 }
 

@@ -101,6 +101,7 @@ button,input,select{font:inherit;color:inherit}
  box-shadow:0 6px 24px rgba(14,26,22,.16);overflow:hidden;z-index:20;display:none;max-height:260px;overflow-y:auto}
 .cityres.on{display:block}
 .cityopt{padding:11px 14px;font-size:14px;cursor:pointer}
+.cityopt small{color:var(--mute);font-size:12.5px}
 .cityopt:hover{background:var(--sand)}
 .cityopt.cityempty{color:var(--mute);cursor:default}
 .cityopt.cityempty:hover{background:none}
@@ -348,8 +349,8 @@ const CITIES=[
  ['ხელვაჩაური',41.58556,41.66889,2],['გონიო',41.55972,41.57222,2],['ქედა',41.5990,41.9400,2],
  ['შუახევი',41.6300,42.1900,2],   ['ხულო',41.6460,42.3090,2],
  ['ვალე',41.61667,42.87778,2],
- ['ქარელი',41.9298,44.0453,2],    ['წნორი',41.5928,46.1622,2],
- ['ჯვარი',42.7043,42.0596,2],
+ ['ქარელი',42.0215,43.89553,2],   ['წნორი',41.618,45.979,2],
+ ['ჯვარი',42.71693,42.052,2],
  ['ანაკლია',42.39361,41.56917,3], ['გრიგოლეთი',42.03694,41.73917,3],
  ['სიონი',42.0500,44.7000,3],
  ['წავკისი',41.67111,44.73583,3],['მჭადიჯვარი',42.01778,44.59833,3],
@@ -360,6 +361,17 @@ const CITIES=[
 /* ქართული ტექსტის მარტივი ნორმალიზება — ლათინური არ სჭირდება,
    უბრალოდ სივრცეები/ვირგულები ჩამოვშალოთ შედარებისთვის. */
 const cityNorm=s=>String(s||'').trim().toLowerCase();
+
+/* GeoNames-ის რეგიონის რიცხვითი კოდი → სახელი — მხოლოდ საძიებო
+   ჩამონათვალში დუბლირებული სოფლის-სახელების გასარჩევად ვიყენებთ
+   (მაგ. ორი სოფელი „ზედუბანი" სხვადასხვა რეგიონში). იხ. schema.sql,
+   'place' ცხრილის კომენტარი — იგივე კოდები. */
+const REGION={
+ '51':'თბილისი','02':'აფხაზეთი','04':'აჭარა','65':'გურია','66':'იმერეთი',
+ '67':'კახეთი','68':'ქვემო ქართლი','69':'მცხეთა-მთიანეთი',
+ '70':'რაჭა-ლეჩხუმი და ქვ. სვანეთი','71':'სამეგრელო-ზემო სვანეთი',
+ '72':'სამცხე-ჯავახეთი','73':'შიდა ქართლი'
+};
 
 /* =================================================================
    „სწრაფი ქალაქის" ჩიფები რუკის თავზე — George-ის მოთხოვნით (2026-08-27):
@@ -1200,34 +1212,67 @@ function initMap(){
  el('pin').onclick=()=>{const c=map.getCenter();placePin(c.lat,c.lng)};
 }
 /* ================= ქალაქის ძებნა რუკის თავზე =================
-   ⚠️ მხოლოდ ჩვენი 81 ქალაქის სია იძებნება (CITIES) — არავითარი
-   ქუჩა/ჩიხი/გამზირი, გარე გეოკოდერი არ გვიხმია. არჩევისას რუკა
-   მთელ ქალაქზე გადაფრინდება (ზუმი 12 — ისე, რომ არა ზუსტი წერტილი,
-   არამედ მთელი ქალაქი ჩანდეს), ნიშნულს კი მომხმარებელი თვითონ სვამს,
-   თავად დაზუმებული. */
+   ჯერ ჩვენი 84 ხელით-შერჩეული ქალაქი/დაბა (CITIES) ეძებნება ლოკალურად,
+   მყისვე — ეს ყოველთვის პირველ ადგილას ჩანს. 2026-08-27, George-ის
+   მოთხოვნით (სქრინ 2) — ამას ემატება debounce-ილი მოთხოვნა /api/places-ზე,
+   რომელიც D1-ის 'place' ცხრილს ეძებს (~5373 ჩანაწერი — პრაქტიკულად
+   ყველა საქართველოს დასახლებული პუნქტი, სოფლების ჩათვლით). სერვერული
+   შედეგები მხოლოდ დამატებით ემატება, დუბლირების გარეშე, და მხოლოდ მაშინ
+   თუ ინტერნეტი აქტიურია — წარუმატებლობისას ლოკალური სია მაინც რჩება.
+   არჩევისას რუკა ამ წერტილზე გადაფრინდება (ზუმი 12), ნიშნულს კი
+   მომხმარებელი თვითონ სვამს, თავად დაზუმებული. */
 function initCitySearch(){
  const box=el('citybox'), res=el('cityres');
  if(!box||!res)return;
  const isEn=()=>typeof LANG!=='undefined'&&LANG==='en';
  const label=c=>isEn()?T(c[0]):c[0];
- const close=()=>{res.innerHTML='';res.classList.remove('on')};
- const search=()=>{
-  const q=cityNorm(box.value);
-  if(!q){close();return}
-  const matches=CITIES.filter(c=>cityNorm(label(c)).includes(q)).sort((a,b)=>a[3]-b[3]||a[0].localeCompare(b[0])).slice(0,8);
-  if(!matches.length){
+ let placeTimer=null, reqSeq=0;
+ const close=()=>{res.innerHTML='';res.classList.remove('on');clearTimeout(placeTimer)};
+
+ function draw(list){
+  if(!list.length){
    res.innerHTML='<div class="cityopt cityempty">'+T('ქალაქი ვერ მოიძებნა')+'</div>';
    res.classList.add('on');
    return;
   }
-  res.innerHTML=matches.map((c,i)=>'<div class="cityopt" data-i="'+i+'">'+label(c)+'</div>').join('');
+  res.innerHTML=list.map(c=>'<div class="cityopt">'+c.lbl+(c.region?'<small> — '+c.region+'</small>':'')+'</div>').join('');
   res.classList.add('on');
   res.querySelectorAll('.cityopt:not(.cityempty)').forEach((elx,i)=>elx.onclick=()=>{
-   const c=matches[i];
-   box.value=label(c);
+   const c=list[i];
+   box.value=c.lbl;
    close();
-   if(map)map.flyTo({center:[c[2],c[1]],zoom:12,duration:700});
+   if(map)map.flyTo({center:[c.lng,c.lat],zoom:12,duration:700});
   });
+ }
+
+ function localMatches(q){
+  return CITIES.filter(c=>cityNorm(label(c)).includes(q))
+   .sort((a,b)=>a[3]-b[3]||a[0].localeCompare(b[0])).slice(0,8)
+   .map(c=>({name:c[0], lbl:label(c), lat:c[1], lng:c[2]}));
+ }
+
+ const search=()=>{
+  const raw=box.value, q=cityNorm(raw);
+  clearTimeout(placeTimer);
+  if(!q){close();return}
+  const loc=localMatches(q);
+  draw(loc);
+  if(q.length<2)return;
+  const mySeq=++reqSeq;
+  placeTimer=setTimeout(()=>{
+   fetch('/api/places?q='+encodeURIComponent(raw.trim())).then(r=>r.ok?r.json():null).then(j=>{
+    if(!j||mySeq!==reqSeq)return;
+    const have=new Set(loc.map(x=>x.name));
+    const cnt={};
+    (j.places||[]).forEach(p=>{cnt[p[0]]=(cnt[p[0]]||0)+1});
+    const extra=(j.places||[])
+     .filter(p=>!have.has(p[0]))
+     .slice(0, Math.max(0, 10-loc.length))
+     .map(p=>({name:p[0], lbl:isEn()?(p[3]||p[0]):p[0], lat:p[1], lng:p[2],
+       region: cnt[p[0]]>1?(REGION[p[4]]||''):''}));
+    if(extra.length) draw(loc.concat(extra));
+   }).catch(()=>{/* ოფლაინ — ლოკალური სია მაინც ჩანს */});
+  }, 300);
  };
  box.oninput=search;
  box.onfocus=()=>{ if(box.value)search() };

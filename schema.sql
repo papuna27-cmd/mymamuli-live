@@ -149,6 +149,29 @@ CREATE TABLE IF NOT EXISTS cad (
   fetched INTEGER NOT NULL
 );
 
+-- ───────── დასახლებული პუნქტები (ქალაქი/დაბა/სოფელი) — 2026-08-27 ─────────
+-- George-ის მოთხოვნით, ფორმის ადგილმდებარეობის ძებნის გასაფართოებლად.
+-- წყარო: GeoNames GE.txt საჯარო დამპი (P feature class, PPLQ გარდა —
+-- მიტოვებული ადგილები გამორიცხულია). id — GeoNames-ის geonameid.
+-- name — ქართული სახელი (ან, თუ საერთოდ არსად მოიძებნა, ლათინური
+-- fallback). name_en — ასლი ლათინური/ინგლისური. admin1 — GeoNames-ის
+-- რეგიონის რიცხვითი კოდი (51 თბილისი, 04 აჭარა, 66 იმერეთი, 67 კახეთი,
+-- 68 ქვ. ქართლი, 69 მცხეთა-მთიანეთი, 70 რაჭა-ლეჩხუმი და ქვ. სვანეთი,
+-- 71 სამეგრელო-ზემო სვანეთი, 72 სამცხე-ჯავახეთი, 73 შიდა ქართლი,
+-- 02 აფხაზეთი). /api/places.js ამ ცხრილს კითხულობს.
+CREATE TABLE IF NOT EXISTS place (
+  id      INTEGER PRIMARY KEY,                     -- geonameid
+  name    TEXT NOT NULL,                           -- ქართული (ან ლათინური fallback)
+  name_en TEXT,
+  lat     REAL NOT NULL,
+  lng     REAL NOT NULL,
+  kind    TEXT,                                    -- GeoNames feature code (PPL, PPLA, PPLC...)
+  admin1  TEXT,
+  pop     INTEGER DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_place_name ON place(name);
+CREATE INDEX IF NOT EXISTS idx_place_name_en ON place(name_en);
+
 -- ───────── ვალუტის კურსი (ეროვნული ბანკი) — 2026-08-27 ─────────
 CREATE TABLE IF NOT EXISTS fx (
   code    TEXT PRIMARY KEY,                       -- 'USD'

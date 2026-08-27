@@ -162,6 +162,15 @@ export async function onRequestGet({ params, request, env }) {
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${esc(canonical)}">
+<meta property="og:site_name" content="MyMamuli.ge">
+<meta property="og:locale" content="ka_GE">
+<meta property="og:image" content="${SITE}/images/mymamuli-social-share-1200x630.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(title)}">
+<meta name="twitter:description" content="${esc(desc)}">
+<meta name="twitter:image" content="${SITE}/images/mymamuli-social-share-1200x630.png">
 <script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}

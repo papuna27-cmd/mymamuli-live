@@ -53,6 +53,19 @@ function page({ lang, title, desc, h1, lead, body, backLabel }) {
 <link rel="alternate" hreflang="ka" href="https://mymamuli.ge/how-it-works">
 <link rel="alternate" hreflang="en" href="https://mymamuli.ge/how-it-works?lang=en">
 <link rel="alternate" hreflang="x-default" href="https://mymamuli.ge/how-it-works">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MyMamuli.ge">
+<meta property="og:locale" content="${lang === 'en' ? 'en_US' : 'ka_GE'}">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${desc}">
+<meta property="og:url" content="https://mymamuli.ge/how-it-works${lang === 'en' ? '?lang=en' : ''}">
+<meta property="og:image" content="https://mymamuli.ge/images/mymamuli-social-share-1200x630.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${title}">
+<meta name="twitter:description" content="${desc}">
+<meta name="twitter:image" content="https://mymamuli.ge/images/mymamuli-social-share-1200x630.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">

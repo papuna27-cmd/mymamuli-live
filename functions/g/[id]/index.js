@@ -290,6 +290,9 @@ export async function onRequestGet({ params, request, env }) {
 <meta name="description" content="${esc(desc)}">
 ${l.visibility === 'private' ? '<meta name="robots" content="noindex,nofollow">' : ''}
 <link rel="canonical" href="${esc(url)}">
+<link rel="alternate" hreflang="ka" href="${esc(SITE + '/g/' + id + '/')}">
+<link rel="alternate" hreflang="en" href="${esc(SITE + '/g/' + id + '/?lang=en')}">
+<link rel="alternate" hreflang="x-default" href="${esc(SITE + '/g/' + id + '/')}">
 <meta property="og:type" content="product">
 <meta property="og:site_name" content="MyMamuli.ge">
 <meta property="og:locale" content="${lang === 'en' ? 'en_US' : 'ka_GE'}">
@@ -486,6 +489,9 @@ async function requestPage(id, env, lang, bot) {
 <title>${esc(fullTitle)} | MyMamuli.ge</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${esc(url)}">
+<link rel="alternate" hreflang="ka" href="${esc(SITE + '/g/' + id + '/')}">
+<link rel="alternate" hreflang="en" href="${esc(SITE + '/g/' + id + '/?lang=en')}">
+<link rel="alternate" hreflang="x-default" href="${esc(SITE + '/g/' + id + '/')}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MyMamuli.ge">
 <meta property="og:locale" content="${lang === 'en' ? 'en_US' : 'ka_GE'}">

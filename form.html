@@ -598,7 +598,7 @@ let __rStep=null, __rTab=null;
 const S={terms:false,sub:true,priv:false,anon:false,d1:false,d2:false,d3:false,d4:false,cat:'',deal:'buy',period:'month',lat:null,lng:null,radius:0,
  amin:'',amax:'',pmax:'',pmin:'',rooms:'',note:'',desc:'',pass:'',
  who:'ind',name:'',email:'',phone:'',cc:'',comp:'',cid:'',
- cad:'',cadAddr:'',price:'',area:'',
+ cad:'',cadAddr:'',addrTxt:'',price:'',area:'',
  photos:[],   /* {url, name, up} — [0] ყოველთვის ქავერია; up=true სანამ /api/upload მუშაობს */
  srcReq:''};  /* რომელ მყიდველის მოთხოვნაზე პასუხად ივსება ეს ფორმა — თუ საერთოდ */
 /* ⚠️ 2026-08-26: George-ის მოთხოვნით — თუ მომხმარებელი უკვე შესულია
@@ -1331,6 +1331,11 @@ function initAddrSearch(){
   res.querySelectorAll('.cityopt').forEach((elx,i)=>elx.onclick=()=>{
    const x=list[i];
    box.value=x.label;
+   /* ⚠️ 2026-08-27, George-ის მოთხოვნით (ტექნიკური აუდიტი) — ეს
+      მისამართი ტვირთდება ttl-ის აწყობაშიც (იხ. next.onclick-ის
+      ttl:... ხაზი), რომ განცხადების სათაურს ჰქონდეს რეალური
+      ადგილმდებარეობა მაშინაც, როცა საკადასტრო კოდი არ შეყვანილა. */
+   S.addrTxt=x.label;
    close();
    if(map)placePin(x.lat,x.lng);
   });
@@ -1338,6 +1343,7 @@ function initAddrSearch(){
  box.oninput=()=>{
   const q=box.value.trim();
   clearTimeout(t);
+  S.addrTxt='';   /* ტექსტი შეიცვალა — ძველი დადასტურებული მისამართი ბათილია */
   if(q.length<4){close();return}
   const my=++seq;
   t=setTimeout(()=>{
@@ -1772,7 +1778,16 @@ el('next').onclick=async()=>{
   lat:S.lat,lng:S.lng,radius:S.radius,
   amin:'',amax:S.amax,pmin:autoPmin,pmax:S.pmax,note:S.note,dsc:S.desc,
   area:S.area,price:S.price,cad:S.cad,  /* addr აღარ იგზავნება — სერვერი რეესტრიდან იღებს */
-  ttl:(catOf(S.cat).n+' · '+(S.cadAddr||'')).slice(0,160),
+  /* ⚠️ 2026-08-27, George-ის მოთხოვნით (ტექნიკური აუდიტი) — ბაგის
+     გასწორება: Task #181-ის შემდეგ (საკადასტრო კოდი/მისამართი
+     არჩევითია) S.cadAddr ხშირად ცარიელია, და ძველი კოდი მაინც
+     უპირობოდ სვამდა '· '-ს ბოლოში ("ბინა · ") — ეს შემდეგ index.html-ის
+     seoFor()-სა და g/[id]/index.js-ის fullTitle-ში "ბინა · —
+     $2,000/წელი"-ის მსგავს გატეხილ სათაურებს იძლეოდა. ახლა locName
+     ცარიელია, თუ არც კადასტრო და არც საძიებო-მისამართის ველი არაა
+     შევსებული — და გამყოფიც მხოლოდ მაშინ ემატება, როცა რეალურად
+     არის რაღაც დასამატებელი. */
+  ttl:(catOf(S.cat).n+(function(loc){return loc?' · '+loc:''})(S.cadAddr||S.addrTxt||'')).slice(0,160),
   name:S.name,email:S.email,tel:S.phone?('+'+dialOf(S.cc)+' '+S.phone):'',
   who:S.who,comp:S.comp,cid:S.cid,attrs:A,pass:S.pass,
   photos:TAB==='lst'?S.photos.filter(p=>p.url).map(p=>p.url):[],

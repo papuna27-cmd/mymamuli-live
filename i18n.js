@@ -10,6 +10,13 @@
    აქაც უნდა შეცვალო, თორემ თარგმანი ჩუმად გაქრება.
    ================================================================= */
 const I18N = {
+/* ⚠️ 2026-08-27, George-ის მოთხოვნით (ტექნიკური აუდიტი) — ეს 2 ფრაზა
+   EN რეჟიმში ქართულად რჩებოდა, რადგან ლექსიკონში საერთოდ არ ჰქონდათ
+   ჩანაწერი (checked: "აწარმოე საქართველოში"/სახელმწიფო თანადაფინანსება
+   ბანერის ტექსტს უკვე ჰქონდა ჩანაწერი ქვემოთ — აქ დუბლირება არ
+   დამიმატებია). */
+"რუკის ხელსაწყოები": "Map tools",
+"გასაყიდი მიწა თბილისში": "Land for sale in Tbilisi",
 "საქართველოს უძრავი ქონების ბაზარი ერთ რუკაზე. საკადასტრო საზღვრები, პირდაპირი კონტაქტი, შუამავლის გარეშე.": "Georgia's real-estate market on one map. Cadastral boundaries, direct contact, no intermediaries.",
 "MyMamuli.ge — გასაყიდი მიწის ნაკვეთები, სახლები, ბინები და კომერციული ფართები საქართველოში, პირდაპირ საკადასტრო რუკაზე. ოფიციალური საზღვრები საჯარო რეესტრიდან, შუამავლების გარეშე.": "MyMamuli.ge — land, houses, apartments and commercial space for sale in Georgia, directly on the cadastral map. Official boundaries from the Public Registry, no intermediaries.",
 "უძრავი ქონება და მიწის ნაკვეთები საქართველოში — საკადასტრო რუკაზე": "Real estate and land plots in Georgia — on the cadastral map",

@@ -69,12 +69,12 @@ gtag('config', 'G-N30XKZCDCT');
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.08.27-1870"></script>
+<script src="i18n.js?v=2026.08.27-1890"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.27-1870';
+window.MM_BUILD = '2026.08.27-1890';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1269,11 +1269,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.27-1870">
+<footer data-build="2026.08.27-1890">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.27-1870</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.27-1890</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -2957,10 +2957,23 @@ setTimeout(()=>{if(!mk.length)render();try{applyLayers()}catch(e){}},1500);
     const r=REQ.find(x=>x.id===qid);
     if(r){deepLinked=true; openReq(r); return}
    }
-   const m=location.hash.match(/^#\/r\/(r_[a-z0-9]+)/);
-   if(m){
-    const r=REQ.find(x=>x.id===m[1]);
-    if(r){deepLinked=true; openReq(r)}
+   const mr=location.hash.match(/^#\/r\/(r_[a-z0-9]+)/);
+   if(mr){
+    const r=REQ.find(x=>x.id===mr[1]);
+    if(r){deepLinked=true; openReq(r); return}
+   }
+   /* ⚠️ 2026-08-27, George-ის იგივე მოთხოვნით — გასაქირავებელი/გასაყიდი
+      განცხადების (lst) გაზიარების გვერდსაც (/g/{l_id}/) ჰქონდა
+      „რუკაზე ნახვის" ღილაკი (`#/g/{id}`, იხ. openCard()-ის
+      history.replaceState ამავე ფორმატში), მაგრამ აქამდე აქეთ მხარეს
+      ეს hash საერთოდ არავის უკითხავს — მხოლოდ req-ის დეპ-ლინკი
+      არსებობდა. შედეგად, ბინის/სახლის გაზიარებული ბმულიდან შემოსული
+      ვიზიტორი ზოგად რუკაზე ჩამოდიოდა, კონკრეტული ბარათის გახსნის
+      გარეშე — ზუსტად იგივე პრობლემა, რაც მოთხოვნებზე იყო. */
+   const ml=location.hash.match(/^#\/g\/(l_[a-z0-9]+)/);
+   if(ml){
+    const o=DATA.find(x=>x.id===ml[1]);
+    if(o){deepLinked=true; openCard(o)}
    }
   }catch(e){}
  }

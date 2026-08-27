@@ -69,12 +69,12 @@ gtag('config', 'G-N30XKZCDCT');
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.08.27-1900"></script>
+<script src="i18n.js?v=2026.08.27-1910"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.27-1900';
+window.MM_BUILD = '2026.08.27-1910';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1269,11 +1269,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.27-1900">
+<footer data-build="2026.08.27-1910">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.27-1900</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.27-1910</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -2937,20 +2937,31 @@ setTimeout(()=>{if(!mk.length)render();try{applyLayers()}catch(e){}},1500);
     ჩვეულებრივ მთავარ გვერდზე ჩამოდიოდა, კონკრეტული მოთხოვნის გახსნის
     გარეშე. ერთხელაა საჭირო (deep-link), REQ-ის პირველივე რეალური
     ჩატვირთვის შემდეგ ვამოწმებთ.
-    ⚠️ 2026-08-27, George-ის მოთხოვნით (ბაგის გასწორება) — თავდაპირველად
-    აქ map.loaded()-ს ვამოწმებდით, მაგრამ ეს ჭეშმარიტდება მხოლოდ მაშინ,
-    როცა მიმდინარე ხედის ყველა რასტრული ფილა (ArcGIS World_Imagery)
-    ბოლომდეა ჩამოტვირთული — ნელ ინტერნეტზე ეს ხანდახან საერთოდ არ
-    დგება, და ამის გამო გაზიარებული ბმულიდან შემოსულს კონკრეტული
-    მოთხოვნა პრაქტიკულად არასდროს ეხსნებოდა ავტომატურად (მხოლოდ ხელით
-    openReq()-ის გამოძახება მუშაობდა სწორად). 'load' მოვლენა კი მხოლოდ
-    სტილისა და პირველადი რესურსების მზადყოფნას ნიშნავს — იმავეს
-    ეყრდნობა applyLayers()-იც ზემოთ, უპრობლემოდ — ამიტომ მისი mapReady
-    დროშა გაცილებით საიმედოა. */
- let deepLinked=false, mapReady=map.loaded();   /* იშვიათი შემთხვევა — თუ 'load' ჯერ კიდევ ამ სტრიქონამდე დაფიქსირდა */
- map.on('load',()=>{mapReady=true; tryDeepLink()});
+    ⚠️ 2026-08-27, George-ის მოთხოვნით (ბაგის გასწორება — 3 ცდა):
+    1) თავდაპირველად აქ map.loaded()-ს ვამოწმებდით, მაგრამ ეს
+       ჭეშმარიტდება მხოლოდ მაშინ, როცა მიმდინარე ხედის ყველა რასტრული
+       ფილა (ArcGIS World_Imagery) ბოლომდეა ჩამოტვირთული — ნელ
+       ინტერნეტზე ეს ხანდახან საერთოდ არ დგება.
+    2) შემდეგ map.loaded()-ის ნაცვლად 'load' მოვლენაზე გადავედით
+       (mapReady დროშა) — მაგრამ ლაივზე პირდაპირი დიაგნოსტიკით
+       გამოჩნდა, რომ 'load'-იც ნელ/პრობლემურ ქსელზე შეიძლება საერთოდ
+       არ დაფიქსირდეს დიდხანს (ან საერთოდ არასდროს), ანუ ეს დროშაც
+       იმავე რისკს ატარებდა.
+    3) რეალური root cause სულ სხვა რამეში იყო: openReq()-ში
+       map.setFeatureState() თავად აგდებდა გამონაკლისს
+       (`Style is not done loading.`) სანამ სტილი ბოლომდე არ
+       ჩატვირთულიყო, და ეს გამონაკლისი tryDeepLink()-ის საერთო
+       catch(e){}-ში ჩუმად იკარგებოდა — მთელი ბარათი საერთოდ არ
+       იხსნებოდა. ის ხაზი უკვე ცალკე try/catch-შია გახვეული (იხ.
+       openReq()), ხოლო history.replaceState() და map.fitBounds() —
+       რასაც deep-link რეალურად საჭიროებს — მუშაობს სტილის
+       ჩატვირთვის მდგომარეობის მიუხედავად. ამიტომ mapReady/'load'
+       ლოდინი საერთოდ ზედმეტი და საშიში იყო — მთლიანად მოვხსენით,
+       tryDeepLink() ახლა REQ/DATA-ს ჩატვირთვისთანავე მუშაობს
+       (იხ. pull()-ის ბოლო). */
+ let deepLinked=false;
  function tryDeepLink(){
-  if(deepLinked||!mapReady)return;
+  if(deepLinked)return;
   try{
    const qid=new URLSearchParams(location.search).get('req');
    if(qid){

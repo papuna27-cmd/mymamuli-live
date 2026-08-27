@@ -60,7 +60,7 @@ export async function whoami(request, env) {
   const c = cookie(request);
   if (!c || !env.DB) return null;
   const row = await env.DB.prepare(
-    `SELECT t.user_id, t.expires, t.used, u.email, u.name, u.phone_full, u.status
+    `SELECT t.user_id, t.expires, t.used, u.email, u.name, u.phone_full, u.status, u.balance
        FROM token t JOIN users u ON u.id = t.user_id
       WHERE t.id = ?1 AND t.kind = 'user'`
   ).bind(await sha('u:' + c)).first();
@@ -71,8 +71,11 @@ export async function whoami(request, env) {
      უკვე შესულია. phone_full საკუთარ თავზეა და ესაა ერთადერთი ადგილი,
      სადაც ის ჩვეულებრივ (არა-ადმინ) endpoint-იდან ბრუნდება — ესეც
      უსაფრთხოა, რადგან მხოლოდ საკუთარ, cookie-ით დამტკიცებულ ანგარიშზე
-     ვაბრუნებთ, არავის სხვისზე. */
-  return { id: row.user_id, email: row.email, name: row.name, tel: row.phone_full || '' };
+     ვაბრუნებთ, არავის სხვისზე.
+     ⚠️ 2026-08-26: George-ის მოთხოვნით — პროფილის მენიუში ("ბალანსის
+     შევსება") ბალანსის საჩვენებლად, balance-იც აქვე ბრუნდება იმავე
+     უსაფრთხოების პრინციპით (მხოლოდ საკუთარი ანგარიშისთვის). */
+  return { id: row.user_id, email: row.email, name: row.name, tel: row.phone_full || '', balance: row.balance || 0 };
 }
 
 export async function onRequestGet({ request, env }) {
@@ -116,6 +119,36 @@ export async function onRequestPost({ request, env }) {
     if (c) await env.DB.prepare(`UPDATE token SET used=1 WHERE id=?1`)
       .bind(await sha('u:' + c)).run();
     return J({ ok: true }, 200, { 'set-cookie': setCookie('', 0) });
+  }
+
+  /* --- პროფილის რედაქტირება — სახელი და ტელეფონი ---
+     ⚠️ 2026-08-26, George-ის მოთხოვნით ("პროფილის რედაქტირება" პროფილის
+     მენიუში). ელფოსტის შეცვლა აქ განზრახ არ არის დაშვებული — ელფოსტა
+     ანგარიშის საიდენტიფიკაციო გასაღებია (login, დადასტურების კოდი),
+     ცვლილება ხელახალ ვერიფიკაციას მოითხოვდა და ცალკე დავალებაა.
+     ტელეფონის დუბლიკატის შემოწმება იგივეა, რაც რეგისტრაციაზე. */
+  if (b.mode === 'profile') {
+    const u = await whoami(request, env);
+    if (!u) return J({ error: 'unauthorized' }, 401);
+
+    const name = str(b.name, 90);
+    if (!name) return J({ error: 'bad-name' }, 400);
+
+    const tel = normPhone(b.tel);
+    if (tel.length < 6) return J({ error: 'bad-phone' }, 400);
+    const telHash = await sha('tel:' + tel);
+
+    const dupPhone = await env.DB.prepare(
+      `SELECT id FROM users WHERE phone_hash=?1 AND id<>?2`
+    ).bind(telHash, u.id).first();
+    if (dupPhone) return J({ error: 'phone-taken' }, 409);
+
+    const telFull = str(b.tel, 32);
+    await env.DB.prepare(
+      `UPDATE users SET name=?2, phone=?3, phone_hash=?4, phone_full=?5 WHERE id=?1`
+    ).bind(u.id, name, '••' + tel.slice(-4), telHash, telFull).run();
+
+    return J({ ok: true, name, tel: telFull });
   }
 
   const ip = request.headers.get('cf-connecting-ip') || '0';

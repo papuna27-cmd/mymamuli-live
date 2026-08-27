@@ -1151,6 +1151,20 @@ body.foot-min .fslim{display:flex}
  .acct{padding:0 10px 0 9px;font-size:11.5px;margin-right:6px}
  .acct span{max-width:64px;overflow:hidden;text-overflow:ellipsis}
 }
+/* ⚠️ 2026-08-26: პროფილის dropdown — .acctw შეიცავს .acct ღილაკს და,
+   დალოგინების შემდეგ, .acctdd მენიუს. პოზიციონირება მინიმალურია:
+   ღილაკის ქვემოთ, იმავე card/border ენით რაც მოდალს აქვს. */
+.acctw{position:relative;display:inline-flex}
+.acctdd{position:absolute;top:calc(100% + 8px);right:0;min-width:190px;
+ background:#fff;border:1px solid var(--line);border-radius:14px;
+ box-shadow:0 12px 30px rgba(14,26,22,.14);padding:6px;display:none;flex-direction:column;
+ gap:1px;z-index:60}
+.acctw.open .acctdd{display:flex}
+.acctdd a,.acctdd button{display:block;width:100%;text-align:left;background:none;border:none;
+ font:500 13px/1 inherit;color:var(--ink);padding:11px 12px;border-radius:9px;cursor:pointer;
+ text-decoration:none}
+.acctdd a:hover,.acctdd button:hover{background:var(--sand)}
+.acctdd button.out{color:#B23B3B}
 </style>
 </head>
 <body>
@@ -4309,7 +4323,34 @@ const PAGES={
    <li><b>ანონიმური სტატისტიკა:</b> რომელი რეგიონი და კატეგორია იხსნება ხშირად. კონკრეტულ ადამიანს არ უკავშირდება.</li>
   </ul>
   <h4>წაშლა</h4>
-  <p>ერთი წერილი <a href="mailto:${MAIL}">${MAIL}</a>-ზე და შენს განცხადებასა და მონაცემს ვშლით.</p>`}}
+  <p>ერთი წერილი <a href="mailto:${MAIL}">${MAIL}</a>-ზე და შენს განცხადებასა და მონაცემს ვშლით.</p>`}},
+
+ /* ⚠️ 2026-08-26, George-ის მოთხოვნით — პროფილის მენიუს ორი ახალი პუნქტი.
+    ორივე შეგნებულად ARIA-ს (ORDER-ის) მიღმაა — ეს ორი მხოლოდ დალოგინებულ
+    მომხმარებელს ეხება, ზოგადი "საიტის შესახებ" ტაბების გვერდით აზრი
+    არა აქვთ. მოდალი მაინც იხსნება ჩვეულებრივი openModal(k)-ით — ტაბების
+    ზოლო ORDER-ს აჩვენებს (მასში ეს ორი არ შედის), თვითონ content-ი კი k-ს. */
+ account:{t:'პროფილი',h:function(){return `
+  <h3>პროფილის რედაქტირება</h3>
+  <p class="lead">შეცვალე სახელი ან ტელეფონის ნომერი.
+  ელფოსტის შეცვლა ამჟამად მხარდაჭერილი არაა — საჭიროების შემთხვევაში მოგვწერე: <a href="${mailto('ელფოსტის შეცვლა')}">${MAIL}</a>.</p>
+  <div class="frm" id="accfrm">
+   <div class="fg">
+    <div class="f"><label for="ac-n">სახელი და გვარი</label>
+     <input id="ac-n" placeholder="სახელი და გვარი" autocomplete="name"></div>
+    <div class="f"><label for="ac-t">ტელეფონის ნომერი</label>
+     <input id="ac-t" inputmode="tel" placeholder="5XX XX XX XX" autocomplete="tel"></div>
+   </div>
+   <div class="err" id="ac-e"></div>
+   <button class="go" id="ac-go">შენახვა</button>
+   <div class="okmsg" id="ac-ok"></div>
+  </div>`}},
+
+ balance:{t:'ბალანსი',h:function(){return `
+  <h3>ბალანსის შევსება</h3>
+  <p class="lead">მიმდინარე ბალანსი: <b id="bal-n">— ₾</b></p>
+  <div class="note"><i>ⓘ</i><span>ონლაინ ბარათით შევსება მალე ჩაირთვება.
+  სანამ ეს მზად იქნება, ბალანსთან დაკავშირებულ საკითხზე მოგვწერე: <a href="${mailto('ბალანსის შესახებ')}">${MAIL}</a>.</span></div>`}}
 };
 
 const ORDER=['main','post','want','buy','terms','priv'];
@@ -4332,6 +4373,8 @@ function openModal(k,reqId){
  el('mdb').scrollTop=0;
  el('mdb').querySelectorAll('[data-modal]').forEach(a=>a.onclick=e=>{e.preventDefault();openModal(a.dataset.modal)});
  if(k==='sell')wireForm();
+ if(k==='account')wireAccount();
+ if(k==='balance')wireBalance();
  el('mask').classList.add('on');
  track('page',{p:k});
 }
@@ -4479,6 +4522,45 @@ function wireForm(){
  };
 }
 
+/* ⚠️ 2026-08-26, George-ის მოთხოვნით — პროფილის მენიუს 2 ახალი ეკრანი.
+   ორივე /api/auth-ს ეყრდნობა (whoami/mode:'profile') — არა ცალკე
+   endpoint-ს — სესია იგივეა, რასაც კაბინეტიც იყენებს. */
+function wireAccount(){
+ const n=el('ac-n'), t=el('ac-t'), e=el('ac-e'), go=el('ac-go'), ok=el('ac-ok');
+ if(!n||!go)return;
+ fetch('/api/auth',{cache:'no-store'}).then(r=>r.json()).then(d=>{
+  if(d&&d.ok&&d.user){ n.value=d.user.name||''; t.value=d.user.tel||'' }
+ }).catch(()=>{});
+ go.onclick=async()=>{
+  e.textContent=''; e.classList.remove('on'); ok.classList.remove('on');
+  const name=n.value.trim(), tel=t.value.replace(/\s/g,'');
+  if(name.length<2){ e.textContent='სახელი მოკლეა'; e.classList.add('on'); return }
+  if(tel.replace(/\D/g,'').length<9){ e.textContent='ტელეფონის ნომერი არასწორია'; e.classList.add('on'); return }
+  go.disabled=true; go.textContent='…';
+  try{
+   const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({mode:'profile',name,tel})});
+   const j=await r.json().catch(()=>({}));
+   if(!r.ok||!j.ok){
+    e.textContent=j.error==='phone-taken'?'ეს ნომერი უკვე დაკავშირებულია სხვა ანგარიშთან'
+     :j.error==='bad-phone'?'ტელეფონის ნომერი არასწორია'
+     :j.error==='bad-name'?'სახელი არასწორია':'ვერ შენახა — სცადე ხელახლა';
+    e.classList.add('on');
+   }else{
+    ok.textContent='შენახულია.'; ok.classList.add('on');
+    const acc=document.querySelector('.acct span'); if(acc)acc.textContent=name.split(' ')[0];
+   }
+  }catch(_){ e.textContent='ქსელის შეცდომა — სცადე ხელახლა'; e.classList.add('on') }
+  go.disabled=false; go.textContent='შენახვა';
+ };
+}
+function wireBalance(){
+ const b=el('bal-n'); if(!b)return;
+ fetch('/api/auth',{cache:'no-store'}).then(r=>r.json()).then(d=>{
+  if(d&&d.ok&&d.user)b.textContent=(+d.user.balance||0).toFixed(2)+' ₾';
+ }).catch(()=>{});
+}
+
 const closeModal=()=>el('mask').classList.remove('on');
 el('mdx').onclick=closeModal;
 el('mask').onclick=e=>{if(e.target===el('mask'))closeModal()};
@@ -4568,19 +4650,45 @@ function mountLangSwitch(){
     არც რუკა იფარება, არც განცხადება და არც ფუტერი. ვიზუალურად ის
     დროშებს ებმის და ერთ ჯგუფად აღიქმება — ახალი ელემენტი კი არა,
     არსებული რიგის გაგრძელება. */
+ /* ⚠️ 2026-08-26, George-ის მოთხოვნით — აქამდე .acct უბრალო <a> იყო,
+    დალოგინებულებისთვისაც პირდაპირ cabinet.html-ზე გადამყვანი. ახლა
+    დალოგინებულს ღილაკზე დაჭერისას მენიუ ეხსნება (ჩემი განცხადებები /
+    პროფილის რედაქტირება / ბალანსის შევსება / გასვლა) — cabinet.html-ზე
+    ნავიგაცია მხოლოდ პირველი პუნქტია, არა ერთადერთი მოქმედება. სანამ
+    შესული არაა, ღილაკი ძველებურად პირდაპირ cabinet.html-ზე (login
+    ფორმაზე) გადაჰყავს. */
+ const accw=document.createElement('div');
+ accw.className='acctw'; accw.setAttribute('data-noi18n','');
  const acc=document.createElement('a');
- acc.className='acct'; acc.href='cabinet.html'; acc.setAttribute('data-noi18n','');
- /* ⚠️ data-noi18n განზრახაა — ეს ელემენტი JS-ით იქმნება page-load-ის შემდეგ,
-    ამიტომ ჩვეულებრივი i18n/MutationObserver-ის ნაცვლად LANG პირდაპირ აქვე
-    მოწმდება. ენის გადართვა location.reload()-ს იძახებს, ასე რომ ეს საკმარისია. */
+ acc.className='acct'; acc.href='cabinet.html';
  acc.title=LANG==='en'?'Cabinet':'კაბინეტი';
  acc.innerHTML='<i class="ad"></i><span>'+(LANG==='en'?'Log in':'შესვლა')+'</span>';
- bar.appendChild(acc);
- /* ვინც უკვე შესულია, სახელს ხედავს — არა „შესვლას" */
+ accw.appendChild(acc);
+ bar.appendChild(accw);
+ /* ვინც უკვე შესულია, სახელს ხედავს — არა „შესვლას", და ღილაკი
+    ნავიგაციის მაგივრად dropdown-ს ხსნის. */
  fetch('/api/auth',{cache:'no-store'}).then(r=>r.json()).then(d=>{
   if(d&&d.ok&&d.user){
    acc.classList.add('on');
    acc.querySelector('span').textContent=(d.user.name||(LANG==='en'?'Cabinet':'კაბინეტი')).split(' ')[0];
+   const dd=document.createElement('div');
+   dd.className='acctdd';
+   dd.innerHTML=
+    '<a href="cabinet.html">'+(LANG==='en'?'My listings':'ჩემი განცხადებები')+'</a>'+
+    '<button type="button" data-ac="account">'+(LANG==='en'?'Edit profile':'პროფილის რედაქტირება')+'</button>'+
+    '<button type="button" data-ac="balance">'+(LANG==='en'?'Top up balance':'ბალანსის შევსება')+'</button>'+
+    '<button type="button" class="out" data-ac="out">'+(LANG==='en'?'Log out':'გასვლა')+'</button>';
+   accw.appendChild(dd);
+   acc.href='javascript:void(0)';
+   acc.onclick=e=>{e.preventDefault();e.stopPropagation();accw.classList.toggle('open')};
+   dd.querySelector('[data-ac="account"]').onclick=()=>{accw.classList.remove('open');openModal('account')};
+   dd.querySelector('[data-ac="balance"]').onclick=()=>{accw.classList.remove('open');openModal('balance')};
+   dd.querySelector('[data-ac="out"]').onclick=async()=>{
+    accw.classList.remove('open');
+    await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'out'})}).catch(()=>{});
+    location.reload();
+   };
+   document.addEventListener('click',e=>{ if(!accw.contains(e.target))accw.classList.remove('open') });
   }
  }).catch(()=>{});
 

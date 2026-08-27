@@ -28,7 +28,7 @@ export async function onRequestGet({ env }) {
          საერთო რუკიდან გამორიცხულია. ის მაინც რჩება 'active' და მისი
          დამთხვევის/შეტყობინების ლოგიკა (mod.js) ამაზე არ არის დამოკიდებული —
          მხოლოდ ეს, საჯარო feed, არ აჩვენებს. */
-      `SELECT id, cat, deal, cad, lat, lng, poly, loc, reg, area, price, ttl, dsc,
+      `SELECT id, cat, deal, period, cad, lat, lng, poly, loc, reg, area, price, ttl, dsc,
               photos, attrs, tel, contact_name, created
          FROM lst WHERE status='active' AND visibility != 'private' ORDER BY created DESC LIMIT 500`
     ).all(),
@@ -44,7 +44,15 @@ export async function onRequestGet({ env }) {
     const attrs = safeJson(l.attrs, {});
     const poly = safeJson(l.poly, null);
     return {
-      id: l.id, t: l.cat, kind: l.deal, k: l.cad || null,
+      /* ⚠️ 2026-08-27, George-ის მოთხოვნით — გარიგების ტიპი (ყიდვა/ქირავნობა)
+         ახლა `deal`-ის სახელითაა (და არა `kind`) — `kind` ველი ისედაც
+         გამოიყენება index.html-ში მიწის დანიშნულების ფილტრისთვის
+         (agri/nonagri), და ეს ორი მნიშვნელობა ერთმანეთს ეჯახებოდა:
+         ბინა/სახლი "გასაქირავებელი" განცხადებებზეც კი "kind" 'buy'/'rent'-
+         ს შეიცავდა, რის გამოც ბარათზე ვერც ერთი ნამდვილად ვერ ჩანდა
+         სწორად (მიწის ფილტრიც აქამდე ამის გამო ვერასდროს მუშაობდა
+         რეალურად — ცალკე გამოსასწორებელია). */
+      id: l.id, t: l.cat, deal: l.deal, period: l.period, k: l.cad || null,
       lat: l.lat, lng: l.lng, poly,
       loc: l.loc, reg: l.reg, a: l.area, p: l.price,
       ttl: l.ttl, desc: l.dsc, photos, img: photos[0] || null,

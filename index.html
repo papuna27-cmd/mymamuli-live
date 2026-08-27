@@ -69,12 +69,12 @@ gtag('config', 'G-N30XKZCDCT');
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.08.27-1420"></script>
+<script src="i18n.js?v=2026.08.27-1530"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.27-1420';
+window.MM_BUILD = '2026.08.27-1530';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1269,11 +1269,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.27-1420">
+<footer data-build="2026.08.27-1530">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.27-1420</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.08.27-1530</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -1419,7 +1419,13 @@ const NAT=[
 /* ⚠️ ლაივზე გასვლისას გასუფთავდა — ადრე აქ იყო სადემონსტრაციო/სატესტო განცხადებები.
    რეალური მონაცემი D1 ბაზიდან მოვა (/api-ს საშუალებით), როცა ეს ეტაპი აშენდება. */
 const DATA=[];
-const TN={land:'მიწის ნაკვეთი',house:'სახლი / ბინა',comm:'კომერციული',invest:'საინვესტიციო',garage:'ავტოფარეხი'};
+/* ⚠️ 2026-08-27, George-ის მოთხოვნით — ეს სია LAUNCH.cats-ს/CATN2-ს
+   ჩამორჩენოდა (flat/cottage/villa/office/hotel/resto/base აკლდა),
+   ამიტომ ასეთი კატეგორიის ბინის/სახლის ბარათზე TN[o.t] იძლეოდა
+   undefined-ს და "undefined" ჩანდა ბეჯზე ბუკვალურად. */
+const TN={land:'მიწის ნაკვეთი',house:'სახლი / აგარაკი',flat:'ბინა',cottage:'კოტეჯი',villa:'ვილა',
+ comm:'კომერციული',office:'საოფისე ფართი',hotel:'სასტუმრო',resto:'რესტორანი / ბარი',base:'სარდაფი',
+ invest:'საინვესტიციო',garage:'ავტოფარეხი',parking:'ავტოსადგომი'};
 
 /* =================================================================
    3ბ. მყიდველის მოთხოვნები — „ვეძებ"
@@ -1526,6 +1532,12 @@ const CATN2={land:'მიწის ნაკვეთი',invest:'საინ�
 const DEALN={buy:'იყიდება',rent:'ქირავდება'};
 const catName=t=>CATN2[t]||t;
 const dealName=d=>DEALN[d]||'';
+/* ⚠️ 2026-08-27, George-ის მოთხოვნით — გასაქირავებელი განცხადება (o.deal
+   ==='rent') ფასს ისე კი არ უნდა აჩვენებდეს, როგორც გასაყიდი (ფასი
+   მ²-ზე + სრული ფასი) — ქირას მ²-ზე დაყოფას აზრი არა აქვს. მის მაგივრად
+   მთლიან ფასს ვაჩვენებთ, პერიოდის აღნიშვნით (/თვე ან /წელი). */
+const isRent=o=>o&&o.deal==='rent';
+const dealSuffix=o=>isRent(o)?' / '+T(o.period==='year'?'წელი':'თვე'):'';
 /* ⚠️ 2026-08-26: George-ის მოთხოვნით — მოთხოვნის (request) ბარათზე
    "ქირავდება" (რაც განცხადების/listing-ის ტერმინია, ანუ "ეს ქონება
    გაქირავებულია") აზრობრივად არასწორია, სწორია "ქირით" (ანუ "ეძებს
@@ -2094,15 +2106,19 @@ function hovBox(){
 const PIN_ICON='<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="10" r="2.4" fill="currentColor"/></svg>';
 
 function hovHTML(o){
- const m=perM2(o);
+ /* ⚠️ 2026-08-27, George-ის მოთხოვნით — გასაქირავებელ განცხადებას
+    ფასის მ²-ზე დაშლილი ვერსია აღარ უჩანს (ქირას ეს არ ერგება) და
+    ბეჯზეც პირდაპირ "ქირავდება" წერია — მანამდე TN[o.t] ცალკე (flat-
+    ისთვის) undefined-ს იძლეოდა, "undefined" ჩანდა ტექსტურად. */
+ const m=isRent(o)?null:perM2(o);
  return '<div class="hv-top">'+
    (o.t==='land'&&!o.img?'<img src="'+LAND_IMG+'" alt="">':'')+
-   '<span class="hv-badge">'+T(TN[o.t])+'</span>'+
+   '<span class="hv-badge">'+T(TN[o.t]||o.t)+(isRent(o)?' · '+T('ქირავდება'):'')+'</span>'+
    (o.days===0?'<span class="hv-new">'+T('დღეს')+'</span>':'')+
    '<span class="hv-int">'+interestHTML(o.id)+'</span>'+
   '</div>'+
   '<div class="hv-b">'+
-   '<div class="hv-p">'+(m!=null?'$'+fmt(m):'$'+fmt(o.p))+(m!=null?'<small>/'+T('მ²')+' · $'+fmt(o.p)+'</small>':'')+'</div>'+
+   '<div class="hv-p">'+(m!=null?'$'+fmt(m):'$'+fmt(o.p))+(m!=null?'<small>/'+T('მ²')+' · $'+fmt(o.p)+'</small>':dealSuffix(o))+'</div>'+
    '<div class="hv-t">'+T(o.ttl)+'</div>'+
    '<div class="hv-l">'+PIN_ICON+'<span>'+T(o.loc)+(o.reg&&o.reg!==o.loc?', '+T(o.reg):'')+'</span></div>'+
    '<div class="hv-r"><span><b>'+fmt(o.a)+'</b> '+T('მ²')+'</span>'+
@@ -3165,8 +3181,11 @@ const BASE_TITLE=document.title, BASE_DESC=document.querySelector('meta[name=des
 function setMeta(name,val,attr){let m=document.querySelector('meta['+(attr||'name')+'="'+name+'"]');
  if(!m){m=document.createElement('meta');m.setAttribute(attr||'name',name);document.head.appendChild(m)}m.content=val;}
 function seoFor(o){
- const t=o.ttl+' — $'+fmt(o.p)+' | MyMamuli.ge';
- const desc=o.ttl+'. ფასი $'+fmt(o.p)+' ($'+fmt(o.p/o.a)+'/მ²), '+o.loc+
+ /* ⚠️ 2026-08-27, George-ის მოთხოვნით — ქირაზე მ²-ზე ფასი (ისევე
+    როგორც ბარათზე) აზრს კარგავს; მის მაგივრად "/თვე"-ს ვწერთ. */
+ const priceTxt='$'+fmt(o.p)+(isRent(o)?' / '+(o.period==='year'?'წელი':'თვე'):(o.a?' ($'+fmt(o.p/o.a)+'/მ²)':''));
+ const t=o.ttl+' — $'+fmt(o.p)+(isRent(o)?'/'+(o.period==='year'?'წელი':'თვე'):'')+' | MyMamuli.ge';
+ const desc=o.ttl+'. ფასი '+priceTxt+', '+o.loc+
    (o.k?'. საკადასტრო კოდი '+o.k+', ოფიციალური საზღვარი საჯარო რეესტრიდან.':'.')+' შუამავლების გარეშე — MyMamuli.ge';
  const url='https://mymamuli.ge/g/'+o.id;
  document.title=t;
@@ -3450,10 +3469,10 @@ function openCard(o){
  (function(){
    const ph=photosOf(o), n=ph.length;
    if(!n)return '<div class="gal" style="cursor:default"><div class="ph">'+T('ფოტო ჯერ არ არის')+'</div>'+
-     '<div class="kind">'+TN[o.t]+'</div></div>';
+     '<div class="kind">'+(TN[o.t]||o.t)+(isRent(o)?' · '+T('ქირავდება'):'')+'</div></div>';
    return '<div class="gal" id="gal0">'+
      '<img class="gp" id="galimg" src="'+ph[0]+'" alt="'+o.ttl+'" loading="lazy">'+
-     '<div class="kind">'+TN[o.t]+'</div>'+
+     '<div class="kind">'+(TN[o.t]||o.t)+(isRent(o)?' · '+T('ქირავდება'):'')+'</div>'+
      (n>1?'<div class="cnt" id="galcnt">1 / '+n+'</div>':'')+
      (n>1?'<button class="ga p" id="ga-p" aria-label="'+T('წინა')+'">‹</button>'+
           '<button class="ga n" id="ga-n" aria-label="'+T('შემდეგი')+'">›</button>'+
@@ -3465,7 +3484,7 @@ function openCard(o){
       '<div class="th'+(k===0?' on':'')+'" data-k="'+k+'"><img src="'+u+'" alt=""></div>').join('')+'</div>':'');
  })()+
  '<div class="introw">'+interestHTML(o.id)+'</div>'+
- '<div class="price">$'+fmt(o.p)+'</div>'+
+ '<div class="price">$'+fmt(o.p)+dealSuffix(o)+'</div>'+
  '<h1 class="ttl">'+o.ttl+'</h1>'+
  '<div class="addr"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="margin-top:3px;flex:0 0 auto"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="2"/></svg><span>'+(o.loc||o.reg||T('მდებარეობა არ არის მითითებული'))+(o.loc&&o.reg&&o.reg!==o.loc?', '+o.reg:'')+'</span></div>'+
  '<div class="blk" id="kv">'+
@@ -3482,7 +3501,13 @@ function openCard(o){
  /* ⚠️ 2026-08-26, George-ის მოთხოვნით — ფასის ჩვენება მაძიებლის
     ბარათის (openReq) ლოგიკის მიხედვით: მთავარ ფასთან ერთად ცალკე
     ბლოკი "ფასი მ²-ზე"/"სრული ფასი" ორ ცალკე მწკრივად. */
- (o.a?'<div class="blk"><div class="h"><span class="dot"></span>საშუალო ფასი</div>'+
+ /* ⚠️ 2026-08-27, George-ის მოთხოვნით — ეს "ფასი მ²-ზე" ბლოკი მხოლოდ
+    გასაყიდ განცხადებას შეესაბამება; ქირას მ²-ზე დაყოფა აზრს კარგავს
+    (ორივემ ერთი და იგივე ლოგიკით ჩვენება ქირას "გასაყიდივით" აჩენდა,
+    თუმცა თვითონ სიტყვა "იყიდება" არსად წერია — უბრალოდ ფასის ფორმატი
+    სწორედ გაყიდვის ფორმატი იყო). ქირაზე ზედა ფასი (/თვე ან /წელი)
+    უკვე საკმარისია, ამ ბლოკის გამეორება არ სჭირდება. */
+ (o.a&&!isRent(o)?'<div class="blk"><div class="h"><span class="dot"></span>საშუალო ფასი</div>'+
    '<div class="r"><span>ფასი მ²-ზე</span><span>$'+fmt(Math.round(o.p/o.a))+'</span></div>'+
    '<div class="r"><span>სრული ფასი</span><span>$'+fmt(o.p)+'</span></div>'+
  '</div>':'')+
@@ -3550,9 +3575,9 @@ function openCard(o){
   '<div class="pk-top">'+
     '<div class="pk-th">'+(o.t==='land'&&!o.img?'<img class="gp" src="'+LAND_IMG+'" alt="">':'')+'<b>'+WATERMARK+'</b></div>'+
     '<div class="pk-i">'+
-      '<div class="pk-p">$'+fmt(o.p)+(perM2(o)!=null?'<small>$'+fmt(perM2(o))+'/მ²</small>':'')+'</div>'+
+      '<div class="pk-p">$'+fmt(o.p)+(!isRent(o)&&perM2(o)!=null?'<small>$'+fmt(perM2(o))+'/მ²</small>':'<small>'+dealSuffix(o)+'</small>')+'</div>'+
       '<div class="pk-t">'+o.ttl+'</div>'+
-      '<div class="pk-m">'+o.loc+' · '+fmt(o.a)+' მ²'+(o.k?' · '+TN[o.t]:'')+'</div>'+
+      '<div class="pk-m">'+o.loc+' · '+fmt(o.a)+' მ²'+(isRent(o)?' · '+T('ქირავდება'):(o.k?' · '+(TN[o.t]||o.t):''))+'</div>'+
     '</div></div>'+
   '<div class="pk-b">'+
     '<button class="pri" id="pk-tel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6.5 3.5h3l1.6 4-2 1.4a12 12 0 0 0 6 6l1.4-2 4 1.6v3c0 1-.8 1.9-1.9 1.8C10.6 19.6 4.4 13.4 3.7 5.4 3.6 4.3 4.5 3.5 5.5 3.5h1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>ნომრის ჩვენება</button>'+

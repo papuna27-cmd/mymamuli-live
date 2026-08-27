@@ -29,11 +29,28 @@
  * ⚠️ მხოლოდ status='active' ჩანს. დაუდასტურებელი/დახურული
  *    ჩანაწერი მთავარზე გადამისამართდება — გატეხილი ბმული
  *    უარესია, ვიდრე მშვიდი გადამისამართება.
- */
+ *
+ * ⚠️ 2026-08-27, George-ის მოთხოვნით — ცოცხალი ადამიანისთვის ეს გვერდი
+ *    საერთოდ აღარ ჩანს: მას პირდაპირ საიტის დეპ-ლინკზე (`/?req={id}`
+ *    ან `/#/g/{id}`) ვამისამართებთ 302-ით, სადაც ბარათი/popup თავად
+ *    იხსნება ავტომატურად (იხ. index.html-ის tryDeepLink()). ეს გვერდი
+ *    კვლავ სრულად რჩება Facebook/WhatsApp/Telegram/Google-ის
+ *    ბოტებისთვის (OG პრევიუ + SEO ინდექსაცია) — მათი User-Agent-ის
+ *    მიხედვით ვარჩევთ, აჩვენოთ თუ გადავამისამართოთ. ნახვის მთვლელს
+ *    ეს არ ვნებს — SPA თავადაც წერს ნახვას ბარათის გახსნისას
+ *    (loadViews()/POST /api/views, index.html-ში), ამიტომ ადამიანის
+ *    ვიზიტი მაინც დაითვლება, უბრალოდ ერთხელ ორის ნაცვლად. */
 import { CITY_SLUGS } from '../../_cities.js';
 import { CITY_LOCATIVE } from '../../_city_locative.js';
 
 const SITE = 'https://mymamuli.ge';
+
+/* ცნობილი ბოტები/crawler-ები, რომლებსაც სრული OG/SEO გვერდი უნდა
+   დარჩეთ (redirect არ ეხებათ) — სოც. ქსელების პრევიუ-სკანერები და
+   საძიებო სისტემები. ყველა დანარჩენი (ნამდვილი ბრაუზერი) პირდაპირ
+   საიტის დეპ-ლინკზე გადადის. */
+const BOT_UA_RE = /bot|spider|crawl|slurp|facebookexternalhit|whatsapp|skypeuripreview|vkshare|pinterest|embedly|outbrain|quora|telegram|discordbot/i;
+const isBotUA = ua => BOT_UA_RE.test(ua || '');
 
 /* ნომინატივი — გამყიდველის განცხადებებში „იყიდება/ქირავდება {კატეგორია}" */
 const CATN = {
@@ -174,9 +191,15 @@ export async function onRequestGet({ params, request, env }) {
 
   const lang = new URL(request.url).searchParams.get('lang') === 'en' ? 'en' : 'ka';
   const t = T[lang];
+  const bot = isBotUA(request.headers.get('user-agent'));
 
-  if (/^r_[a-z0-9]+$/.test(id)) return requestPage(id, env, lang);
+  if (/^r_[a-z0-9]+$/.test(id)) return requestPage(id, env, lang, bot);
   if (!/^l_[a-z0-9]+$/.test(id)) return redirectHome();
+
+  /* ⚠️ 2026-08-27: ნამდვილი ბრაუზერი პირდაპირ დეპ-ლინკზე გადადის,
+     DB-ის წაკითხვის გარეშეც — id-ს ვალიდურობას tryDeepLink() თავად
+     ამოწმებს (თუ id არ მოიძებნა, უბრალოდ ჩვეულებრივი რუკა რჩება). */
+  if (!bot) return Response.redirect(`${SITE}/#/g/${id}${lang === 'en' ? '?lang=en' : ''}`, 302);
 
   const l = await env.DB.prepare(
     `SELECT id,cat,deal,period,cad,addr,lat,lng,loc,reg,area,price,ttl,dsc,photos,attrs,tel,contact_name,visibility,created,expires
@@ -380,9 +403,12 @@ if(b)b.onclick=function(){
  * გამყიდველს შეუძლია შეთავაზების გაგზავნა. OG სურათად requests-map.jpg-ს
  * ვიყენებთ — საქართველოს რუკა მოთხოვნების ბუშტებით + ლოგო (მოთხოვნას
  * საკუთარი ფოტო არ აქვს, ამიტომ ეს არის საერთო ბრენდირებული დეფოლტი). */
-async function requestPage(id, env, lang) {
+async function requestPage(id, env, lang, bot) {
   const t = T[lang];
   const redirectHome = () => Response.redirect(SITE, 302);
+  /* ⚠️ 2026-08-27: იხ. ფაილის თავში კომენტარი — ნამდვილი ბრაუზერი
+     პირდაპირ დეპ-ლინკზე გადადის, DB-ის წაკითხვის გარეშეც. */
+  if (!bot) return Response.redirect(`${SITE}/?req=${id}${lang === 'en' ? '&lang=en' : ''}`, 302);
   const r = await env.DB.prepare(
     `SELECT id,cat,deal,period,lat,lng,radius,area_min,area_max,price_min,price_max,note,sent_n,created
        FROM req WHERE id=?1 AND status='active'`

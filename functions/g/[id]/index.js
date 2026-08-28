@@ -464,9 +464,11 @@ async function requestPage(id, env, lang, bot) {
   const desc = [dealN, areaTxt, budgetTxt, place ? t.near(place) + ', ' + radiusTxt : radiusTxt]
     .filter(Boolean).join(' · ') + t.descTailReq;
   const url = `${SITE}/g/${id}/` + (lang === 'en' ? '?lang=en' : '');
-  /* George-ის მოთხოვნით (2026-08-25) — კანონიკური სურათის მისამართი და
-     ფორმატი: /images/mymamuli-social-share-1200x630.png (PNG, 1200x630). */
-  const cover = `${SITE}/images/mymamuli-social-share-1200x630.png`;
+  /* ⚠️ 2026-08-28: George-ის მოთხოვნით — საერთო რუკის სურათის ნაცვლად
+     r.deal-ის მიხედვით ორი ცალკე ბრენდირებული სურათი: ქირის მოთხოვნას
+     "ვეძებ ... ქირით", ყიდვის მოთხოვნას "მყიდველი ეძებს ...". ორივე
+     PNG, 1200x630, images/-ში. */
+  const cover = `${SITE}/images/mymamuli-social-share-${r.deal === 'rent' ? 'rent' : 'buy'}-1200x630.png`;
 
   const rows = [
     [t.category, catN],

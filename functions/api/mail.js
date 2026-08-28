@@ -61,10 +61,24 @@ export async function onRequestGet({ request, env }) {
   const q = await env.DB.prepare(
     `SELECT status, COUNT(*) AS n FROM mailq GROUP BY status`
   ).all();
+
+  /* ⚠️ 2026-08-28: George-ის მოთხოვნით — დიაგნოსტიკისთვის საჭირო გახდა
+     კონკრეტული status/kind-ის მიხედვით გაფილტვრა (მაგ. ?status=failed
+     ან ?kind=verify), რომ დავინახოთ ზუსტად რატომ არ აღწევს
+     დადასტურების კოდი — ნაგულისხმევი "ბოლო 20" ხშირად სულ სხვა
+     ტიპის (approved და ა.შ.) წერილებით ივსებოდა. */
+  const stF = url.searchParams.get('status');
+  const kF = url.searchParams.get('kind');
+  const lim = Math.min(Number(url.searchParams.get('limit')) || 20, 200);
+  const conds = [], args = [];
+  if (stF) { conds.push(`status=?${args.length + 1}`); args.push(stF) }
+  if (kF) { conds.push(`kind=?${args.length + 1}`); args.push(kF) }
+  const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
   const last = await env.DB.prepare(
     `SELECT id, kind, to_addr, status, err, created, sent
-       FROM mailq ORDER BY id DESC LIMIT 20`
-  ).all();
+       FROM mailq ${where} ORDER BY id DESC LIMIT ${lim}`
+  ).bind(...args).all();
+
   return J({
     counts: q.results || [],
     recent: last.results || [],

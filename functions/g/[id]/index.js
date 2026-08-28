@@ -466,9 +466,12 @@ async function requestPage(id, env, lang, bot) {
   const url = `${SITE}/g/${id}/` + (lang === 'en' ? '?lang=en' : '');
   /* ⚠️ 2026-08-28: George-ის მოთხოვნით — საერთო რუკის სურათის ნაცვლად
      r.deal-ის მიხედვით ორი ცალკე ბრენდირებული სურათი: ქირის მოთხოვნას
-     "ვეძებ ... ქირით", ყიდვის მოთხოვნას "მყიდველი ეძებს ...". ორივე
+     "ვეძებ ... ქირით", ყიდვის მოთხოვნას "მყიდველი ეძებს ...". ორივეს
+     ინგლისური ვერსიაც დაემატა — lang-ის მიხედვით 4 ვარიანტიდან ერთ-ერთი
+     ("Looking to Rent a Property" / "Buyer Looking for Property"). ყველა
      PNG, 1200x630, images/-ში. */
-  const cover = `${SITE}/images/mymamuli-social-share-${r.deal === 'rent' ? 'rent' : 'buy'}-1200x630.png`;
+  const coverDeal = r.deal === 'rent' ? 'rent' : 'buy';
+  const cover = `${SITE}/images/mymamuli-social-share-${coverDeal}${lang === 'en' ? '-en' : ''}-1200x630.png`;
 
   const rows = [
     [t.category, catN],

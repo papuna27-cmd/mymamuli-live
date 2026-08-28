@@ -204,6 +204,15 @@ export async function onRequestPost({ request, env }) {
     /* დადასტურებული ანგარიში უკვე არსებობს — ხელახლა არ იქმნება */
     if (u && u.pass && u.email_ok) return J({ error: 'exists' }, 409);
 
+    /* ⚠️ 2026-08-28: George-ის მოთხოვნით (Resend-ის "daily_quota_exceeded"
+       ინციდენტის შემდეგ) — თუ დაუდასტურებელი ანგარიში მრავალჯერ იგზავნება
+       register-ზე (მაგ. მომხმარებელი კოდს არ იღებს და თავიდან ცდის),
+       ყოველი ცდა ახალ ვერიფიკაციის წერილს ქმნიდა, `resend`-ის (5/დღეში)
+       მსგავსი ლიმიტის გარეშე — სწორედ ამან დაწვა დღიური Resend-კვოტა
+       ერთი ტესტ-ანგარიშის გამო. იგივე ზღვარი აქაც. */
+    if (await limited(env, 'reg-mail:' + email, 5, 86400e3))
+      return J({ ok: true, needVerify: true, email });
+
     /* ტელეფონი სხვას ეკუთვნის (გარდა თვითონ ამ, ჯერ დაუდასტურებელი, ანგარიშისა) */
     const dupPhone = await env.DB.prepare(
       `SELECT id FROM users WHERE phone_hash=?1 AND email_norm<>?2`

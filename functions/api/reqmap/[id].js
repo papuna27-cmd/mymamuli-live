@@ -105,12 +105,14 @@ export async function onRequestGet({ params, request, env }) {
 
   if (debug) {
     const test = await fetch(mapUrl).catch(e => ({ status: 'fetch-throw:' + e, ok: false, headers: new Headers() }));
+    const testBody = test.text ? await test.text().catch(() => '') : '';
     const composed = await fetch(mapUrl, {
       cf: { image: { width: W, height: H, fit: 'cover', draw: [{ url: frameUrl, top: 0, left: 0 }] } }
     }).catch(e => ({ status: 'fetch-throw:' + e, ok: false, headers: new Headers() }));
     return new Response(JSON.stringify({
       mapUrl: mapUrl.replace(/apiKey=[^&]+/, 'apiKey=***'),
       frameUrl,
+      rawMapBody: testBody.slice(0, 500),
       rawMap: { status: test.status, ok: test.ok, ctype: test.headers.get && test.headers.get('content-type') },
       composed: { status: composed.status, ok: composed.ok, ctype: composed.headers.get && composed.headers.get('content-type') }
     }, null, 2), { headers: { 'content-type': 'application/json' } });

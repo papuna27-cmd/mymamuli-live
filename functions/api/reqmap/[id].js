@@ -101,7 +101,15 @@ export async function onRequestGet({ params, request, env }) {
 
   if (!env.GEOAPIFY_KEY) return Response.redirect(frameUrl, 302);
 
-  const mapUrl = buildMapUrl(env, r.lat, r.lng, r.radius || 300);
+  let mapUrl = buildMapUrl(env, r.lat, r.lng, r.radius || 300);
+
+  /* debug-ონლი override — Geoapify-ის სქემის სწრაფი ტესტირებისთვის,
+     George-ის ხელახალი დეპლოის გარეშე: ?debug=1&testmarker=... */
+  if (debug && url.searchParams.get('testmarker')) {
+    const u = new URL(mapUrl);
+    u.searchParams.set('marker', url.searchParams.get('testmarker'));
+    mapUrl = u.toString();
+  }
 
   if (debug) {
     const test = await fetch(mapUrl).catch(e => ({ status: 'fetch-throw:' + e, ok: false, headers: new Headers() }));

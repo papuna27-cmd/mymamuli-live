@@ -204,6 +204,17 @@ export async function onRequestPost({ request, env }) {
     /* დადასტურებული ანგარიში უკვე არსებობს — ხელახლა არ იქმნება */
     if (u && u.pass && u.email_ok) return J({ error: 'exists' }, 409);
 
+    /* ⚠️ 2026-08-28: George-ის მოთხოვნით — admin-ის მიერ „ულიმიტო"
+       მონიშნულ (comp_ok) მომხმარებელს ელფოსტის კოდი საერთოდ არ სჭირდება,
+       არც submit.js-ის განცხადება/მოთხოვნაზე (ეს უკვე მუშაობდა) და
+       არც აქ, ანგარიშის შექმნა/შესვლისას. აქამდე comp_ok მხოლოდ
+       submit.js-ში მოქმედებდა — ეს ფაილი (auth.js) საერთოდ არ კითხულობდა
+       ამ ალამს, ამიტომ „ულიმიტო" მომხმარებელსაც ისევ კოდი ეთხოვებოდა
+       register-ისას. ალამი მხოლოდ არსებულ (უკვე ადმინის მიერ მონიშნულ)
+       ანგარიშზე მოქმედებს — ახალი, ჯერ არარსებული ანგარიში ვერასდროს
+       იქნება comp_ok, ამიტომ აქ ბოროტად გამოყენების რისკი არ არის. */
+    const wasCompOk = !!(u && u.comp_ok);
+
     /* ⚠️ 2026-08-28: George-ის მოთხოვნით (Resend-ის "daily_quota_exceeded"
        ინციდენტის შემდეგ) — თუ დაუდასტურებელი ანგარიში მრავალჯერ იგზავნება
        register-ზე (მაგ. მომხმარებელი კოდს არ იღებს და თავიდან ცდის),
@@ -245,6 +256,12 @@ export async function onRequestPost({ request, env }) {
       u = { id };
     }
 
+    /* comp_ok — კოდის გარეშე პირდაპირ სესია (იხ. ზემოთ კომენტარი) */
+    if (wasCompOk) {
+      await env.DB.prepare(`UPDATE users SET email_ok=1 WHERE id=?1`).bind(u.id).run();
+      return issueSession(env, u);
+    }
+
     /* --- დადასტურების კოდი ელფოსტაზე --- */
     const code = randCode(6);
     await env.DB.batch([
@@ -281,8 +298,12 @@ export async function onRequestPost({ request, env }) {
   const h = await hash(pass, u.salt || '');
   if (!safeEq(h, u.pass)) return J({ error: 'wrong' }, 401);
 
-  /* დაუდასტურებელი ელფოსტით სესია არ იხსნება — კოდის გვერდზე ვაბრუნებთ */
-  if (!u.email_ok) return J({ error: 'unverified', email: u.email }, 403);
+  /* დაუდასტურებელი ელფოსტით სესია არ იხსნება — კოდის გვერდზე ვაბრუნებთ,
+     comp_ok („ულიმიტო") მომხმარებლის გარდა — მას კოდი საერთოდ არ სჭირდება. */
+  if (!u.email_ok && !u.comp_ok) return J({ error: 'unverified', email: u.email }, 403);
+  if (!u.email_ok && u.comp_ok) {
+    await env.DB.prepare(`UPDATE users SET email_ok=1 WHERE id=?1`).bind(u.id).run();
+  }
 
   return issueSession(env, u);
 }

@@ -123,6 +123,15 @@ export async function onRequestGet({ params, request, env }) {
     return Response.redirect(frameUrl, 302);
   }
 
+  /* ?rawimg=1 — ადმინისთვის: Geoapify-ის სუფთა რუკის სურათი, ჩარჩოს/
+     Cloudflare-ის image-transform-ის გარეშე (ზუმის ზუსტი კალიბრაციისთვის,
+     Image Transformations-ის რეიტ-ლიმიტისგან დამოუკიდებლად). */
+  if (debug && url.searchParams.get('rawimg') === '1') {
+    const raw = await fetch(mapUrl).catch(() => null);
+    if (raw && raw.ok) return new Response(raw.body, { headers: { 'content-type': raw.headers.get('content-type') || 'image/jpeg' } });
+    return new Response('raw map fetch failed: ' + (raw ? raw.status : 'exception'), { status: 502 });
+  }
+
   if (debug) {
     const test = await fetch(mapUrl).catch(e => ({ status: 'fetch-throw:' + e, ok: false, headers: new Headers() }));
     const testBody = test.text ? await test.text().catch(() => '') : '';

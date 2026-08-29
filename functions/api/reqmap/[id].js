@@ -113,11 +113,22 @@ export async function onRequestGet({ params, request, env }) {
 
   let mapUrl = buildMapUrl(env, r.lat, r.lng, r.radius || 300);
 
+  /* ⚠️ 2026-08-29 (3): Cloudflare Image Transformations-ს აქვს ცალკე,
+     დამოუკიდებელი cache draw()-ის წყარო-URL-ებისთვის — ის ინახავდა
+     ჩარჩოს ფაილის ძველ ვერსიას (ჯერ კიდევ George-ის ახალი დიზაინის
+     ატვირთვამდე), მიუხედავად იმისა, რომ origin-ზე ფაილი უკვე
+     განახლებულია (პირდაპირი fetch ყოველთვის სუფთა/ახალს აბრუნებდა).
+     ამიტომ ყოველ draw()-სურათს ვამატებთ ვერსიის query-პარამეტრს, რომ
+     Cloudflare-მ ახალი URL-ივით აღიქვას და ქეშიდან აღარ წამოიღოს. */
+  const ASSET_V = 'v3';
+  const frameUrlV = `${frameUrl}?${ASSET_V}`;
+  const circleUrlV = `${CIRCLE_ASSET}?${ASSET_V}`;
+
   /* ორი ფენა რუკის თავზე: (1) ჩვენი ფიქსირებული ზომის დაშტრიხული წრე,
      ზუსტად ჩარჩოს ფანჯარაში ცენტრირებული; (2) ბრენდირებული ჩარჩო. */
   const drawLayers = [
-    { url: CIRCLE_ASSET, top: CIRCLE_TOP, left: CIRCLE_LEFT, width: CIRCLE_D, height: CIRCLE_D },
-    { url: frameUrl, top: 0, left: 0 }
+    { url: circleUrlV, top: CIRCLE_TOP, left: CIRCLE_LEFT, width: CIRCLE_D, height: CIRCLE_D },
+    { url: frameUrlV, top: 0, left: 0 }
   ];
 
   /* debug-ონლი override — Geoapify-ის სქემის/ზუმის სწრაფი კალიბრაციისთვის,

@@ -9,17 +9,25 @@
  * ერთი წრით/პინით, არა ჩვენი ცოცხალი რუკის screenshot-ით.
  *
  * აწყობა ხდება ორი ფენით, გარე compositing-სერვისის გარეშე:
- *   1) MapTiler Static Maps API — რუკის სურათი მოთხოვნის lat/lng-ზე,
- *      + დახატული წრე (path) ზუსტად radius-ის მიხედვით + პინი.
+ *   1) Geoapify Static Maps API — რუკის სურათი მოთხოვნის lat/lng-ზე,
+ *      + დახატული წრე (geometry) ზუსტად radius-ის მიხედვით + პინი.
  *   2) Cloudflare-ის ჩაშენებული Image Transformations draw() —
  *      ჩვენი ბრენდირებული ჩარჩო (header/footer, y:106–493
  *      გამჭვირვალეა) ეხატება ამ რუკის თავზე ერთ საბოლოო PNG-ად.
+ *
+ * ⚠️ 2026-08-29 (2): თავდაპირველად MapTiler-ის Static Maps API
+ * ვცადეთ (env.MAPTILER_KEY უკვე არსებობდა — ცოცხალი ინტერაქტიული
+ * რუკისთვის), მაგრამ ყოველთვის 429 აბრუნებდა. გავარკვიეთ: MapTiler-ის
+ * Static Maps API საერთოდ არ შედის მათ Free გეგმაში (მხოლოდ ფასიან
+ * გეგმებზეა ხელმისაწვდომი) — ეს ცნობილი ფაქტია (იხ. ძველი შენიშვნა
+ * task #110-ში: "MapTiler არ გამოდგა"). ამიტომ Geoapify-ზე გადავედით,
+ * რომლის Free tier-იც სპეციალურად სწორედ ამ სცენარს ფარავს.
  *
  * ზუმი ისე გამოითვლება, რომ წრე ყოველთვის ჩარჩოს ხილული ფანჯრის
  * (1200×388) ~62%-ს იკავებდეს — ანუ კიდეებს არ ეხება, მარგინალი
  * თანაბრადაა ორივე მხარეს (George-ის მოთხოვნა).
  *
- * თუ რამე ვერ მოხერხდა (MapTiler-ის ხარვეზი, გასაღები არ არის,
+ * თუ რამე ვერ მოხერხდა (Geoapify-ის ხარვეზი, გასაღები არ არის,
  * მოთხოვნა ვერ მოიძებნა) — ვბრუნდებით უბრალო ბრენდირებულ ჩარჩოზე
  * (რუკის გარეშე), რომ FB/WhatsApp-ისთვის სურათი არასდროს გატყდეს.
  *
@@ -43,20 +51,6 @@ const W = 1200, H = 630;
 const WIN_H = 388;
 const CIRCLE_PX = Math.round(WIN_H * 0.62); /* ~240px */
 
-/* წრის მრავალკუთხედი (64 წვერო) — lat/lng-ში, mercator-გარეშე
-   მარტივი მიახლოებით (იგივე ფორმულა, რასაც submit.js იყენებს
-   მოთხოვნის ბაუნდინგ-ბოქსისთვის). */
-function circlePolygon(lat, lng, radiusM, points = 64) {
-  const dLat = radiusM / 111320;
-  const dLng = radiusM / (111320 * Math.cos(lat * Math.PI / 180));
-  const pts = [];
-  for (let i = 0; i <= points; i++) {
-    const a = (i / points) * 2 * Math.PI;
-    pts.push([lat + dLat * Math.sin(a), lng + dLng * Math.cos(a)]);
-  }
-  return pts;
-}
-
 /* ზუმის გამოთვლა — წრის დიამეტრი (მეტრებში) ზუსტად CIRCLE_PX
    პიქსელს რომ შეესაბამებოდეს ამ განედზე (Web Mercator scale). */
 function zoomForRadius(lat, radiusM) {
@@ -65,15 +59,26 @@ function zoomForRadius(lat, radiusM) {
   return Math.max(3, Math.min(19, z));
 }
 
+/* Geoapify Static Maps — წრეს (geometry=circle) და პინს (marker)
+   თვითონ ხატავს სერვერზე ერთადერთ ამ ორ ობიექტს, ჩვენი მოთხოვნის
+   მეზობელი განცხადებების ბუშტების გარეშე (ისინი საერთოდ არც კი
+   იგზავნება). Free tier ამას სრულად ფარავს. */
 function buildMapUrl(env, lat, lng, radiusM) {
   const zoom = zoomForRadius(lat, radiusM).toFixed(2);
-  const poly = circlePolygon(lat, lng, radiusM);
-  /* Google/MapTiler-ტიპის path სინტაქსი: fill/color/weight + lat,lng წერტილები */
-  const path = 'fill:0xC8873A33|color:0xC8873AFF|weight:3|' +
-    poly.map(p => p[0].toFixed(6) + ',' + p[1].toFixed(6)).join('|');
-  const marker = 'color:0xC8873AFF|' + lat.toFixed(6) + ',' + lng.toFixed(6);
-  const params = new URLSearchParams({ key: env.MAPTILER_KEY, path, markers: marker });
-  return `https://api.maptiler.com/maps/hybrid/static/${lng.toFixed(6)},${lat.toFixed(6)},${zoom}/${W}x${H}@2x.png?${params.toString()}`;
+  const geometry = `circle:${lng.toFixed(6)},${lat.toFixed(6)},${Math.round(radiusM)};linewidth:3;linecolor:%23C8873A;fillcolor:%23C8873A;fillopacity:0.15;linestyle:dashed`;
+  const marker = `lonlat:${lng.toFixed(6)},${lat.toFixed(6)};color:%23C8873A;size:large`;
+  const params = new URLSearchParams({
+    style: 'osm-bright-smooth',
+    center: `lonlat:${lng.toFixed(6)},${lat.toFixed(6)}`,
+    zoom,
+    width: String(W),
+    height: String(H),
+    'scale-factor': '2',
+    geometry,
+    marker,
+    apiKey: env.GEOAPIFY_KEY
+  });
+  return `https://maps.geoapify.com/v1/staticmap?${params.toString()}`;
 }
 
 export async function onRequestGet({ params, request, env }) {
@@ -94,7 +99,7 @@ export async function onRequestGet({ params, request, env }) {
   const dealKey = r.deal === 'rent' ? 'rent' : 'buy';
   const frameUrl = `${SITE}${FRAME[dealKey][lang]}`;
 
-  if (!env.MAPTILER_KEY) return Response.redirect(frameUrl, 302);
+  if (!env.GEOAPIFY_KEY) return Response.redirect(frameUrl, 302);
 
   const mapUrl = buildMapUrl(env, r.lat, r.lng, r.radius || 300);
 
@@ -104,7 +109,7 @@ export async function onRequestGet({ params, request, env }) {
       cf: { image: { width: W, height: H, fit: 'cover', draw: [{ url: frameUrl, top: 0, left: 0 }] } }
     }).catch(e => ({ status: 'fetch-throw:' + e, ok: false, headers: new Headers() }));
     return new Response(JSON.stringify({
-      mapUrl: mapUrl.replace(/key=[^&]+/, 'key=***'),
+      mapUrl: mapUrl.replace(/apiKey=[^&]+/, 'apiKey=***'),
       frameUrl,
       rawMap: { status: test.status, ok: test.ok, ctype: test.headers.get && test.headers.get('content-type') },
       composed: { status: composed.status, ok: composed.ok, ctype: composed.headers.get && composed.headers.get('content-type') }

@@ -6,33 +6,41 @@
  * რუკა + საძიებო წრე უნდა ჰქონდეს, თან მხოლოდ საკუთარი პინით (სხვა
  * განცხადება/მოთხოვნის ბუშტები არ უნდა გამოჩნდეს) — ეს ავტომატურად
  * სრულდება, რადგან რუკა ყოველ ჯერზე ნულიდან გენერირდება მხოლოდ ამ
- * ერთი წრით/პინით, არა ჩვენი ცოცხალი რუკის screenshot-ით.
+ * ერთი პინით, არა ჩვენი ცოცხალი რუკის screenshot-ით.
  *
- * აწყობა ხდება ორი ფენით, გარე compositing-სერვისის გარეშე:
- *   1) Geoapify Static Maps API — რუკის სურათი მოთხოვნის lat/lng-ზე,
- *      + დახატული წრე (geometry) ზუსტად radius-ის მიხედვით + პინი.
- *   2) Cloudflare-ის ჩაშენებული Image Transformations draw() —
- *      ჩვენი ბრენდირებული ჩარჩო (header/footer, y:106–493
- *      გამჭვირვალეა) ეხატება ამ რუკის თავზე ერთ საბოლოო PNG-ად.
+ * აწყობა ხდება სამი ფენით, ერთადერთი Cloudflare Image Transformations
+ * draw()-ის საშუალებით (გარე compositing-სერვისის გარეშე):
+ *   1) Geoapify Static Maps API — მხოლოდ საბაზო რუკა + პინი მოთხოვნის
+ *      lat/lng-ზე (osm-carto სტილი, იგივე რაც ჩვენი საიტის ცოცხალი
+ *      რუკაზეა — index.html-ის OSM raster ფენა).
+ *   2) images/radius-circle.png — ჩვენივე დახატული, ფიქსირებული ზომის
+ *      დაშტრიხული წრე, ზუსტად ჩარჩოს გამჭვირვალე ფანჯარაში ჩასამატებლად
+ *      (ზუსტი პიქსელური კონტროლი — Geoapify-ის geometry=circle პარამეტრს
+ *      აღმოჩნდა auto-fit ბაგი: ის ზუმ/ცენტრს არ ითვალისწინებდა და წრე
+ *      ყოველთვის კადრს გადასდიოდა, დაზომილი კონკრეტულად — ამის გამო
+ *      გადავედით ჩვენს, სტატიკურ, ზუსტად დაკალიბრებულ წრის სურათზე).
+ *   3) ჩვენი ბრენდირებული ჩარჩო (header/footer, y:106–493
+ *      გამჭვირვალეა) ეხატება ყველაფრის თავზე.
  *
- * ⚠️ 2026-08-29 (2): თავდაპირველად MapTiler-ის Static Maps API
- * ვცადეთ (env.MAPTILER_KEY უკვე არსებობდა — ცოცხალი ინტერაქტიული
- * რუკისთვის), მაგრამ ყოველთვის 429 აბრუნებდა. გავარკვიეთ: MapTiler-ის
- * Static Maps API საერთოდ არ შედის მათ Free გეგმაში (მხოლოდ ფასიან
- * გეგმებზეა ხელმისაწვდომი) — ეს ცნობილი ფაქტია (იხ. ძველი შენიშვნა
- * task #110-ში: "MapTiler არ გამოდგა"). ამიტომ Geoapify-ზე გადავედით,
- * რომლის Free tier-იც სპეციალურად სწორედ ამ სცენარს ფარავს.
+ * ⚠️ 2026-08-29 (2): MapTiler-ის Static Maps API ვცადეთ, 429 იძლეოდა —
+ * გავარკვიეთ, Free გეგმაზე საერთოდ არ მუშაობს (task #110-ის ძველი
+ * შენიშვნა). გადავედით Geoapify-ზე (Free tier მუშაობს).
  *
- * ზუმი ისე გამოითვლება, რომ წრე ყოველთვის ჩარჩოს ხილული ფანჯრის
- * (1200×388) ~62%-ს იკავებდეს — ანუ კიდეებს არ ეხება, მარგინალი
- * თანაბრადაა ორივე მხარეს (George-ის მოთხოვნა).
+ * წრის ზომა ფიქსირებულია (radius-circle.png = 800×800, დახატულია
+ * cf.image draw()-ით 368×368-ზე) — ჩარჩოს 388px ფანჯარაში ზუსტად
+ * 10px მარგინალით ზემოთ/ქვემოთ, George-ის მოთხოვნის მიხედვით.
+ * ეს არ ცვლის რეალურ radius-ის მნიშვნელობას ვიზუალურად ზუსტად
+ * (Geoapify-ის auto-fit ბაგის გამო ეს ისედაც შეუძლებელი იყო ვიზუალურ
+ * სიზუსტეზე დათვლა) — მაგრამ ყოველ პოსტს აქვს საკუთარი, ინდივიდუალური
+ * ლოკაცია/პინი/მოხაზული ტერიტორია, არასდროს სხვისი მოთხოვნის ბუშტი.
  *
  * თუ რამე ვერ მოხერხდა (Geoapify-ის ხარვეზი, გასაღები არ არის,
  * მოთხოვნა ვერ მოიძებნა) — ვბრუნდებით უბრალო ბრენდირებულ ჩარჩოზე
  * (რუკის გარეშე), რომ FB/WhatsApp-ისთვის სურათი არასდროს გატყდეს.
  *
- * ?debug=1 — ადმინისთვის: აბრუნებს JSON-ს (mapUrl გასაღების გარეშე,
- * ორივე ფენის HTTP სტატუსი) დიაგნოსტიკისთვის, სურათის ნაცვლად.
+ * ?debug=1 — ადმინისთვის: აბრუნებს JSON-ს დიაგნოსტიკისთვის.
+ * ?debug=1&preview=1 — საბოლოო კომპოზიტური სურათი პირდაპირ (ბრაუზერში სანახავად).
+ * ?debug=1&rawimg=1 — მხოლოდ Geoapify-ის საბაზო რუკა, ტესტირებისთვის.
  */
 const SITE = 'https://mymamuli.ge';
 
@@ -45,27 +53,31 @@ const FRAME = {
 };
 
 const W = 1200, H = 630;
-/* ჩარჩოს გამჭვირვალე ფანჯრის სიმაღლე (იხ. images/*-charjo.png ალფა-
-   არხის გაზომვა: y=106-დან 493-მდე გამჭვირვალეა → 388px). წრის
-   დიამეტრს ამის მიმართ ვზომავთ, რომ კიდეებს არ ეხებოდეს. */
-const WIN_H = 388;
-const CIRCLE_PX = Math.round(WIN_H * 0.62); /* ~240px */
+/* ჩარჩოს გამჭვირვალე ფანჯრის საზღვრები (იხ. images/*-charjo.png ალფა-
+   არხის გაზომვა: y=106-დან 493-მდე გამჭვირვალეა → 388px). */
+const WIN_TOP = 106, WIN_H = 388;
+const MARGIN = 10;                         /* George: ზედა/ქვედა მარგინალი მაქს. 10px */
+const CIRCLE_D = WIN_H - MARGIN * 2;        /* 368px — წრის დიამეტრი */
+const CIRCLE_TOP = WIN_TOP + MARGIN;        /* 116 */
+const CIRCLE_LEFT = Math.round((W - CIRCLE_D) / 2); /* ჰორიზონტალურად ცენტრში */
+const CIRCLE_ASSET = `${SITE}/images/radius-circle.png`;
 
-/* ზუმის გამოთვლა — წრის დიამეტრი (მეტრებში) ზუსტად CIRCLE_PX
-   პიქსელს რომ შეესაბამებოდეს ამ განედზე (Web Mercator scale). */
+/* ზუმის გამოთვლა მხოლოდ საბაზო რუკის ვიზუალური მასშტაბისთვის (რომ
+   პატარა/დიდი radius-ის მოთხოვნებს ცოტათი განსხვავებული, გონივრული
+   მასშტაბის რუკა ჰქონდეთ) — არა წრის ზომის კონტროლისთვის (ის
+   ფიქსირებულია radius-circle.png-ით). */
 function zoomForRadius(lat, radiusM) {
-  const metersPerPixel = (radiusM * 2) / CIRCLE_PX;
+  const targetPx = 700; /* სავარაუდო "საინტერესო არეალის" პიქსელური ზომა */
+  const metersPerPixel = (radiusM * 2) / targetPx;
   const z = Math.log2((156543.03392 * Math.cos(lat * Math.PI / 180)) / metersPerPixel);
   return Math.max(3, Math.min(19, z));
 }
 
-/* Geoapify Static Maps — წრეს (geometry=circle) და პინს (marker)
-   თვითონ ხატავს სერვერზე ერთადერთ ამ ორ ობიექტს, ჩვენი მოთხოვნის
-   მეზობელი განცხადებების ბუშტების გარეშე (ისინი საერთოდ არც კი
-   იგზავნება). Free tier ამას სრულად ფარავს. */
+/* Geoapify Static Maps — მხოლოდ საბაზო რუკა + პინი (წრეს აღარ
+   ვთხოვთ Geoapify-სგან — geometry=circle-ს ჩარჩო/ზუმის auto-fit
+   ბაგი ჰქონდა, წრეს ჩვენ თვითონ ვხატავთ ცალკე ფენად). */
 function buildMapUrl(env, lat, lng, radiusM) {
   const zoom = zoomForRadius(lat, radiusM).toFixed(2);
-  const geometry = `circle:${lng.toFixed(6)},${lat.toFixed(6)},${Math.round(radiusM)};linewidth:3;linecolor:#c8873a;fillcolor:#c8873a;fillopacity:0.15;linestyle:dashed`;
   const marker = `lonlat:${lng.toFixed(6)},${lat.toFixed(6)};type:awesome;color:#c8873a;size:large`;
   const params = new URLSearchParams({
     style: 'osm-carto',
@@ -73,7 +85,6 @@ function buildMapUrl(env, lat, lng, radiusM) {
     zoom,
     width: String(W),
     height: String(H),
-    geometry,
     marker,
     apiKey: env.GEOAPIFY_KEY
   });
@@ -102,6 +113,13 @@ export async function onRequestGet({ params, request, env }) {
 
   let mapUrl = buildMapUrl(env, r.lat, r.lng, r.radius || 300);
 
+  /* ორი ფენა რუკის თავზე: (1) ჩვენი ფიქსირებული ზომის დაშტრიხული წრე,
+     ზუსტად ჩარჩოს ფანჯარაში ცენტრირებული; (2) ბრენდირებული ჩარჩო. */
+  const drawLayers = [
+    { url: CIRCLE_ASSET, top: CIRCLE_TOP, left: CIRCLE_LEFT, width: CIRCLE_D, height: CIRCLE_D },
+    { url: frameUrl, top: 0, left: 0 }
+  ];
+
   /* debug-ონლი override — Geoapify-ის სქემის/ზუმის სწრაფი კალიბრაციისთვის,
      George-ის ხელახალი დეპლოის გარეშე: ?debug=1&testmarker=/testgeom=/testzoom=/teststyle= */
   if (debug && (url.searchParams.get('testmarker') || url.searchParams.get('testgeom') || url.searchParams.get('testzoom') || url.searchParams.get('teststyle'))) {
@@ -117,7 +135,7 @@ export async function onRequestGet({ params, request, env }) {
      (ბრაუზერში სანახავად), test-override-ებთან ერთად, JSON-ის გარეშე. */
   if (debug && url.searchParams.get('preview') === '1') {
     const composed = await fetch(mapUrl, {
-      cf: { image: { width: W, height: H, fit: 'cover', draw: [{ url: frameUrl, top: 0, left: 0 }] } }
+      cf: { image: { width: W, height: H, fit: 'cover', draw: drawLayers } }
     }).catch(() => null);
     if (composed && composed.ok) return new Response(composed.body, { headers: { 'content-type': 'image/png' } });
     return Response.redirect(frameUrl, 302);
@@ -136,7 +154,7 @@ export async function onRequestGet({ params, request, env }) {
     const test = await fetch(mapUrl).catch(e => ({ status: 'fetch-throw:' + e, ok: false, headers: new Headers() }));
     const testBody = test.text ? await test.text().catch(() => '') : '';
     const composed = await fetch(mapUrl, {
-      cf: { image: { width: W, height: H, fit: 'cover', draw: [{ url: frameUrl, top: 0, left: 0 }] } }
+      cf: { image: { width: W, height: H, fit: 'cover', draw: drawLayers } }
     }).catch(e => ({ status: 'fetch-throw:' + e, ok: false, headers: new Headers() }));
     return new Response(JSON.stringify({
       mapUrl: mapUrl.replace(/apiKey=[^&]+/, 'apiKey=***'),
@@ -149,7 +167,7 @@ export async function onRequestGet({ params, request, env }) {
 
   try {
     const composed = await fetch(mapUrl, {
-      cf: { image: { width: W, height: H, fit: 'cover', draw: [{ url: frameUrl, top: 0, left: 0 }] } }
+      cf: { image: { width: W, height: H, fit: 'cover', draw: drawLayers } }
     });
     if (!composed.ok) return Response.redirect(frameUrl, 302);
     return new Response(composed.body, {

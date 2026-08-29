@@ -68,12 +68,11 @@ function buildMapUrl(env, lat, lng, radiusM) {
   const geometry = `circle:${lng.toFixed(6)},${lat.toFixed(6)},${Math.round(radiusM)};linewidth:3;linecolor:#c8873a;fillcolor:#c8873a;fillopacity:0.15;linestyle:dashed`;
   const marker = `lonlat:${lng.toFixed(6)},${lat.toFixed(6)};type:awesome;color:#c8873a;size:large`;
   const params = new URLSearchParams({
-    style: 'osm-bright-smooth',
+    style: 'osm-carto',
     center: `lonlat:${lng.toFixed(6)},${lat.toFixed(6)}`,
     zoom,
     width: String(W),
     height: String(H),
-    'scale-factor': '2',
     geometry,
     marker,
     apiKey: env.GEOAPIFY_KEY
@@ -103,13 +102,25 @@ export async function onRequestGet({ params, request, env }) {
 
   let mapUrl = buildMapUrl(env, r.lat, r.lng, r.radius || 300);
 
-  /* debug-ონლი override — Geoapify-ის სქემის სწრაფი ტესტირებისთვის,
-     George-ის ხელახალი დეპლოის გარეშე: ?debug=1&testmarker=... */
-  if (debug && (url.searchParams.get('testmarker') || url.searchParams.get('testgeom'))) {
+  /* debug-ონლი override — Geoapify-ის სქემის/ზუმის სწრაფი კალიბრაციისთვის,
+     George-ის ხელახალი დეპლოის გარეშე: ?debug=1&testmarker=/testgeom=/testzoom=/teststyle= */
+  if (debug && (url.searchParams.get('testmarker') || url.searchParams.get('testgeom') || url.searchParams.get('testzoom') || url.searchParams.get('teststyle'))) {
     const u = new URL(mapUrl);
     if (url.searchParams.get('testmarker')) u.searchParams.set('marker', url.searchParams.get('testmarker'));
     if (url.searchParams.get('testgeom')) u.searchParams.set('geometry', url.searchParams.get('testgeom'));
+    if (url.searchParams.get('testzoom')) u.searchParams.set('zoom', url.searchParams.get('testzoom'));
+    if (url.searchParams.get('teststyle')) u.searchParams.set('style', url.searchParams.get('teststyle'));
     mapUrl = u.toString();
+  }
+
+  /* ?preview=1 — ადმინისთვის: პირდაპირ აბრუნებს კომპოზიტურ სურათს
+     (ბრაუზერში სანახავად), test-override-ებთან ერთად, JSON-ის გარეშე. */
+  if (debug && url.searchParams.get('preview') === '1') {
+    const composed = await fetch(mapUrl, {
+      cf: { image: { width: W, height: H, fit: 'cover', draw: [{ url: frameUrl, top: 0, left: 0 }] } }
+    }).catch(() => null);
+    if (composed && composed.ok) return new Response(composed.body, { headers: { 'content-type': 'image/png' } });
+    return Response.redirect(frameUrl, 302);
   }
 
   if (debug) {

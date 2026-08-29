@@ -436,14 +436,30 @@ export async function onRequestPost({ request, env }) {
      admin_new შეტყობინება მაინც იგზავნება, უბრალოდ ელფოსტის კოდის
      მოლოდინის გარეშე, რადგან ავტორი უკვე დადასტურებული ანგარიშიდან
      წერს (cookie-ით დამტკიცებული). */
-  if (compOk || sessUser) {
+  /* ⚠️⚠️ 2026-08-28, George-ის მოთხოვნით — დროებითი გლობალური გამონაკლისი:
+     paneVerify()/done()-ის კლიენტის ბაგის გამო (form.html, იხ. done()-ის
+     კომენტარი) მომხმარებელს ცრუდ ეჩვენებოდა "კოდს ველოდებით" ეკრანი
+     მაშინაც კი, როცა სერვერს კოდი საერთოდ არ გაუგზავნია — ანუ რეალურ
+     მომხმარებელს ფორმის ჩაბარება არ შეეძლო ვიზუალურად, თუმცა სერვერული
+     ლოგიკა (submit.js) სწორად მუშაობდა. სანამ client-side root cause
+     ბოლომდე არ დადასტურდება (George-ს ვთხოვე კონსოლის ნამდვილი
+     შეცდომა), George-მა თავად სთხოვა ყველა ახალი განცხადება/მოთხოვნა
+     კოდის გარეშე პირდაპირ pending-ში ჩავარდეს — მოდერაციას თავად
+     გაუძღვება mod.html-დან ხელით. ეს ცვლილება ერთადერთი ხაზია
+     (`compOk || sessUser` → `true`) და ადვილად შექცევადია, როცა
+     client-side ბაგი დადასტურებულად გასწორდება.
+     ⚠️ admin_new შეტყობინება ახლა ყველასთვის იგზავნება (`!compOk`,
+     ადრინდელი `sessUser && !compOk` ნაცვლად) — რომ George-მა
+     ელფოსტაზეც დაინახოს ყოველი ახალი, არავერიფიცირებული ჩანაწერი და
+     დროულად შეამოწმოს mod.html-ში, კოდის ლოდინის გარეშეც. */
+  if (true) {
     const table = kind === 'req' ? 'req' : 'lst';
     const stmts = [
       env.DB.prepare(`UPDATE users SET email_ok=1 WHERE id=?1`).bind(u.id),
       env.DB.prepare(`UPDATE ${table} SET status='pending' WHERE id=?1 AND user_id=?2 AND status='draft'`)
         .bind(id, u.id)
     ];
-    if (sessUser && !compOk) {
+    if (!compOk) {
       const row = await env.DB.prepare(
         table === 'lst'
           ? `SELECT cat,deal,ttl,loc,reg,price,area FROM lst WHERE id=?1`
@@ -473,7 +489,7 @@ export async function onRequestPost({ request, env }) {
       }
     }
     await env.DB.batch(stmts);
-    if (sessUser && !compOk) await kickMail(env);
+    if (!compOk) await kickMail(env);
     return J({
       ok: true, id, autoVerified: true, isNewUser,
       cad: o.cad ? { ok: cadOk, addr: cadAddr, why: cadWhy } : undefined

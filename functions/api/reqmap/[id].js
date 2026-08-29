@@ -66,7 +66,7 @@ function zoomForRadius(lat, radiusM) {
 function buildMapUrl(env, lat, lng, radiusM) {
   const zoom = zoomForRadius(lat, radiusM).toFixed(2);
   const geometry = `circle:${lng.toFixed(6)},${lat.toFixed(6)},${Math.round(radiusM)};linewidth:3;linecolor:#C8873A;fillcolor:#C8873A;fillopacity:0.15;linestyle:dashed`;
-  const marker = `lonlat:${lng.toFixed(6)},${lat.toFixed(6)};color:#C8873A;size:large`;
+  const marker = `lonlat:${lng.toFixed(6)},${lat.toFixed(6)};type:awesome;color:#C8873A;size:large`;
   const params = new URLSearchParams({
     style: 'osm-bright-smooth',
     center: `lonlat:${lng.toFixed(6)},${lat.toFixed(6)}`,

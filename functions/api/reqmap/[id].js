@@ -105,9 +105,10 @@ export async function onRequestGet({ params, request, env }) {
 
   /* debug-ონლი override — Geoapify-ის სქემის სწრაფი ტესტირებისთვის,
      George-ის ხელახალი დეპლოის გარეშე: ?debug=1&testmarker=... */
-  if (debug && url.searchParams.get('testmarker')) {
+  if (debug && (url.searchParams.get('testmarker') || url.searchParams.get('testgeom'))) {
     const u = new URL(mapUrl);
-    u.searchParams.set('marker', url.searchParams.get('testmarker'));
+    if (url.searchParams.get('testmarker')) u.searchParams.set('marker', url.searchParams.get('testmarker'));
+    if (url.searchParams.get('testgeom')) u.searchParams.set('geometry', url.searchParams.get('testgeom'));
     mapUrl = u.toString();
   }
 

@@ -464,14 +464,13 @@ async function requestPage(id, env, lang, bot) {
   const desc = [dealN, areaTxt, budgetTxt, place ? t.near(place) + ', ' + radiusTxt : radiusTxt]
     .filter(Boolean).join(' · ') + t.descTailReq;
   const url = `${SITE}/g/${id}/` + (lang === 'en' ? '?lang=en' : '');
-  /* ⚠️ 2026-08-28: George-ის მოთხოვნით — საერთო რუკის სურათის ნაცვლად
-     r.deal-ის მიხედვით ორი ცალკე ბრენდირებული სურათი: ქირის მოთხოვნას
-     "ვეძებ ... ქირით", ყიდვის მოთხოვნას "მყიდველი ეძებს ...". ორივეს
-     ინგლისური ვერსიაც დაემატა — lang-ის მიხედვით 4 ვარიანტიდან ერთ-ერთი
-     ("Looking to Rent a Property" / "Buyer Looking for Property"). ყველა
-     PNG, 1200x630, images/-ში. */
-  const coverDeal = r.deal === 'rent' ? 'rent' : 'buy';
-  const cover = `${SITE}/images/mymamuli-social-share-${coverDeal}${lang === 'en' ? '-en' : ''}-1200x630.png`;
+  /* ⚠️ 2026-08-29: George-ის მოთხოვნით — სტატიკური "ზოგადი" ქავერის
+     ნაცვლად ყოველ მოთხოვნას თავისი, რეალური რუკა+საძიებო წრე აქვს
+     (/api/reqmap/), მხოლოდ საკუთარი პინით, ბრენდირებულ ჩარჩოში
+     (George-ის 2026-08-29 დიზაინი: header/footer + გამჭვირვალე
+     შუათანა, სადაც რუკა ჩანს). თუ რუკის აწყობა ვერ მოხერხდა,
+     /api/reqmap/ თვითონ ბრუნდება უბრალო ჩარჩოზე (რუკის გარეშე). */
+  const cover = `${SITE}/api/reqmap/${id}${lang === 'en' ? '?lang=en' : ''}`;
 
   const rows = [
     [t.category, catN],

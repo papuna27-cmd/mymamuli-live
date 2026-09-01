@@ -618,6 +618,16 @@ const S={terms:false,sub:true,priv:false,anon:false,d1:false,d2:false,d3:false,d
    პრეფილისთვისაა (UI) — რეალურ იდენტიფიკაციას სერვერი cookie-დან
    იღებს, ამ ცვლადს არ ენდობა. */
 let SESSION=null;
+/* ⚠️ 2026-09-01, George-ის პირადი მოთხოვნით — ჩვეულებრივ, დალოგინებულ
+   მომხმარებელს „სახელი, გვარი" ველი readonly აქვს (საკუთარ ანგარიშზე
+   დაფიქსირებულ სახელზეა ჩაკეტილი, იხ. ქვემოთ). ამ ერთადერთ ანგარიშს
+   (George-ის საკუთარი, g.papiashvili@hotmail.com) კი უნდა შეეძლოს
+   ნებისმიერი სახელის ჩაწერა ნებისმიერი განცხადების/მოთხოვნის დადებისას
+   (მაგ. კლიენტის სახელით განთავსებისთვის). სხვა ანგარიშებზე არაფერი
+   იცვლება. თუ სამომავლოდ მეტ ანგარიშს დასჭირდება იგივე უფლება, ეს
+   მასივი უნდა გაფართოვდეს (ჯერჯერობით განზრახ მხოლოდ ერთი ანგარიშია). */
+const NAME_UNLOCK_EMAILS=['g.papiashvili@hotmail.com'];
+const nameUnlocked=()=>!!(SESSION&&SESSION.email&&NAME_UNLOCK_EMAILS.includes(String(SESSION.email).toLowerCase()));
 /* ⚠️ 2026-08-26: George-ის მოთხოვნით — „ვეძებ" (req) 4 ბიჯიდან 2-მდე
    შემცირდა: [1] რას ეძებ + ფართი/ფასი/აღწერა (ძველი paneCat+paneParams
    გაერთიანდა, დამატებითი ატრიბუტების ჩიფები მოიხსნა — იხ. task #133),
@@ -756,7 +766,7 @@ function paneReqWhere(){
    '<button class="chip'+(S.who==='ind'?' on':'')+'" data-who="ind">ფიზიკური პირი</button>'+
    '<button class="chip'+(S.who==='co'?' on':'')+'" data-who="co">იურიდიული პირი</button>'+
   '</div></div>'+
-  '<div class="row"><div class="f"><label>სახელი, გვარი</label><input id="name" value="'+S.name+'" placeholder="გიორგი ბერიძე"'+(SESSION?' readonly':'')+'></div>'+
+  '<div class="row"><div class="f"><label>სახელი, გვარი</label><input id="name" value="'+S.name+'" placeholder="გიორგი ბერიძე"'+(SESSION&&!nameUnlocked()?' readonly':'')+'></div>'+
    '<div class="f" id="femail"><label>ელფოსტა</label><input id="email" type="email" value="'+S.email+'" placeholder="mail@example.com"'+(SESSION?' readonly':'')+'>'+
      (SESSION?'<div class="hint">შესული ხარ როგორც '+S.email+' — დამატებითი დადასტურება არ დაგჭირდება.</div>'
              :'<div class="hint">დადასტურების კოდს აქ გამოგიგზავნით — მისამართი რეალური უნდა იყოს.</div>')+
@@ -1033,7 +1043,7 @@ function paneWho(){
    '<button class="chip'+(S.who==='co'?' on':'')+'" data-who="co">იურიდიული პირი</button>'+
   '</div></div>'+
   '<div class="row" style="margin-top:12px">'+
-   '<div class="f"><label>სახელი, გვარი</label><input id="name" value="'+S.name+'" placeholder="გიორგი ბერიძე"'+(SESSION?' readonly':'')+'></div>'+
+   '<div class="f"><label>სახელი, გვარი</label><input id="name" value="'+S.name+'" placeholder="გიორგი ბერიძე"'+(SESSION&&!nameUnlocked()?' readonly':'')+'></div>'+
    '<div class="f" id="femail"><label>ელფოსტა</label><input id="email" type="email" value="'+S.email+'" placeholder="mail@example.com"'+(SESSION?' readonly':'')+'>'+
      (SESSION?'<div class="hint">შესული ხარ როგორც '+S.email+' — დამატებითი დადასტურება არ დაგჭირდება.</div>'
              :'<div class="hint">დადასტურების კოდს აქ გამოგიგზავნით — მისამართი რეალური უნდა იყოს.</div>')+

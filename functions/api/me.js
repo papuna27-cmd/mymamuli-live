@@ -128,9 +128,12 @@ export async function onRequestPost({ request, env }) {
   const id = String(b.id || '').trim();
   if (!kind || !id) return J({ error: 'bad-request' }, 400);
 
-  const row = await env.DB.prepare(
-    `SELECT id, status FROM ${kind} WHERE id=?1 AND user_id=?2`
-  ).bind(id, u.id).first();
+  /* ⚠️ 2026-09-01: lst-ის რედაქტირებისას contact_name-იც გვჭირდება
+     row-იდან (fallback-ისთვის, იხ. ქვემოთ) — req ცხრილს ეს სვეტი
+     საერთოდ არ აქვს, ამიტომ SELECT kind-ის მიხედვით განსხვავდება. */
+  const row = kind === 'lst'
+    ? await env.DB.prepare(`SELECT id, status, contact_name FROM lst WHERE id=?1 AND user_id=?2`).bind(id, u.id).first()
+    : await env.DB.prepare(`SELECT id, status FROM req WHERE id=?1 AND user_id=?2`).bind(id, u.id).first();
   if (!row) return J({ error: 'not-found' }, 404);
 
   if (b.action === 'edit') {
@@ -141,7 +144,19 @@ export async function onRequestPost({ request, env }) {
       const dsc = String(b.dsc || '').trim().slice(0, 2000);
       const price = Number(b.price) || null;
       const tel = String(b.tel || '').trim().slice(0, 40);
-      const contact_name = String(b.contact_name || '').trim().slice(0, 80);
+      /* ⚠️ 2026-09-01, root cause fix — cabinet.html-ის რედაქტირების
+         ფორმას აქამდე საერთოდ არ ჰქონდა contact_name ველი, ამიტომ
+         b.contact_name ყოველთვის undefined იყო და ეს ხაზი მას ჩუმად
+         ცარიელით (''-ით) ცვლიდა ყოველ რედაქტირებაზე — ნებისმიერი
+         მომხმარებლის განცხადების საკონტაქტო სახელი ქრებოდა, როგორც
+         კი ის რედაქტირებას შეეხებოდა. ახლა თუ ველი საერთოდ არ
+         გამოგზავნილა, ძველი მნიშვნელობა (row.contact_name) ინარჩუნებს
+         თავს; მხოლოდ როცა b.contact_name პირდაპირ გამოგზავნილია
+         (ჯერჯერობით — მხოლოდ George-ის ანგარიშის cabinet.html UI-დან,
+         იხ. nameUnlocked()), მაშინ ახალი მნიშვნელობა ინახება. */
+      const contact_name = (b.contact_name != null)
+        ? String(b.contact_name).trim().slice(0, 80)
+        : (row.contact_name || '');
       if (!ttl) return J({ error: 'bad-title' }, 400);
 
       await env.DB.prepare(

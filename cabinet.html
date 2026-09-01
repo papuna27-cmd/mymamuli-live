@@ -234,6 +234,14 @@ const dialOf=c=>{const x=COUNTRIES.find(k=>k[0]===c);return x?x[2]:'995'};
 /* ══ შესვლის ეკრანი ══ */
 let MODE='login', CC=detectCountry();
 let LAST_REG=null;         /* რეგისტრაციის ბოლო მონაცემი — კოდის თავიდან გასაგზავნად */
+/* ⚠️ 2026-09-01, George-ის პირადი მოთხოვნით (form.html-ის იგივე
+   მექანიზმის ანალოგი) — მხოლოდ ამ ერთ ანგარიშს შეუძლია, საკუთარ
+   კაბინეტში განცხადების რედაქტირებისას, საკონტაქტო სახელი (contact_name)
+   თავისუფლად შეცვალოს ნებისმიერზე. სხვა ანგარიშებს ეს ველი საერთოდ
+   არ უჩანთ რედაქტირების ფანჯარაში. */
+const NAME_UNLOCK_EMAILS=['g.papiashvili@hotmail.com'];
+let ME_EMAIL=null;
+const nameUnlocked=()=>!!(ME_EMAIL&&NAME_UNLOCK_EMAILS.includes(String(ME_EMAIL).toLowerCase()));
 
 function paintAuth(msg){
  el('app').innerHTML=
@@ -392,6 +400,7 @@ async function delItem(kind,id,btn){
 }
 
 function paintMe(d){
+ ME_EMAIL=(d.user&&d.user.email)||null;
  const tt=d.totals;
  el('app').innerHTML=
  '<div class="top"><a class="logo" href="index.html" title="'+t('მთავარზე დაბრუნება','Back to home')+'"><span class="bk">←</span>My<b>Mamuli</b>.ge</a><div class="sp"></div>'+
@@ -471,6 +480,12 @@ function openEdit(id,list){
   '<label for="e_dsc">'+t('აღწერა','Description')+'</label><textarea id="e_dsc">'+esc(l.dsc||'')+'</textarea>'+
   '<div class="mrow"><div><label for="e_price">'+t('ფასი ($)','Price ($)')+'</label><input id="e_price" inputmode="numeric" value="'+esc(l.price||'')+'"></div>'+
   '<div><label for="e_tel">'+t('ტელეფონი','Phone')+'</label><input id="e_tel" value="'+esc(l.tel||'')+'"></div></div>'+
+  /* ⚠️ 2026-09-01, George-ის პირადი მოთხოვნით — მხოლოდ ამ ერთ
+     ანგარიშს (nameUnlocked()) აქვს საკონტაქტო სახელის თავისუფლად
+     შეცვლის საშუალება. სხვებისთვის ეს ველი საერთოდ არ ჩნდება, და
+     me.js-ის API contact_name-ს არ ცვლის, თუ საერთოდ არ გაეგზავნა
+     (იხ. functions/api/me.js-ის fallback). */
+  (nameUnlocked()?'<label for="e_cname">'+t('საკონტაქტო სახელი','Contact name')+'</label><input id="e_cname" value="'+esc(l.contact_name||'')+'">':'')+
   '<button class="go" id="e_save">'+t('შენახვა','Save')+'</button>'+
   '<div class="err" id="e_er"></div>'+
   '<button type="button" class="resend" id="e_cancel">'+t('გაუქმება','Cancel')+'</button>'+
@@ -482,10 +497,12 @@ function openEdit(id,list){
   const b=el('e_save'); b.disabled=true; b.textContent='…';
   const ttl=el('e_ttl').value.trim();
   if(!ttl){el('e_er').textContent=t('სათაური აუცილებელია.','Title is required.');b.disabled=false;b.textContent=t('შენახვა','Save');return}
+  const payload={kind:'lst',id,action:'edit',
+       ttl,dsc:el('e_dsc').value.trim(),price:el('e_price').value.trim(),tel:el('e_tel').value.trim()};
+  if(nameUnlocked())payload.contact_name=el('e_cname').value.trim();
   try{
    const r=await fetch('/api/me',{method:'POST',headers:{'Content-Type':'application/json'},
-     body:JSON.stringify({kind:'lst',id,action:'edit',
-       ttl,dsc:el('e_dsc').value.trim(),price:el('e_price').value.trim(),tel:el('e_tel').value.trim()})});
+     body:JSON.stringify(payload)});
    if(!r.ok)throw 0;
   }catch(e){ el('e_er').textContent=t('ვერ შენახულა — სცადე ხელახლა.','Could not save — try again.'); b.disabled=false; b.textContent=t('შენახვა','Save'); return }
   ov.remove(); load();

@@ -10,6 +10,28 @@
    აქაც უნდა შეცვალო, თორემ თარგმანი ჩუმად გაქრება.
    ================================================================= */
 const I18N = {
+/* ⚠️ 2026-08-31, George-ის მოთხოვნით — საინფორმაციო მოდალის „მთავარი" ტაბის
+   სრულად გადაწერილი ტექსტი (hook-ზე ორიენტირებული, არა უბრალო feature-სია).
+   ყოველი p/h3/h4 ცალკე ტექსტურ კვანძადაა დარენდერებული (inline თეგები არ
+   აქვს), ამიტომ თითო ელემენტს ერთი სრული ჩანაწერი შეესაბამება. */
+"მაძიებელი შენ გიპოვის — არა შენ მას": "The buyer finds you — not the other way around",
+"ეს არ არის კიდევ ერთი განცხადებების დაფა, სადაც პოსტი იკარგება ასობით სხვას შორის და მოთმინებით ელოდები, ვინმემ შემოხედოს თუ არა. MyMamuli.ge-ზე მაძიებლებს უკვე წინასწარ აქვთ დაფიქსირებული, ზუსტად რას ეძებენ — არეალი, ბიუჯეტი, ფართობი. შენ რომ მხოლოდ ერთხელ ათავსებ განცხადებას, სისტემა თვითონ პოულობს, ვისაც ეს შეესაბამება, და მას ავტომატურად ატყობინებს — მანამდე, სანამ ვინმე საერთოდ დაიწყებდა შენი განცხადების ძებნას. შენი პოსტი არ ელოდება შემთხვევით მაყურებელს — თავად მიდის იმასთან, ვისაც სჭირდება.":
+ "This isn't another listings board where your post gets buried among hundreds of others while you wait and hope someone scrolls past it. On MyMamuli.ge, searchers have already set exactly what they're looking for — the area, the budget, the size. The moment you post your listing, the system finds everyone it matches and notifies them automatically — before anyone would even start searching for it. Your post doesn't wait for a random visitor — it goes straight to whoever needs it.",
+"რატომ განსხვავდება ეს საიტი დანარჩენებისგან": "Why this site is different",
+"ქართული უძრავი ქონების ბაზარი დღემდე ორ რამეზეა აგებული — არასანდო ინფორმაცია (ჯგუფებში ვინ იცის რამდენად ზუსტია მისამართი და ფართობი) და შუამავალი, რომელიც პროცესის ორივე ბოლოში საკომისიოს იღებს. ჩვენ ორივეს ვშლით. ნაკვეთის საზღვარი რუკაზე ჩნდება არა როგორც მიახლოებითი წერტილი, არამედ როგორც საჯარო რეესტრიდან აღებული ნამდვილი კონტური — მყიდველი ხედავს ზუსტად რას ყიდულობს, ჯერ კიდევ დარეკვამდე. და შუამავალი აქ არავინ არის: ზარი პირდაპირ შენთან მოდის, არა ვინმე მესამესთან, ვინც ამის სანაცვლოდ საკომისიოს ითხოვს.":
+ "Georgia's real estate market has always run on two things — unreliable information (in a Facebook group, who really knows if the address and size are accurate) and a middleman who takes a cut on both ends of the deal. We remove both. A plot's boundary appears on the map not as an approximate point, but as a real outline pulled from the Public Registry — the buyer sees exactly what they're buying before they even call. And there's no middleman here: the call goes straight to you, not to some third party asking for a commission in return.",
+"მიზანი": "Our mission",
+"გინდა შენი უძრავი ქონების გაყიდვა ან გაქირავება?": "Want to sell or rent out your property?",
+"განცხადება მაქსიმუმ": "Your listing goes live",
+"გააქტიურდება საიტზე — ყველა განაცხადი გადის დეტალურ შემოწმებას.": "at most — every submission goes through a detailed review.",
+"გვინდა, გავათანაბროთ ის, რასაც ჩვეულებრივ მხოლოდ დიდი სააგენტოები ფლობენ — ნამდვილი, გადამოწმებული მონაცემი და მყისიერი წვდომა დაინტერესებულ მყიდველთან — და ეს გავხადოთ ხელმისაწვდომი ნებისმიერისთვის, თავისუფლად, ანაზღაურების გარეშე.":
+ "We want to level the playing field — giving everyone, for free, what usually only big agencies have: real, verified data and instant access to an interested buyer.",
+"რას კარგავ, თუ დღეს არ განათავსებ": "What you lose by not posting today",
+"ყოველ დღეს, სანამ შენი ობიექტი საიტზე არ დევს, ვიღაც ზუსტად ამ არეალში, ამ ბიუჯეტში და ამ ფართობში მოთხოვნას ტოვებს — და შენს ნაცვლად სხვის განცხადებას პოულობს. განთავსება არაფერს გიჯდება: არც ერთჯერადი გადასახადია, არც თვიური, არც საკომისიო გაყიდვისას.":
+ "Every day your property isn't listed, someone leaves a request for exactly this area, this budget, this size — and finds someone else's listing instead of yours. Posting costs you nothing: no one-time fee, no monthly fee, no commission on the sale.",
+"შენ განკარგავ, ვინ დაინახავს": "You decide who sees it",
+"გინდა, რომ განცხადება საერთოდ არავინ ხედავდეს გარდა შესაბამისი მყიდველისა? დამალე საერთო რუკიდან — ის კვლავ აქტიურია და მაინც ავტომატურად პოულობს მასზე მორგებულ მაძიებელს, უბრალოდ დანარჩენებისთვის უჩინარია. გინდა, არც შენი სახელი გამოჩნდეს? ბარათზე „ვიზიტორი\" დარჩება, ტელეფონი კი ისევ პირდაპირ შენთან რეკავს. ეს არ არის უბრალო „კონფიდენციალურობის პარამეტრი\" — ეს ნიშნავს, რომ შეგიძლია საერთოდ არავის შეატყობინო, რომ ყიდი, და მაინც იპოვო ის, ვინც ყიდულობს.":
+ "Want no one to see your listing except the matching buyer? Hide it from the public map — it stays active and still automatically finds the searcher it matches, it's just invisible to everyone else. Don't want your name to show either? The card will simply say \"Visitor\" instead, while your phone still rings directly. This isn't just a \"privacy setting\" — it means you can sell without telling anyone you're selling, and still find the person who's buying.",
 /* ⚠️ 2026-08-27, George-ის მოთხოვნით (ტექნიკური აუდიტი) — ეს 2 ფრაზა
    EN რეჟიმში ქართულად რჩებოდა, რადგან ლექსიკონში საერთოდ არ ჰქონდათ
    ჩანაწერი (checked: "აწარმოე საქართველოში"/სახელმწიფო თანადაფინანსება
@@ -310,7 +332,7 @@ const I18N = {
 "ვინაობას ვერავინ გაიგებს": "No one can identify you",
 "მოთხოვნაში ჩანს მხოლოდ არეალი, ბიუჯეტი და ფართობი — არა სახელი და არა ვინაობა.": "Your request shows only the area, budget, and size — never your name or identity.",
 "ახალ განცხადებას პირველი იგებ": "You're the first to know about new listings",
-"შენს არეალში შესაბამისი ნაკვეთის გამოჩენისთანავე შეტყობინება შენთან მოდის — ადრე, ვიდრე ის საერთო სიაში აისახება.": "The moment a matching plot appears in your area, you're notified — before it even shows up in the general listings.",
+"შენს არეალში შესაბამისი უძრავი ქონების გამოჩენისთანავე შეტყობინება შენთან მოდის — ადრე, ვიდრე ის საერთო სიაში აისახება.": "The moment a matching property appears in your area, you're notified — before it even shows up in the general listings.",
 "გადაწყვეტილება მხოლოდ შენია": "The decision is always yours",
 "თუ ფასი და ობიექტი მოგეწონა — თვითონ დაუკავშირდები გამყიდველს. თუ არა — უბრალოდ არაფერს აკეთებ.": "If the price and property suit you, you reach out to the seller yourself. If not, you simply do nothing.",
 "დადება 1 წუთს არ სცდება": "Posting takes less than a minute",

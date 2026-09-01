@@ -26,9 +26,15 @@ b{color:#0E1A16}
 .mc{background:#F5F4F0;border-radius:12px;padding:14px 16px}
 .mc b{display:block;margin-bottom:4px;font-size:14px}
 .mc span{color:#4A5A54;font-size:13.5px}
-.cbox{background:#EFF6F2;border-radius:14px;padding:18px 20px;margin:22px 0}
-.cbox b{display:block;margin-bottom:6px}
-.cb{display:inline-block;margin-top:8px;background:#0F6B4F;color:#fff;text-decoration:none;font-weight:600;padding:10px 18px;border-radius:10px;font-size:14px}
+.hook{border:1px solid #E3E1D9;border-radius:14px;padding:16px 18px;margin:16px 0;background:#F5F4F0}
+.hook h4{margin:0 0 8px;color:#0F6B4F}
+.hook p{margin:0}
+.cbox{background:#EFF6F2;border:1px solid #CFE4DA;border-radius:16px;padding:20px 22px;margin:24px 0;
+ box-shadow:0 8px 22px -12px rgba(15,107,79,.3)}
+.cbox b{display:block;margin-bottom:8px;font-size:16px}
+.cbox p{margin:0 0 14px;line-height:1.55}
+.cb{display:inline-block;margin-top:2px;background:#0F6B4F;color:#fff;text-decoration:none;font-weight:600;padding:11px 18px;border-radius:10px;font-size:14px;
+ box-shadow:0 4px 12px -4px rgba(15,107,79,.5)}
 .note{background:#F5F4F0;border-radius:10px;padding:12px 14px;font-size:14px;color:#4A5A54;margin:14px 0;display:flex;gap:8px}
 a{color:#0F6B4F}
 .back{display:inline-block;margin-top:26px;color:#0F6B4F;font-weight:600;text-decoration:none}`;
@@ -87,20 +93,35 @@ ${body}
 }
 
 const KA_BODY = `
-    <h4>როგორ მუშაობს</h4>
-    <div class="mgrid">
-     <div class="mc"><b>1 · რუკა, არა სია</b><span>ყველა განცხადება რუკაზეა. მ²-ის ფასი პირდაპირ ნიშნულზე წერია.</span></div>
-     <div class="mc"><b>2 · ნამდვილი საზღვარი</b><span>საკადასტრო კოდზე დაჭერით ნაკვეთის კონტური რუკაზევე ჩნდება — maps.gov.ge-ზე გადასვლა აღარ სჭირდება.</span></div>
-     <div class="mc"><b>3 · გაზომვა ადგილზე</b><span>ფართობისა და მანძილის საზომი ხელსაწყო — შენს ხელშია, დამატებითი აპლიკაციის გარეშე.</span></div>
-     <div class="mc"><b>4 · პირდაპირი კონტაქტი</b><span>ტელეფონი ბარათზეა. საკომისიო არ არსებობს, არც გამყიდველისთვის, არც მყიდველისთვის.</span></div>
-    </div>
+    <div class="hook"><h4>რატომ განსხვავდება ეს საიტი დანარჩენებისგან</h4>
+    <p>ქართული უძრავი ქონების ბაზარი დღემდე ორ რამეზეა აგებული — არასანდო ინფორმაცია
+    (ჯგუფებში ვინ იცის რამდენად ზუსტია მისამართი და ფართობი) და შუამავალი, რომელიც პროცესის
+    ორივე ბოლოში საკომისიოს იღებს. ჩვენ ორივეს ვშლით. ნაკვეთის საზღვარი რუკაზე ჩნდება არა
+    როგორც მიახლოებითი წერტილი, არამედ როგორც საჯარო რეესტრიდან აღებული ნამდვილი კონტური —
+    მყიდველი ხედავს ზუსტად რას ყიდულობს, ჯერ კიდევ დარეკვამდე. და შუამავალი აქ არავინ არის:
+    ზარი პირდაპირ შენთან მოდის, არა ვინმე მესამესთან, ვინც ამის სანაცვლოდ საკომისიოს ითხოვს.</p></div>
 
-    <h4>განცხადების განთავსება უფასოა</h4>
-    <p>განცხადების განთავსებაში საფასურს არ ვიღებთ — არც ერთჯერადს, არც თვიურს.</p>
+    <div class="hook"><h4>მიზანი</h4>
+    <p>გვინდა, გავათანაბროთ ის, რასაც ჩვეულებრივ მხოლოდ დიდი სააგენტოები ფლობენ — ნამდვილი,
+    გადამოწმებული მონაცემი და მყისიერი წვდომა დაინტერესებულ მყიდველთან — და ეს გავხადოთ
+    ხელმისაწვდომი ნებისმიერისთვის, თავისუფლად, ანაზღაურების გარეშე.</p></div>
+
+    <div class="hook"><h4>რას კარგავ, თუ დღეს არ განათავსებ</h4>
+    <p>ყოველ დღეს, სანამ შენი ობიექტი საიტზე არ დევს, ვიღაც ზუსტად ამ არეალში, ამ ბიუჯეტში და
+    ამ ფართობში მოთხოვნას ტოვებს — და შენს ნაცვლად სხვის განცხადებას პოულობს. განთავსება
+    არაფერს გიჯდება: არც ერთჯერადი გადასახადია, არც თვიური, არც საკომისიო გაყიდვისას.</p></div>
+
+    <div class="hook"><h4>შენ განკარგავ, ვინ დაინახავს</h4>
+    <p>გინდა, რომ განცხადება საერთოდ არავინ ხედავდეს გარდა შესაბამისი მყიდველისა? დამალე
+    საერთო რუკიდან — ის კვლავ აქტიურია და მაინც ავტომატურად პოულობს მასზე მორგებულ მაძიებელს,
+    უბრალოდ დანარჩენებისთვის უჩინარია. გინდა, არც შენი სახელი გამოჩნდეს? ბარათზე „ვიზიტორი"
+    დარჩება, ტელეფონი კი ისევ პირდაპირ შენთან რეკავს. ეს არ არის უბრალო „კონფიდენციალურობის
+    პარამეტრი" — ეს ნიშნავს, რომ შეგიძლია საერთოდ არავის შეატყობინო, რომ ყიდი, და მაინც იპოვო
+    ის, ვინც ყიდულობს.</p></div>
 
     <div class="cbox">
-     <b>გინდა ნაკვეთის გაყიდვა?</b>
-     <p>შეავსე ფორმა — დანარჩენს ჩვენ გავაკეთებთ. განცხადებას <b>24 საათში</b> ვდებთ საიტზე.</p>
+     <b>გინდა შენი უძრავი ქონების გაყიდვა ან გაქირავება?</b>
+     <p>განცხადება მაქსიმუმ <b>24 საათში</b> გააქტიურდება საიტზე — ყველა განაცხადი გადის დეტალურ შემოწმებას.</p>
      <a class="cb" href="/#post">განცხადების ფორმა →</a>
     </div>
 
@@ -108,20 +129,34 @@ const KA_BODY = `
     ფასს, ფოტოსა და საკონტაქტო ინფორმაციას განცხადების ავტორი განსაზღვრავს.</span></div>`;
 
 const EN_BODY = `
-    <h4>How it works</h4>
-    <div class="mgrid">
-     <div class="mc"><b>1 · A map, not a list</b><span>Every listing is on the map. The price per m² is right on the pin.</span></div>
-     <div class="mc"><b>2 · A real boundary</b><span>Click the cadastral code and the plot's outline appears right on the map — no need to open maps.gov.ge.</span></div>
-     <div class="mc"><b>3 · Measure on the spot</b><span>An area and distance measuring tool, right in your hands — no extra app needed.</span></div>
-     <div class="mc"><b>4 · Direct contact</b><span>The phone number is on the card. There's no commission, for either the seller or the buyer.</span></div>
-    </div>
+    <div class="hook"><h4>Why this site is different</h4>
+    <p>Georgia's real estate market has always run on two things — unreliable information (in a
+    Facebook group, who really knows if the address and size are accurate) and a middleman who
+    takes a cut on both ends of the deal. We remove both. A plot's boundary appears on the map
+    not as an approximate point, but as a real outline pulled from the Public Registry — the
+    buyer sees exactly what they're buying before they even call. And there's no middleman here:
+    the call goes straight to you, not to some third party asking for a commission in return.</p></div>
 
-    <h4>Posting a listing is free</h4>
-    <p>We don't charge for posting a listing — not a one-time fee, not a monthly one.</p>
+    <div class="hook"><h4>Our mission</h4>
+    <p>We want to level the playing field — giving everyone, for free, what usually only big
+    agencies have: real, verified data and instant access to an interested buyer.</p></div>
+
+    <div class="hook"><h4>What you lose by not posting today</h4>
+    <p>Every day your property isn't listed, someone leaves a request for exactly this area, this
+    budget, this size — and finds someone else's listing instead of yours. Posting costs you
+    nothing: no one-time fee, no monthly fee, no commission on the sale.</p></div>
+
+    <div class="hook"><h4>You decide who sees it</h4>
+    <p>Want no one to see your listing except the matching buyer? Hide it from the public map —
+    it stays active and still automatically finds the searcher it matches, it's just invisible
+    to everyone else. Don't want your name to show either? The card will simply say "Visitor"
+    instead, while your phone still rings directly. This isn't just a "privacy setting" — it
+    means you can sell without telling anyone you're selling, and still find the person who's
+    buying.</p></div>
 
     <div class="cbox">
-     <b>Want to sell your property?</b>
-     <p>Fill out the form — we'll handle the rest. Your listing goes live in <b>24 hours</b>.</p>
+     <b>Want to sell or rent out your property?</b>
+     <p>Your listing goes live <b>within 24 hours</b> at most — every submission goes through a detailed review.</p>
      <a class="cb" href="/#post">Listing form →</a>
     </div>
 
@@ -132,8 +167,8 @@ const html_ka = page({
   lang: 'ka',
   title: 'როგორ მუშაობს — MyMamuli.ge',
   desc: 'MyMamuli.ge აჩვენებს გასაყიდ მიწის ნაკვეთს ზუსტად იქ, სადაც ის დგას — საჯარო რეესტრის საკადასტრო საზღვრით, ფართობით, დანიშნულებითა და სტატუსით.',
-  h1: 'საქართველოს მიწის ბაზარი — ერთ რუკაზე',
-  lead: 'MyMamuli.ge აჩვენებს გასაყიდ მიწის ნაკვეთს <b>ზუსტად იქ, სადაც ის დგას</b> — საჯარო რეესტრის საკადასტრო საზღვრით, ფართობით, დანიშნულებითა და სტატუსით. შუამავალი არ გვყავს: მყიდველი პირდაპირ გამყიდველს უკავშირდება.',
+  h1: 'მაძიებელი შენ გიპოვის — არა შენ მას',
+  lead: 'ეს არ არის კიდევ ერთი განცხადებების დაფა, სადაც პოსტი იკარგება ასობით სხვას შორის და მოთმინებით ელოდები, ვინმემ შემოხედოს თუ არა. MyMamuli.ge-ზე მაძიებლებს უკვე წინასწარ აქვთ დაფიქსირებული, ზუსტად რას ეძებენ — არეალი, ბიუჯეტი, ფართობი. შენ რომ მხოლოდ ერთხელ ათავსებ განცხადებას, სისტემა თვითონ პოულობს, ვისაც ეს შეესაბამება, და მას ავტომატურად ატყობინებს — მანამდე, სანამ ვინმე საერთოდ დაიწყებდა შენი განცხადების ძებნას. შენი პოსტი არ ელოდება შემთხვევით მაყურებელს — თავად მიდის იმასთან, ვისაც სჭირდება.',
   body: KA_BODY,
   backLabel: '← მთავარ გვერდზე დაბრუნება'
 });
@@ -142,8 +177,8 @@ const html_en = page({
   lang: 'en',
   title: "How it works — MyMamuli.ge",
   desc: "MyMamuli.ge shows land for sale exactly where it stands — with the Public Registry's cadastral boundary, area, designation and status.",
-  h1: "Georgia's land market — on one map",
-  lead: "MyMamuli.ge shows land for sale <b>exactly where it stands</b> — with the Public Registry's cadastral boundary, area, designation and status. There's no middleman: the buyer contacts the seller directly.",
+  h1: "The buyer finds you — not the other way around",
+  lead: "This isn't another listings board where your post gets buried among hundreds of others while you wait and hope someone scrolls past it. On MyMamuli.ge, searchers have already set exactly what they're looking for — the area, the budget, the size. The moment you post your listing, the system finds everyone it matches and notifies them automatically — before anyone would even start searching for it. Your post doesn't wait for a random visitor — it goes straight to whoever needs it.",
   body: EN_BODY,
   backLabel: '← Back to homepage'
 });

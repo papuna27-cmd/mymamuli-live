@@ -82,12 +82,12 @@ gtag('config', 'G-N30XKZCDCT');
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.08.27-2020"></script>
+<script src="i18n.js?v=2026.09.01-0100"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.08.27-2020';
+window.MM_BUILD = '2026.09.01-0100';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -481,9 +481,24 @@ body.drawing .catbar{opacity:.25;pointer-events:none}
   .maplibregl-ctrl-bottom-left{margin-bottom:calc(70px + env(safe-area-inset-bottom))}
 }
 .pinlbl{background:#fff;border:1.5px solid var(--brand);color:var(--brand);font:600 12px/1 -apple-system,BlinkMacSystemFont,sans-serif;padding:6px 9px;border-radius:999px;box-shadow:0 2px 8px rgba(14,26,22,.22);white-space:nowrap}
+/* ⚠️ 2026-08-31, George-ის მოთხოვნით — ღია ბარათის ნიშნულზე ორი
+   ცალკე ვიზუალური ვარიანტი ვცადეთ (display:none სრული დამალვა,
+   მერე .actpin კლასით შემცირება/გამჭვირვალობა) და ორივემ პრობლემა
+   შექმნა. საბოლოოდ George-ის მოთხოვნით ღია ბარათის ნიშნული ზუსტად
+   სტანდარტული (არააქტიური) ნიშნულის ზომით/სტილით რჩება — root
+   cause-ის რეალური გამოსწორება render()-შია (activeInView), რომელიც
+   უზრუნველყოფს, რომ ეს ნიშნული არასდროს მოხვდეს კლასტერის ბუშტში. */
 /* ---- ნახვების სითბო: რაც მეტს უყურებენ დღეს, მით წითელი ----
-   h = 0…1 (დღის ნახვები / HOT_FULL). შუაღამეს თბილისის დროით ნულდება. */
-.pinlbl.hot{border-color:var(--hc,#0F6B4F);color:var(--hc,#0F6B4F);
+   h = 0…1 (დღის ნახვები / HOT_FULL). შუაღამეს თბილისის დროით ნულდება.
+   ⚠️ 2026-08-31 — ეს კლასი გადავარქვით .hot-დან .hotpin-ზე: საერთო
+   ფუტერის "ცხელი რეგიონები" ვიჯეტსაც ჰქონდა იგივე .hot სახელი, სადაც
+   `@media(max-width:1320px){.hot{display:none}}` (იხ. footer-ის CSS)
+   ნებისმიერ ვიწრო ეკრანზე (≤1320px ლოგიკური სიგანე — ჩვეულებრივი
+   ლეპტოპიც შედის აქ) სრულად მალავდა ამ ნიშნულს, თუ ის "hot" (ხშირად
+   ნანახი) იყო — ეს იყო "ფასი საერთოდ ქრება" ბაგის ნამდვილი მიზეზი
+   ამ კონკრეტული ტიპის განცხადებებისთვის, დამოუკიდებლად კლასტერიზაცია/
+   active-ლოგიკისგან. */
+.pinlbl.hotpin{border-color:var(--hc,#0F6B4F);color:var(--hc,#0F6B4F);
  box-shadow:0 2px 8px rgba(14,26,22,.22),0 0 0 var(--hr,0px) var(--hg,transparent)}
 .pinlbl .fl{display:inline-block;margin-left:5px;font-size:10px;vertical-align:1px;opacity:.9}
 .vrow{display:flex;align-items:center;gap:6px}
@@ -492,6 +507,14 @@ body.drawing .catbar{opacity:.25;pointer-events:none}
 .pinlbl.seen{background:#EEF1F0;border-color:#B9C4C0;color:#7C8B85;box-shadow:0 1px 4px rgba(14,26,22,.14)}
 .reqlbl.lock{background:#5B6660;box-shadow:0 2px 10px rgba(30,40,36,.4)}
 .reqlbl{background:var(--amber);border:1.5px solid #fff;color:#fff;font:700 12px/1 -apple-system,BlinkMacSystemFont,sans-serif;padding:6px 10px;border-radius:999px;box-shadow:0 2px 10px rgba(200,135,58,.45);white-space:nowrap;display:flex;align-items:center;gap:5px}
+/* ⚠️ 2026-08-30, George-ის მოთხოვნით — გამყიდველის რუკის ნიშნული
+   (.pinlbl.reqlbl.lstlbl) იმავე ზომის/ფორმის დაფას იყენებს, რასაც
+   „ვეძებ" (.reqlbl) — padding/font/border-radius .reqlbl-იდან
+   მემკვიდრეობით მოდის, ფერი კი მწვანეა (არა ქარვისფერი), რომ
+   გასაყიდი ვიზუალურად განსხვავდებოდეს მაძიებლისგან. */
+.reqlbl.lstlbl{background:var(--brand);box-shadow:0 2px 10px rgba(15,107,79,.45)}
+.reqlbl.lstlbl.hotpin{box-shadow:0 2px 10px rgba(15,107,79,.45),0 0 0 var(--hr,0px) var(--hg,transparent)}
+.reqlbl.lstlbl.seen{background:#EEF1F0;border-color:#B9C4C0;color:#7C8B85;box-shadow:0 1px 4px rgba(14,26,22,.14)}
 
 /* ზოლის სიმაღლე ცვალებადია (ერთი ან ორი რიგი) — ამიტომ დინამიური ტოპი */
 .probar{position:absolute;top:calc(12px + var(--cbh,42px) + 8px);right:12px;z-index:12;display:none;align-items:center;gap:7px;
@@ -568,11 +591,21 @@ body.req-mode.peek-on .reqcta,body.drawing .reqcta{display:none}
 .mgrid .mc{border:1px solid var(--line);border-radius:12px;padding:13px 15px}
 .mgrid .mc b{display:block;font-size:13.5px;margin-bottom:3px}
 .mgrid .mc span{font-size:12.5px;line-height:1.55;color:var(--ink2)}
-.cbox{background:linear-gradient(103deg,#0C3D31,#11624D);color:#fff;border-radius:14px;padding:16px 18px;margin:16px 0 4px}
-.cbox b{display:block;color:#fff;font-size:14.5px;margin-bottom:4px}
-.cbox p{color:rgba(255,255,255,.8);font-size:13px;margin:0 0 11px}
+/* ⚠️ 2026-08-31, George-ის მოთხოვნით — „მთავარი" ტაბის ახალი, გრძელი
+   hook-ტექსტის თითოეული აზრობრივი ბლოკი (h4+p) ჩარჩოშია ჩასმული, რომ
+   უბრალო ტექსტის კედლის ნაცვლად ცალ-ცალკე წასაკითხი ბარათებივით გამოიყურებოდეს. */
+.hook{border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:14px 0;
+ background:var(--sand)}
+.hook h4{margin:0 0 8px;font-size:14px;color:var(--brand)}
+.hook p{margin:0;font-size:13.5px;line-height:1.65;color:var(--ink2)}
+.cbox{background:linear-gradient(103deg,#0C3D31,#11624D);color:#fff;border-radius:16px;
+ padding:20px 22px;margin:18px 0 4px;border:1px solid rgba(255,255,255,.14);
+ box-shadow:0 10px 28px -10px rgba(12,61,49,.55)}
+.cbox b{display:block;color:#fff;font-size:16px;margin-bottom:6px;letter-spacing:-.2px}
+.cbox p{color:rgba(255,255,255,.88);font-size:13.5px;line-height:1.55;margin:0 0 14px}
 .cbox .cb{display:inline-flex;align-items:center;gap:7px;background:#fff;color:#0C3D31;
- font:700 13px/1 inherit;padding:11px 16px;border-radius:10px;text-decoration:none}
+ font:700 13.5px/1 inherit;padding:12px 18px;border-radius:10px;text-decoration:none;
+ box-shadow:0 4px 14px -4px rgba(0,0,0,.3)}
 .note{display:flex;gap:9px;background:#FBF4E8;border-radius:11px;padding:12px 14px;margin:14px 0 4px;
  font-size:12.5px;line-height:1.55;color:#7A5416}
 .note i{font-style:normal;flex:0 0 auto}
@@ -1222,13 +1255,15 @@ body.foot-min .fslim{display:flex}
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 19.5V8.2L12 3l9 5.2v11.3" stroke="#0F6B4F" stroke-width="2" stroke-linejoin="round"/><path d="M3 19.5h18" stroke="#0F6B4F" stroke-width="2" stroke-linecap="round"/><path d="M9.5 19.5v-5.3h5v5.3" stroke="#C8873A" stroke-width="2" stroke-linejoin="round"/></svg>
       My<b>Mamuli</b>
     </a>
-    <!-- ⚠️ George-ის მოთხოვნით — H1 ეხლა ნამდვილად ხილულია (არა sr-only),
-         მაგრამ ვიწრო/მუქუხედავი ტექსტია, რომ ჰედერის დიზაინი არ დაირღვეს.
-         ვიწრო ეკრანზე იმალება (.htag{display:none}@media), რადგან
-         ადგილს ვეღარ ჰპოულობს — H1-ის SEO ღირებულებას ეს არ აზარალებს,
-         Google საწყის, სერვერიდან მოსულ HTML-ს კითხულობს ეკრანის
-         სიგანის მიუხედავად. */-->
-    <h1 class="htag">უძრავი ქონება და მიწის ნაკვეთები საქართველოში — საკადასტრო რუკაზე</h1>
+    <!-- ⚠️ 2026-08-30, George-ის მოთხოვნით — წინა ვერსია H1-ს ხილულად
+         აჩენდა ჰედერში (.htag, max-width შეზღუდვის გარეშე), რაც
+         ფართო ეკრანზე რეკლამის (640px, .adwrap) გვერდით ადგილს
+         ვეღარ პოულობდა და მთელ სტატისტიკის ტიკერს (.tick) ნულოვან
+         სიგანემდე აჭყლეტდა — ტიკერი მთლიანად ქრებოდა. H1 კვლავ
+         სერვერიდან მოსულ HTML-შია (SEO-სთვის საკმარისი), უბრალოდ
+         ისევ ვიზუალურად დამალულია (sr-only), როგორც სხვა SEO-ტექსტი
+         გვერდზე — ტიკერს და რეკლამას ისევ სრული ადგილი რჩება. */-->
+    <h1 class="sr-only">უძრავი ქონება და მიწის ნაკვეთები საქართველოში — საკადასტრო რუკაზე</h1>
     <div class="adwrap"><div class="ad" id="ad"></div></div>
 
     <div class="tick" id="tick" data-noi18n><div class="rail" id="rail"></div></div>
@@ -1282,11 +1317,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.08.27-2020">
+<footer data-build="2026.09.01-0100">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.08.27-2020</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.09.01-0100</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -1619,12 +1654,50 @@ const WORLD=[[-180,-85],[180,-85],[180,85],[-180,85],[-180,-85]];
 const OWS='https://gpv0.napr.gov.ge/inspirevs/napr_cp/ows';
 const wmsUrl=l=>OWS+'?service=WMS&version=1.1.1&request=GetMap&layers='+l+'&styles=&format=image/png&transparent=true&srs=EPSG:3857&width=256&height=256&bbox={bbox-epsg-3857}';
 
+/* ⚠️ 2026-08-29 (მე-2 ნაწილი): George-ის მოთხოვნით — ინგლისურ ენაზე
+   ქუჩების სახელებიც ინგლისურად უნდა ჩანდეს. CARTO-ს რასტრული
+   label-tiles (`labels` წყარო ქვემოთ) ყოველთვის ადგილობრივ (ქართულ)
+   ენაზეა ჩარენდერებული სერვერის მხარეს — ენის მიხედვით ვერ იცვლება.
+   ამიტომ EN რეჟიმში ვიყენებთ CARTO-ვე ვექტორულ ტაილებს (იგივე
+   მონაცემი, უფასო, გასაღები არ სჭირდება), სადაც თითო ქუჩას აქვს
+   `name` (ქართული) და `name:en` (ინგლისური, სადაც არსებობს) ველები —
+   ვაჩვენებთ name:en-ს, თუ არა და — name-ს (ცარიელს არ დავტოვებთ).
+   ქართული რეჟიმი (ka) სრულიად უცვლელი რჩება (ძველი რასტრული ფენა). */
+const labelsEnGlyphs=LANG==='en'?{glyphs:'https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf'}:{};
+const labelsEnSources=LANG==='en'?{
+ labelsVec:{type:'vector',url:'https://tiles.basemaps.cartocdn.com/vector/carto.streets/v1/tiles.json'}
+}:{};
+const LABELS_EN_FONT=['Noto Sans Regular','Open Sans Regular'];
+const labelsEnLayers=LANG==='en'?[
+ {id:'labels_en_sec',type:'symbol',source:'labelsVec','source-layer':'transportation_name',minzoom:15,
+  filter:['all',['in','class','secondary','tertiary']],
+  layout:{visibility:'none','symbol-placement':'line','text-font':LABELS_EN_FONT,
+   'text-size':{stops:[[15,10],[17,11],[18,12]]},
+   'text-field':['coalesce',['get','name:en'],['get','name']],
+   'symbol-avoid-edges':false,'symbol-spacing':250,'text-pitch-alignment':'auto',
+   'text-rotation-alignment':'auto','text-justify':'center'},
+  paint:{'text-color':'#666666','text-halo-color':'#fbf8f3','text-halo-width':1}},
+ {id:'labels_en_minor',type:'symbol',source:'labelsVec','source-layer':'transportation_name',minzoom:16,
+  filter:['all',['in','class','minor','service']],
+  layout:{visibility:'none','symbol-placement':'line','text-font':LABELS_EN_FONT,'text-size':9,
+   'text-field':['coalesce',['get','name:en'],['get','name']],
+   'symbol-avoid-edges':false,'symbol-spacing':200,'text-pitch-alignment':'auto',
+   'text-rotation-alignment':'auto','text-justify':'center'},
+  paint:{'text-color':'#87919e','text-halo-color':'#fbf8f3','text-halo-width':1}}
+]:[];
 const map=new maplibregl.Map({
  container:'map',
  style:{version:8,
+  ...labelsEnGlyphs,
   sources:{
    osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,attribution:'© OpenStreetMap'},
    sat:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:18,attribution:'© Esri, Maxar, Earthstar Geographics'},
+   /* ⚠️ 2026-08-29: ქუჩების სახელების ფენა (გამჭვირვალე, მხოლოდ ტექსტი) —
+      სატელიტურ ხედზე დასაფენად, რომ ხალხმა ორიენტირება შეძლოს.
+      მზა CARTO Voyager label-tiles, გასაღები არ სჭირდება.
+      ⚠️ მხოლოდ ka რეჟიმისთვის — იხ. ზემოთ labelsVec, EN-ისთვის. */
+   labels:{type:'raster',tiles:['https://basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,attribution:'© CARTO'},
+   ...labelsEnSources,
    parcel:{type:'raster',tiles:[wmsUrl('napr_cp:CP.CadastralParcel')],tileSize:256,attribution:'საკადასტრო მონაცემები: © სსიპ — საჯარო რეესტრის ეროვნული სააგენტო'},
    sector:{type:'raster',tiles:[wmsUrl('napr_cp:CP.CadastralSector')],tileSize:256},
    mask:{type:'geojson',data:{type:'Feature',geometry:{type:'Polygon',coordinates:[WORLD,borderRing]},properties:{}}},
@@ -1636,6 +1709,15 @@ const map=new maplibregl.Map({
   layers:[
    {id:'osm',type:'raster',source:'osm',layout:{visibility:'none'}},
    {id:'sat',type:'raster',source:'sat'},
+   /* ⚠️ 2026-08-29 (მე-3 ნაწილი, George-ის მოთხოვნით — გადაუდებელი ბაგი):
+      minzoom არ ჰქონდა დაწესებული, ამიტომ საწყის (მთელი საქართველოს)
+      ხედზეც ჩნდებოდა — CARTO-ს label-ტაილები დაბალ ზუმზე ქვეყნის/
+      რეგიონის სახელებს გვიჩვენებს ინგლისურად (GEORGIA, SOCHI,
+      DAGESTAN…), რაც საიტის საკუთარ ქართულ ქალაქების წარწერებთან
+      ერეოდა და მთელი რუკა არეული ჩანდა. ახლა მხოლოდ მიახლოებისას
+      (ქუჩის დონეზე) ჩნდება — ზუსტად ის, რაც თავიდანვე იყო განზრახული. */
+   {id:'labels',type:'raster',source:'labels',minzoom:13,layout:{visibility:'none'}},
+   ...labelsEnLayers,
    {id:'sector',type:'raster',source:'sector',layout:{visibility:'none'},paint:{'raster-opacity':.4}},
    {id:'parcel',type:'raster',source:'parcel',layout:{visibility:'none'},paint:{'raster-opacity':.85}},
    {id:'mask',type:'fill',source:'mask',paint:{'fill-color':'#0E1A16','fill-opacity':['interpolate',['linear'],['zoom'],5,0.30,8,0.16,10,0]}},
@@ -1784,6 +1866,33 @@ const curMo=new MutationObserver(muts=>{
  });
 });
 curMo.observe(document.body,{childList:true,subtree:true});
+/* ⚠️ 2026-08-30 (განახლება) — George-ის მოთხოვნით: ენის ან ვალუტის
+   გადართვისას თუ კონკრეტული განცხადება/მოთხოვნა იყო გახსნილი
+   (openReq/openCard წერს #/r/<id> ან #/g/<id> hash-ს, იხ. ქვემოთ),
+   reload-ის შემდეგ საიტი უნდა დაბრუნდეს ზუსტად იმავე კონკრეტულ
+   გვერდზე — არა უბრალოდ იმავე ტაბზე/კატეგორიაზე. root cause:
+   restoreAfterCurr-ის მიერ პროგრამულად "დაჭერილი" კატეგორიის ტაბი
+   თავად იძახებს closeCard()-ს (.catbar .sub .tab-ის onclick-ში),
+   რაც seoReset()-ის გავლით #/r/, #/g/ hash-ს შლის ჯერ კიდევ მანამ,
+   სანამ /api/geo-ს fetch (async) დაასრულებდა და tryDeepLink() საერთოდ
+   გაეშვებოდა — ანუ ჩვენივე "აღდგენის" ლოგიკა შლიდა ზუსტად იმ
+   ინფორმაციას, რაც კონკრეტული გვერდის ხელახლა გასახსნელად სჭირდებოდა.
+   ამიტომ item-ს (r_/l_ id) ცალკე ვინახავთ და restoreAfterCurr-ის
+   ბოლოს ხელახლა ვწერთ hash-ს — synchronous კოდი ყოველთვის სრულდება
+   async tryDeepLink()-ზე ადრე, ამიტომ ეს დროულად ასწრებს. */
+function saveUiRestoreState(){
+ try{
+  let item=null;
+  const mr=location.hash.match(/^#\/r\/(r_[a-z0-9]+)/);
+  const mg=location.hash.match(/^#\/g\/(l_[a-z0-9]+)/);
+  if(mr)item={t:'r',id:mr[1]}; else if(mg)item={t:'g',id:mg[1]};
+  sessionStorage.setItem('mm_restore',JSON.stringify({
+   MODE, sub:(MODE==='seek'?RCUR:cur),
+   c:[map.getCenter().lng,map.getCenter().lat], z:map.getZoom(),
+   item
+  }));
+ }catch(e){}
+}
 /* ⚠️ ვალუტის გადართვა გვერდის reload-ით სრულდება — იმავე ხერხით,
    რასაც ენის გადამრთველიც იყენებს (mountLangSwitch, ქვემოთ). ასე
    არ გვჭირდება უკუკონვერტაცია ($-დან ლარზე გადასვლისას DOM უკვე
@@ -1792,6 +1901,15 @@ curMo.observe(document.body,{childList:true,subtree:true});
 function setCurr(c){
  if((c!=='usd'&&c!=='gel')||c===CURR)return;
  try{localStorage.setItem('mm_cur',c)}catch(e){}
+ /* ⚠️ 2026-08-30, George-ის მოთხოვნით — ვალუტის გადართვისას გვერდი
+    „მთავარზე" ბრუნდებოდა (განსაკუთრებით „იყიდება" ტაბზე, სადაც MODE/cur
+    ნაგულისხმევისგან განსხვავებული იყო) — location.reload() მთელ
+    in-memory მდგომარეობას (MODE/cur/RCUR/PICKED/OPEN, რუკის კამერას)
+    შლიდა და სკრიპტი თავიდან იწყებოდა ნაგულისხმევი „ვეძებ" მდგომარეობით.
+    სანამ reload ხდება, ვინახავთ ამ მდგომარეობას sessionStorage-ში;
+    ჩატვირთვის ბოლოს (იხ. restoreAfterCurr ქვემოთ) იმავე ღილაკებზე
+    პროგრამულად "დაჭერით" ვაბრუნებთ ზუსტად იმავე ტაბს/კატეგორიას/ხედს. */
+ saveUiRestoreState();
  track('cur',{c});
  fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
   body:JSON.stringify({mode:'setcur',cur:c})}).catch(()=>{});
@@ -1861,7 +1979,7 @@ function applyHeat(o,node){
  const v=VIEWS[o.id]; if(!v||!VIEWS_OK)return;
  const lbl=node.querySelector('.pinlbl'); if(!lbl)return;
  const H=heat(v.today);
- lbl.classList.add('hot');
+ lbl.classList.add('hotpin');
  lbl.style.setProperty('--hc',H.css);
  lbl.style.setProperty('--hg',H.glow);
  lbl.style.setProperty('--hr',H.ring);
@@ -1891,9 +2009,14 @@ function viewsBlock(o){
 function pin(o){
  const d=document.createElement('div');
  d.style.cssText='cursor:pointer';
- const m=perM2(o);
- const label=m!=null?'$'+fmt(m)+'<span style="font-weight:500;opacity:.72">/მ²</span>':'$'+fmt(o.p);
- d.innerHTML='<div class="pinlbl'+(seen.has(o.id)?' seen':'')+'">'+label+'</div>';
+ /* ⚠️ 2026-08-30, George-ის მოთხოვნით — რუკაზე გამყიდველის ნიშნულმა
+    მთლიანი ფასი უნდა აჩვენოს (არა ფასი მ²-ზე), და იმავე ზომის/ფორმის
+    დაფაზე, რასაც „ვეძებ"-ის ნიშნული იყენებს (.reqlbl — pill, იგივე
+    padding/font/border-radius). ფერი მწვანეა (არა ქარვისფერი) — ეს
+    სემანტიკურად განასხვავებს გასაყიდს მაძიებლისგან, ფორმა/ზომა კი
+    იდენტურია. .pinlbl მაინც რჩება კლასებში, რომ hover-სინქრონმა და
+    applyHeat-მა (ორივე .pinlbl-ს ეძებს) იმუშაონ, როგორც აქამდე. */
+ d.innerHTML='<div class="pinlbl reqlbl lstlbl'+(seen.has(o.id)?' seen':'')+'">$'+fmt(o.p)+'</div>';
  applyHeat(o,d);
  d.onclick=e=>{e.stopPropagation();openCard(o)};
  return d;
@@ -2065,10 +2188,12 @@ map.on('moveend',()=>{
 });
 
 /* ---------- კლასტერიზაცია ---------- */
-/* ⚠️ კლასტერი ჩართულია მხოლოდ მაშინ, როცა ნიშნულები მართლა ბევრია.
-   დღეს განცხადება ცოტაა და დაჯგუფება მარაგს მალავდა — ამიტომ ზღვარი.
-   როცა ბაზა შეივსება, CLUSTER_MIN-ის ჩამოწევა საკმარისია. */
-const CLUSTER_MIN=40;               /* ამდენ ნიშნულამდე დაჯგუფება არ ხდება */
+/* ⚠️ 2026-08-31, George-ის მოთხოვნით — ადრე ზღვარი (40) ისე მაღალი იყო,
+   რომ დღევანდელ მცირე მარაგზე დაჯგუფება პრაქტიკულად არასდროს ირთვებოდა,
+   რის გამოც ახლოს მდგარი ფასის დაფები ერთმანეთს ედებოდა (overlap).
+   ზღვარი ჩამოწეულია, რომ დაჯგუფება ყოველთვის იმუშაოს, როცა ნიშნულები
+   რეალურად ახლოს დგას — მარაგის ზომაზე დამოკიდებული აღარაა. */
+const CLUSTER_MIN=2;                /* ამდენ ნიშნულამდე დაჯგუფება არ ხდება */
 const CLUSTER_ZOOM=12.5;            /* ამ ზუმზე ზემოთ კლასტერი აღარაა */
 function clusterize(items,getLL){
  if(items.length<CLUSTER_MIN)return items.map(o=>({one:o}));
@@ -2593,9 +2718,23 @@ function render(){
  }
  const s=src('req'); if(s)s.setData({type:'FeatureCollection',features:[]});
  const v=visible();
- clusterize(v,o=>[o.lng,o.lat]).forEach(g=>{
+ /* ⚠️ 2026-08-31, George-ის მოთხოვნით — ორი ცალკე ბაგის საერთო ფესვი:
+    (1) ადრე ღია ბარათის ნიშნული აქ საერთოდ არ იშენებოდა (return),
+    რაც render()-ის ხელახალ გაშვებაზე ნიშნულს სამუდამოდ კარგავდა.
+    (2) CLUSTER_MIN-ის დაწევის შემდეგ (იხ. clusterize()) ღია ბარათის
+    განცხადება ხანდახან კლასტერის ბუშტში ხვდებოდა და ცალკე ნიშნულად
+    საერთოდ არ ჩნდებოდა — ბუშტს კი "დაკარგული" ფასის კონკრეტულ
+    მდებარეობასთან არაფერი აქვს საერთო. გამოსავალი: ღია ბარათის
+    განცხადება კლასტერიზაციამდე ცალკე ვიღებთ და ყოველთვის ცალკე,
+    ჩვეულებრივი ზომის ნიშნულად ვხატავთ — ისე, როგორც ნებისმიერი
+    სხვა (არააქტიური) ნიშნული გამოიყურება, დამატებითი
+    შემცირების/გამჭვირვალობის გარეშე. */
+ const activeInView = active && v.find(o=>o.id===active.id);
+ const forCluster = activeInView ? v.filter(o=>o.id!==active.id) : v;
+ clusterize(forCluster,o=>[o.lng,o.lat]).forEach(g=>{
   if(g.one){
-   const o=g.one, elx=pin(o);
+   const o=g.one;
+   const elx=pin(o);
    PINEL[o.id]=elx;
    wirePinHover(elx,o,[o.lng,o.lat],false);
    mk.push(new maplibregl.Marker({element:elx,anchor:'bottom'}).setLngLat([o.lng,o.lat]).addTo(map));
@@ -2608,6 +2747,13 @@ function render(){
    mk.push(new maplibregl.Marker({element:c,anchor:'center'}).setLngLat(g.ll).addTo(map));
   }
  });
+ if(activeInView){
+  const o=activeInView;
+  const elx=pin(o);
+  PINEL[o.id]=elx;
+  wirePinHover(elx,o,[o.lng,o.lat],false);
+  mk.push(new maplibregl.Marker({element:elx,anchor:'bottom'}).setLngLat([o.lng,o.lat]).addTo(map));
+ }
  const d=el('fdot'); if(d)d.classList.toggle('on',fActive()||!!AREA);
  const r=el('fres'); if(r)r.innerHTML='ნაპოვნია <b>'+v.length+'</b> განცხადება';
  if(openP==='list')paintList();
@@ -2920,7 +3066,15 @@ function toggleCities(v){
 }
 try{ if(localStorage.getItem('mm_cty')==='0') cityOn=false }catch(e){}
 
-let reT; map.on('zoomend',()=>{clearTimeout(reT);reT=setTimeout(()=>{if(!active)render()},160)});
+/* ⚠️ 2026-08-31 — ეს `if(!active)` შემოწმება იმ დროინდელი render()-ის
+   ლოგიკისთვის იყო საჭირო, როცა ღია ბარათის ნიშნული render()-ში
+   საერთოდ არ იშენებოდა (რომ არ „აციმციმებულიყო"). ახლა render()
+   თავად ინახავს/სწორად ხატავს აქტიურ ნიშნულს ყოველთვის (იხ. render()
+   და openCard()), ამიტომ ეს შემოწმება მოძველდა და პირიქით ეშლებოდა:
+   ღია ბარათის დაფლანჩვის (flyTo) შემდეგ render() საერთოდ არ
+   ეშვებოდა, რაც სწორედ „ფასი ქრება რუკიდან" ბაგს იწვევდა
+   დაფის ბმულით/ხელახლა-გახსნილი კონკრეტული განცხადებისთვის. */
+let reT; map.on('zoomend',()=>{clearTimeout(reT);reT=setTimeout(()=>{render()},160)});
 
 /* ნიშნულების გადახატვის შემდეგ წარწერებიც უნდა გადაითვალოს —
    თორემ ახალი განცხადება ძველ წარწერას გადააფარებდა. */
@@ -2997,7 +3151,20 @@ setTimeout(()=>{if(!mk.length)render();try{applyLayers()}catch(e){}},1500);
    const ml=location.hash.match(/^#\/g\/(l_[a-z0-9]+)/);
    if(ml){
     const o=DATA.find(x=>x.id===ml[1]);
-    if(o){deepLinked=true; openCard(o)}
+    if(o){
+     deepLinked=true;
+     /* ⚠️ 2026-08-31, George-ის მოთხოვნით — თუ საიტის ნაგულისხმევი
+        დაწყების რეჟიმი კვლავ "ვეძებ" იყო (cur==='req', იხ. #138),
+        render() ადრეულადვე ბრუნდებოდა cur==='req' შემოწმებაზე და
+        lst ნიშნულებს საერთოდ არ ხატავდა — ბარათი (გვერდით პანელი)
+        ღიობდა, მაგრამ მისი ფასის ნიშნული რუკაზე არასდროს ჩნდებოდა.
+        გაზიარებული/დაბრუნებული კონკრეტული განცხადების ბმულმა
+        ჯერ "იყიდება/ქირავდება" კონტექსტში უნდა გადაერთოს. */
+     MODE='sell'; PICKED=true; cur='all';
+     document.body.classList.remove('req-mode');
+     paintCatbar();
+     openCard(o);
+    }
    }
   }catch(e){}
  }
@@ -3013,6 +3180,12 @@ setTimeout(()=>{if(!mk.length)render();try{applyLayers()}catch(e){}},1500);
    if(Array.isArray(d.req)){REQ.length=0;REQ.push(...d.req)}
    render();
    try{if(map.loaded())applyLayers()}catch(e){}
+   /* ⚠️ 2026-08-30 — restoreAfterCurr() აქ, DATA/REQ-ის ჩატვირთვის
+      შემდეგ ვიძახებთ (და არა სკრიპტის თავშივე) — იხ. კომენტარი თავად
+      restoreAfterCurr()-თან. თვითონ ფუნქცია idempotent-ია
+      (sessionStorage-დან შლის საკუთარ გასაღებს პირველივე გაშვებისას),
+      ამიტომ უსაფრთხოა ყოველი pull()-ის ციკლში გამოძახება. */
+   restoreAfterCurr();
    tryDeepLink();
   }).catch(e=>{console.error('geo fetch failed',e)});
  }
@@ -3155,6 +3328,48 @@ const fitAll=()=>{
  paintArea(); render(); fitGeorgia(true); track('fit',{});
 };
 const rbf=el('rb-fit'); if(rbf)rbf.onclick=fitAll;
+
+/* ⚠️ 2026-08-30 — setCurr()-ის მიერ დამახსოვრებული მდგომარეობის აღდგენა
+   ვალუტის გადართვის reload-ის შემდეგ (იხ. setCurr ზემოთ). იმავე
+   ღილაკებზე პროგრამულად ვაჭერთ, რასაც მომხმარებელი ხელით აჭერდა —
+   ასე ყოველგვარი მდგომარეობის (MODE/cur/RCUR, body-კლასები,
+   catbar-ის UI) გამორკვევა ერთხელ დაწერილ, უკვე გამართულ ლოგიკას
+   რჩება და არ ვიმეორებთ.
+   ⚠️ 2026-08-30 (განახლება) — George-ის მოთხოვნით: ეს აქამდე
+   გვერდის ჩატვირთვისთანავე (synchronous, DATA/REQ-ის fetch-ის
+   დასრულებამდე) გაეშვებოდა. თუ MODE პირველად ("იყიდება"-ზე პირველი
+   შერჩევა, `first` ცვლადი კატბარის ლოგიკაში) მაშინ ირჩევა, კოდი
+   `cur`-ს ნაგულისხმევ კატეგორიაზე აყენებს `subCats()`-ის მიხედვით —
+   რომელიც ცარიელი/არასრული DATA-ს ეყრდნობოდა (fetch ჯერ არ იყო
+   დასრულებული), ამიტომ ხშირად შეცდომით "მიწის ნაკვეთს" ირჩევდა.
+   შემდეგ ჩვენი tabBtn.click() ცდილობდა სწორი კატეგორიის (`rs.sub`)
+   არჩევას, მაგრამ ის ტაბი DOM-ში საერთოდ არ არსებობდა (იმავე
+   არასრული subCats()-ის გამო) — ანუ "ბინა/სახლი" აირჩია, მაგრამ
+   რეალურად "მიწის ნაკვეთი" რჩებოდა არჩეული. გამოსავალი: აღდგენა
+   ვაჭერით მხოლოდ მას შემდეგ, რაც DATA/REQ ნამდვილად ჩატვირთულია —
+   იხ. გამოძახება `pull()`-ში, render()-ის შემდეგ. */
+function restoreAfterCurr(){
+ let rs=null;
+ try{ rs=JSON.parse(sessionStorage.getItem('mm_restore')||'null'); }catch(e){}
+ if(!rs)return;
+ try{ sessionStorage.removeItem('mm_restore'); }catch(e){}
+ const modeBtn=document.querySelector('.mode.m-'+rs.MODE);
+ if(modeBtn)modeBtn.click();
+ if(rs.sub){
+  const tabBtn=document.querySelector('.catbar .sub .tab[data-t="'+rs.sub+'"]');
+  if(tabBtn)tabBtn.click();
+ }
+ if(rs.c)map.jumpTo({center:rs.c,zoom:rs.z});
+ /* ⚠️ 2026-08-30 — ეს synchronous ბლოკი (ზემოთ tabBtn.click() ↔
+    closeCard() ↔ seoReset()) hash-ს შლის, მაგრამ tryDeepLink() მხოლოდ
+    /api/geo-ს fetch-ის (async, .then()) დასრულების შემდეგ იკითხავს
+    location.hash-ს — ანუ ეს ხაზი აუცილებლად ასწრებს მას. თუ
+    კონკრეტული განცხადება/მოთხოვნა იყო ღია, hash-ს აქ ხელახლა ვწერთ,
+    რომ tryDeepLink()-მა ზუსტად ის იგივე გვერდი გაახსნას ისევ. */
+ if(rs.item){
+  try{ history.replaceState(null,'','#/'+rs.item.t+'/'+rs.item.id); }catch(e){}
+ }
+}
 
 
 /* =================================================================
@@ -3518,7 +3733,17 @@ function investBlock(o){
 }
 
 function openCard(o){
+ /* ⚠️ 2026-08-30→31, George-ის მოთხოვნით — ორი ვერსია გამოვცადეთ
+    (display:none სრული დამალვა, მერე .actpin-ით პატარა წერტილამდე
+    შეკუმშვა) და ორივემ პრობლემა შექმნა — ან ფასი „ქრებოდა", ან
+    ბეჯი/ფონტი არასტანდარტული ზომის გამოდიოდა. საბოლოოდ George-ის
+    მოთხოვნით ღია ბარათის ნიშნული ზუსტად ჩვეულებრივი (არააქტიური)
+    ნიშნულის სტანდარტული ზომითვე რჩება — არც იმალება, არც იკუმშება.
+    render() თავად ზრუნავს, რომ ეს ნიშნული არასდროს მოხვდეს
+    კლასტერის ბუშტში (იხ. render()-ში activeInView), ასე რომ მისი
+    ფასი ყოველთვის ზუსტად თავის რეალურ ადგილას ჩანდეს რუკაზე. */
  active=o; seoFor(o);
+ render();
  cb.innerHTML=
  (function(){
    const ph=photosOf(o), n=ph.length;
@@ -3737,10 +3962,18 @@ async function fillCadastre(o){
 /* =================================================================
    10. ფენები + გაზომვა
    ================================================================= */
-const LAY={sat:true,kb:false};
+const LAY={sat:true,kb:false,names:true};
+/* ⚠️ 2026-08-29 (მე-2 ნაწილი): ka-ში ერთი რასტრული ფენა (`labels`),
+   en-ში ორი ვექტორული (`labels_en_sec/minor`) — იხ. მათი შექმნა
+   map-ის style-ის განსაზღვრისას ზემოთ. */
+const LABEL_LAYER_IDS=LANG==='en'?['labels_en_sec','labels_en_minor']:['labels'];
 function applyLayers(){
  map.setLayoutProperty('sat','visibility',LAY.sat?'visible':'none');
  map.setLayoutProperty('osm','visibility',LAY.sat?'none':'visible');
+ /* ⚠️ 2026-08-29: „ქუჩების სახელები" მხოლოდ სატელიტურ ხედს ეხება —
+    ჩვეულებრივ (osm) რეჟიმში სახელები ისედაც ჩანს ფაისკუტიდან. */
+ const namesV=(LAY.sat&&LAY.names)?'visible':'none';
+ LABEL_LAYER_IDS.forEach(id=>map.setLayoutProperty(id,'visibility',namesV));
  const v=LAY.kb?'visible':'none';
  map.setLayoutProperty('parcel','visibility',v);
  map.setLayoutProperty('sector','visibility',v);
@@ -3859,6 +4092,7 @@ function paintLayers(){
  ptitle.textContent='ფენები';
  pbody.innerHTML=
   '<div class="tgl'+(LAY.sat?' on':'')+'" data-l="sat"><span>სატელიტური რუკა</span><span class="sw"></span></div>'+
+  '<div class="tgl'+(LAY.names?' on':'')+'" data-l="names"><span>ქუჩების სახელები</span><span class="sw"></span></div>'+
   '<div class="tgl'+(LAY.kb?' on':'')+'" data-l="kb"><span>ყველა ნაკვეთის საზღვარი</span><span class="sw"></span></div>'+
   '<div class="pinfo" style="margin-top:12px">გასაყიდი ნაკვეთის საზღვარი ყოველთვის ჩანს. ეს გადამრთველი მეზობელ ნაკვეთებსაც აჩვენებს.</div>';
  pbody.querySelectorAll('.tgl').forEach(t=>t.onclick=()=>{
@@ -4313,25 +4547,43 @@ const PAGES={
      iframe-ის მიღმა იდგა და ბიჯის ცვლილებაზე არ იცვლებოდა. */
   return '<iframe class="mfrm" src="form.html?bare=1&lang='+LANG+'#req" title="მოთხოვნის ფორმა" loading="lazy"></iframe>';}},
  main:{t:'მთავარი',h:function(){return `
-  <h3>საქართველოს უძრავი ქონების ბაზარი — ერთ რუკაზე</h3>
-  <p class="lead">MyMamuli.ge აჩვენებს გასაყიდ მიწის ნაკვეთს <b>ზუსტად იქ, სადაც ის დგას</b> —
-  საჯარო რეესტრის საკადასტრო საზღვრით, ფართობით, დანიშნულებითა და სტატუსით.
-  შუამავალი არ გვყავს: მყიდველი პირდაპირ გამყიდველს უკავშირდება.</p>
+  <h3>მაძიებელი შენ გიპოვის — არა შენ მას</h3>
+  <p class="lead">ეს არ არის კიდევ ერთი განცხადებების დაფა, სადაც პოსტი იკარგება ასობით სხვას შორის
+  და მოთმინებით ელოდები, ვინმემ შემოხედოს თუ არა. MyMamuli.ge-ზე მაძიებლებს უკვე წინასწარ
+  აქვთ დაფიქსირებული, ზუსტად რას ეძებენ — არეალი, ბიუჯეტი, ფართობი. შენ რომ მხოლოდ ერთხელ
+  ათავსებ განცხადებას, სისტემა თვითონ პოულობს, ვისაც ეს შეესაბამება, და მას ავტომატურად
+  ატყობინებს — მანამდე, სანამ ვინმე საერთოდ დაიწყებდა შენი განცხადების ძებნას. შენი პოსტი
+  არ ელოდება შემთხვევით მაყურებელს — თავად მიდის იმასთან, ვისაც სჭირდება.</p>
 
-  <h4>როგორ მუშაობს</h4>
-  <div class="mgrid">
-   <div class="mc"><b>1 · რუკა, არა სია</b><span>ყველა განცხადება რუკაზეა. მ²-ის ფასი პირდაპირ ნიშნულზე წერია.</span></div>
-   <div class="mc"><b>2 · ნამდვილი საზღვარი</b><span>საკადასტრო კოდზე დაჭერით ნაკვეთის კონტური რუკაზევე ჩნდება — maps.gov.ge-ზე გადასვლა აღარ სჭირდება.</span></div>
-   <div class="mc"><b>3 · გაზომვა ადგილზე</b><span>ფართობისა და მანძილის საზომი ხელსაწყო — შენს ხელშია, დამატებითი აპლიკაციის გარეშე.</span></div>
-   <div class="mc"><b>4 · პირდაპირი კონტაქტი</b><span>ტელეფონი ბარათზეა. საკომისიო არ არსებობს, არც გამყიდველისთვის, არც მყიდველისთვის.</span></div>
-  </div>
+  <div class="hook"><h4>რატომ განსხვავდება ეს საიტი დანარჩენებისგან</h4>
+  <p>ქართული უძრავი ქონების ბაზარი დღემდე ორ რამეზეა აგებული — არასანდო ინფორმაცია
+  (ჯგუფებში ვინ იცის რამდენად ზუსტია მისამართი და ფართობი) და შუამავალი, რომელიც პროცესის
+  ორივე ბოლოში საკომისიოს იღებს. ჩვენ ორივეს ვშლით. ნაკვეთის საზღვარი რუკაზე ჩნდება არა
+  როგორც მიახლოებითი წერტილი, არამედ როგორც საჯარო რეესტრიდან აღებული ნამდვილი კონტური —
+  მყიდველი ხედავს ზუსტად რას ყიდულობს, ჯერ კიდევ დარეკვამდე. და შუამავალი აქ არავინ არის:
+  ზარი პირდაპირ შენთან მოდის, არა ვინმე მესამესთან, ვინც ამის სანაცვლოდ საკომისიოს ითხოვს.</p></div>
 
-  <h4>განცხადების განთავსება უფასოა</h4>
-  <p>განცხადების განთავსებაში საფასურს არ ვიღებთ — არც ერთჯერადს, არც თვიურს.</p>
+  <div class="hook"><h4>მიზანი</h4>
+  <p>გვინდა, გავათანაბროთ ის, რასაც ჩვეულებრივ მხოლოდ დიდი სააგენტოები ფლობენ — ნამდვილი,
+  გადამოწმებული მონაცემი და მყისიერი წვდომა დაინტერესებულ მყიდველთან — და ეს გავხადოთ
+  ხელმისაწვდომი ნებისმიერისთვის, თავისუფლად, ანაზღაურების გარეშე.</p></div>
+
+  <div class="hook"><h4>რას კარგავ, თუ დღეს არ განათავსებ</h4>
+  <p>ყოველ დღეს, სანამ შენი ობიექტი საიტზე არ დევს, ვიღაც ზუსტად ამ არეალში, ამ ბიუჯეტში და
+  ამ ფართობში მოთხოვნას ტოვებს — და შენს ნაცვლად სხვის განცხადებას პოულობს. განთავსება
+  არაფერს გიჯდება: არც ერთჯერადი გადასახადია, არც თვიური, არც საკომისიო გაყიდვისას.</p></div>
+
+  <div class="hook"><h4>შენ განკარგავ, ვინ დაინახავს</h4>
+  <p>გინდა, რომ განცხადება საერთოდ არავინ ხედავდეს გარდა შესაბამისი მყიდველისა? დამალე
+  საერთო რუკიდან — ის კვლავ აქტიურია და მაინც ავტომატურად პოულობს მასზე მორგებულ მაძიებელს,
+  უბრალოდ დანარჩენებისთვის უჩინარია. გინდა, არც შენი სახელი გამოჩნდეს? ბარათზე „ვიზიტორი"
+  დარჩება, ტელეფონი კი ისევ პირდაპირ შენთან რეკავს. ეს არ არის უბრალო „კონფიდენციალურობის
+  პარამეტრი" — ეს ნიშნავს, რომ შეგიძლია საერთოდ არავის შეატყობინო, რომ ყიდი, და მაინც იპოვო
+  ის, ვინც ყიდულობს.</p></div>
 
   <div class="cbox">
-   <b>გინდა ნაკვეთის გაყიდვა?</b>
-   <p>შეავსე ფორმა — დანარჩენს ჩვენ გავაკეთებთ. განცხადებას <b>24 საათში</b> ვდებთ საიტზე.</p>
+   <b>გინდა შენი უძრავი ქონების გაყიდვა ან გაქირავება?</b>
+   <p>განცხადება მაქსიმუმ <b>24 საათში</b> გააქტიურდება საიტზე — ყველა განაცხადი გადის დეტალურ შემოწმებას.</p>
    <a class="cb" data-modal="post" href="#sell">განცხადების ფორმა →</a>
   </div>
 
@@ -4416,7 +4668,7 @@ const PAGES={
    <div class="s"><span class="sn">✓</span><span class="st"><b>ვინაობას ვერავინ გაიგებს</b>
     <span>მოთხოვნაში ჩანს მხოლოდ არეალი, ბიუჯეტი და ფართობი — არა სახელი და არა ვინაობა.</span></span></div>
    <div class="s"><span class="sn">✓</span><span class="st"><b>ახალ განცხადებას პირველი იგებ</b>
-    <span>შენს არეალში შესაბამისი ნაკვეთის გამოჩენისთანავე შეტყობინება შენთან მოდის — ადრე, ვიდრე ის საერთო სიაში აისახება.</span></span></div>
+    <span>შენს არეალში შესაბამისი უძრავი ქონების გამოჩენისთანავე შეტყობინება შენთან მოდის — ადრე, ვიდრე ის საერთო სიაში აისახება.</span></span></div>
    <div class="s"><span class="sn">✓</span><span class="st"><b>გადაწყვეტილება მხოლოდ შენია</b>
     <span>თუ ფასი და ობიექტი მოგეწონა — თვითონ დაუკავშირდები გამყიდველს. თუ არა — უბრალოდ არაფერს აკეთებ.</span></span></div>
   </div>
@@ -5034,6 +5286,11 @@ function mountLangSwitch(){
  w.querySelectorAll('button').forEach(b=>b.onclick=()=>{
   const l=b.dataset.l; if(l===LANG)return;
   try{localStorage.setItem('mm_lang',l)}catch(e){}
+  /* ⚠️ 2026-08-30, George-ის მოთხოვნით — ენის გადართვასაც იგივე
+     პრობლემა ჰქონდა, რაც ვალუტას (იხ. saveUiRestoreState ზემოთ,
+     setCurr-თან): თუ კონკრეტული განცხადება/მოთხოვნა იყო გახსნილი,
+     ეს reload მას კარგავდა. setCurr-ის იგივე მექანიზმს ვიყენებთ. */
+  saveUiRestoreState();
   track('lang',{l:l});
   location.reload();
  });

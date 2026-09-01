@@ -229,6 +229,14 @@ export async function onRequestGet({ params, request, env }) {
      (photos[0], იხ. form.html-ის S.photos.unshift ლოგიკა), FB/WhatsApp
      გაზიარებაშიც ეს იგივე სურათი უნდა გამოჩნდეს. */
   const cover = photos[0] || `${SITE}/img/land-1.jpg`;
+  /* ⚠️ 2026-09-01, George-ის მოთხოვნით ("დიზაინი ა") — FB/WhatsApp-ის
+     og:image/twitter:image ახლა შიშველი ფოტოს ნაცვლად /api/oglisting/-ს
+     დინამიურ, ბრენდირებულ ვერსიაზე მიუთითებს (ფოტო + ქვედა მწვანე ზოლი
+     ფასით და ლოგოთი — იხ. functions/api/oglisting/[id].js). ხილული
+     <img> გვერდზე და JSON-LD-ის image ველი უცვლელად რჩება (ის თვითონ
+     ატვირთული ქავერი) — ამ ორ კონტექსტს ბრენდირება არ სჭირდება,
+     ისედაც გვერდის საკუთარ დიზაინშია ჩასმული. */
+  const ogImage = `${SITE}/api/oglisting/${id}`;
 
   let attrsObj = {};
   try { attrsObj = JSON.parse(l.attrs || '{}') || {} } catch (_) {}
@@ -299,9 +307,9 @@ ${l.visibility === 'private' ? '<meta name="robots" content="noindex,nofollow">'
 <meta property="og:title" content="${esc(fullTitle)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${esc(url)}">
-<meta property="og:image" content="${esc(cover)}">
-<meta property="og:image:secure_url" content="${esc(cover)}">
-<meta property="og:image:type" content="${imgType(cover)}">
+<meta property="og:image" content="${esc(ogImage)}">
+<meta property="og:image:secure_url" content="${esc(ogImage)}">
+<meta property="og:image:type" content="${imgType(ogImage)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="${esc(fullTitle)}">
@@ -310,7 +318,7 @@ ${l.price ? `<meta property="product:price:amount" content="${l.price}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(fullTitle)}">
 <meta name="twitter:description" content="${esc(desc)}">
-<meta name="twitter:image" content="${esc(cover)}">
+<meta name="twitter:image" content="${esc(ogImage)}">
 <meta name="theme-color" content="#0F6B4F">
 <script type="application/ld+json">${JSON.stringify({
   '@context': 'https://schema.org', '@type': 'RealEstateListing', name: title, url,

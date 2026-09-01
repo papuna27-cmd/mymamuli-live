@@ -29,12 +29,14 @@ export async function onRequestGet({ env }) {
          დამთხვევის/შეტყობინების ლოგიკა (mod.js) ამაზე არ არის დამოკიდებული —
          მხოლოდ ეს, საჯარო feed, არ აჩვენებს. */
       `SELECT id, cat, deal, period, cad, lat, lng, poly, loc, reg, area, price, ttl, dsc,
-              photos, attrs, tel, contact_name, created
+              photos, attrs, tel, contact_name, created,
+              orig_lang, ttl_tr, dsc_tr, contact_name_tr
          FROM lst WHERE status='active' AND visibility != 'private' ORDER BY created DESC LIMIT 500`
     ).all(),
     env.DB.prepare(
       `SELECT id, cat, deal, lat, lng, radius, bn, bs, be, bw,
-              area_min, area_max, price_min, price_max, attrs, note, sent_n, created
+              area_min, area_max, price_min, price_max, attrs, note, sent_n, created,
+              orig_lang, note_tr
          FROM req WHERE status='active' ORDER BY created DESC LIMIT 300`
     ).all()
   ]);
@@ -56,7 +58,15 @@ export async function onRequestGet({ env }) {
       lat: l.lat, lng: l.lng, poly,
       loc: l.loc, reg: l.reg, a: l.area, p: l.price,
       ttl: l.ttl, desc: l.dsc, photos, img: photos[0] || null,
-      attrs, tel: l.tel, own: l.contact_name || null, days: days(l.created)
+      attrs, tel: l.tel, own: l.contact_name || null, days: days(l.created),
+      /* ⚠️ 2026-09-01, ავტომატური თარგმანი — George-ის მოთხოვნით.
+         `lang` = ორიგინალის ენა (ka/en), `ttl_tr`/`desc_tr`/`own_tr` =
+         Workers AI-ით ნათარგმნი საპირისპირო-ენოვანი ვერსია. კლიენტი
+         (index.html) გამოაჩენს თარგმანს მხოლოდ მაშინ, თუ მიმდინარე
+         LANG ≠ l.orig_lang და თარგმანი საერთოდ არსებობს — თორემ
+         ორიგინალი ჩანს, როგორც აქამდე. */
+      lang: l.orig_lang || 'ka',
+      ttl_tr: l.ttl_tr || '', desc_tr: l.dsc_tr || '', own_tr: l.contact_name_tr || null
     };
   });
 
@@ -78,7 +88,9 @@ export async function onRequestGet({ env }) {
          ბარათზე, index.html→openReq(). ადრე note ბაზაში ინახებოდა,
          მაგრამ აქ არასდროს გამოჩნდებოდა. */
       note: r.note || '',
-      offers: r.sent_n || 0, days: days(r.created)
+      offers: r.sent_n || 0, days: days(r.created),
+      /* ⚠️ 2026-09-01, ავტომატური თარგმანი — იხ. lst-ის იგივე კომენტარი ზემოთ. */
+      lang: r.orig_lang || 'ka', note_tr: r.note_tr || ''
     };
   });
 

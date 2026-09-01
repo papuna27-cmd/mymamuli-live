@@ -226,7 +226,8 @@ export async function onRequestGet({ params, request, env }) {
   if (!bot) return Response.redirect(`${SITE}/#/g/${id}${lang === 'en' ? '?lang=en' : ''}`, 302);
 
   const l = await env.DB.prepare(
-    `SELECT id,cat,deal,period,cad,addr,lat,lng,loc,reg,area,price,ttl,dsc,photos,attrs,tel,contact_name,visibility,created,expires
+    `SELECT id,cat,deal,period,cad,addr,lat,lng,loc,reg,area,price,ttl,dsc,photos,attrs,tel,contact_name,visibility,created,expires,
+            orig_lang,ttl_tr,dsc_tr
        FROM lst WHERE id=?1 AND status='active'`
   ).bind(id).first();
 
@@ -267,20 +268,36 @@ export async function onRequestGet({ params, request, env }) {
 
   const catNomKa = CATN[l.cat] || l.cat;
   const catNom = lang === 'en' ? (CATN_EN[l.cat] || catNomKa) : catNomKa;
-  const title = l.ttl || catNomKa + ' — ' + [l.loc, l.reg].filter(Boolean).join(', ');
+  /* ⚠️ 2026-09-01, George-ის მოთხოვნით — ავტომატური თარგმანი. თუ ვიზიტორის
+     ენა (lang) განსხვავდება ორიგინალის ენისგან (l.orig_lang), ვაჩვენებთ
+     Workers AI-ით ნათარგმნ ttl_tr/dsc_tr-ს (თუ საერთოდ არსებობს — თარგმანის
+     ავარიაზე/queue-ში ყოფნისას ორიგინალი რჩება, გვერდი არასდროს იმტვრევა). */
+  const showTr = lang !== (l.orig_lang || 'ka');
+  const ttlDisplay = (showTr && l.ttl_tr) ? l.ttl_tr : l.ttl;
+  const dscDisplay = (showTr && l.dsc_tr) ? l.dsc_tr : l.dsc;
+  const title = ttlDisplay || catNomKa + ' — ' + [l.loc, l.reg].filter(Boolean).join(', ');
   /* ⚠️ 2026-08-27, George-ის მოთხოვნით — ეს იგივე ბაგი იყო, რაც
      index.html-ის ბარათებზე გავასწორეთ: ქირაზე ფასის მ²-ზე დაშლას
      აზრი არა აქვს — მთლიან ფასს ვაჩვენებთ, პერიოდის აღნიშვნით. */
   const priceTxt = l.price ? '$' + num(l.price) + (l.deal === 'rent' ? (l.period === 'year' ? t.perYear : t.perMonth) : '') : '';
   const perM2 = (l.deal !== 'rent' && l.price && l.area) ? '$' + Math.round(l.price / l.area) + (lang === 'en' ? ' / m²' : ' / მ²') : '';
   const locTxt = [l.loc, l.reg].filter(Boolean).join(', ') || addrFallbackLoc(l.addr);
+  /* ⚠️ 2026-09-01 — აქამდე ინგლისურ რეჟიმში l.dsc საერთოდ არ ჩანდა
+     (გენერიკული წინადადებით იცვლებოდა), რადგან ორიგინალი ქართული
+     ტექსტის პირდაპირ ჩვენება ინგლისურენოვან ვიზიტორს აზრს არ ჰქონდა.
+     ახლა dscDisplay უკვე ნათარგმნია (როცა თარგმანი არსებობს) — ამიტომ
+     ორივე ენაზე ნამდვილი აღწერა ჩანს, თარგმანის გარეშე კი ძველებურად
+     ვუბრუნდებით გენერიკულ წინადადებას. */
   const desc = lang === 'ka'
-    ? ([l.dsc, locTxt, l.cad ? ('საკადასტრო კოდი ' + l.cad) : '']
+    ? ([dscDisplay, locTxt, l.cad ? ('საკადასტრო კოდი ' + l.cad) : '']
         .filter(Boolean).join('. ').slice(0, 300) ||
        (title + (priceTxt ? '. ფასი ' + priceTxt : '') + (locTxt ? '. ' + locTxt : '') +
         '. ოფიციალური საზღვარი საჯარო რეესტრიდან. შუამავლების გარეშე — MyMamuli.ge'))
-    : (catNom + (locTxt ? '. ' + locTxt : '') + (priceTxt ? '. Price ' + priceTxt : '') +
-       '. Official boundary from the Public Registry. No intermediaries — MyMamuli.ge');
+    : ((showTr && l.dsc_tr)
+        ? [l.dsc_tr, locTxt, priceTxt ? ('Price ' + priceTxt) : '']
+            .filter(Boolean).join('. ').slice(0, 300)
+        : (catNom + (locTxt ? '. ' + locTxt : '') + (priceTxt ? '. Price ' + priceTxt : '') +
+           '. Official boundary from the Public Registry. No intermediaries — MyMamuli.ge'));
   const url = `${SITE}/g/${id}/` + (lang === 'en' ? '?lang=en' : '');
 
   /* ⚠️ 2026-08-25: George-ის მოთხოვნით — FB/WhatsApp გაზიარების სათაური

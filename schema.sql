@@ -70,6 +70,12 @@ CREATE TABLE IF NOT EXISTS req (
   price_min INTEGER, price_max INTEGER,
   attrs    TEXT,                                -- JSON
   note     TEXT,
+  -- ავტომატური თარგმანი (2026-09-01, George-ის მოთხოვნით) — Workers AI.
+  -- orig_lang = რა ენაზეა დაწერილი note ('ka'|'en'); note_tr = საპირისპირო
+  -- ენაზე ნათარგმნი ვერსია; tr_status = pending|done|failed|skip(ცარიელი note).
+  orig_lang TEXT NOT NULL DEFAULT 'ka',
+  note_tr   TEXT,
+  tr_status TEXT NOT NULL DEFAULT 'pending',
   status   TEXT NOT NULL DEFAULT 'pending',     -- pending|active|paused|closed|expired|rejected
   reject   TEXT,
   -- ჩართულობა: რამდენი შევთავაზეთ და რამდენი გახსნა
@@ -99,6 +105,13 @@ CREATE TABLE IF NOT EXISTS lst (
   photos TEXT,
   attrs  TEXT,
   tel TEXT, contact_name TEXT,
+  -- ავტომატური თარგმანი (2026-09-01, George-ის მოთხოვნით) — Workers AI.
+  -- orig_lang = რა ენაზეა დაწერილი ttl/dsc ('ka'|'en'); *_tr = საპირისპირო
+  -- ენაზე ნათარგმნი ვერსიები (contact_name_tr — ფონეტიკური ტრანსლიტერაცია);
+  -- tr_status = pending|done|failed.
+  orig_lang TEXT NOT NULL DEFAULT 'ka',
+  ttl_tr TEXT, dsc_tr TEXT, contact_name_tr TEXT,
+  tr_status TEXT NOT NULL DEFAULT 'pending',
   decl     TEXT,                                -- გამყიდველის დეკლარაცია (JSON) — მტკიცებულება
   visibility TEXT NOT NULL DEFAULT 'public',    -- public|private — 2026-08-26, დამალვა საერთო რუკიდან
   status   TEXT NOT NULL DEFAULT 'pending',     -- pending|active|rejected|expired

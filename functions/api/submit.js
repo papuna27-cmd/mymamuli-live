@@ -26,6 +26,7 @@ import {
 } from './_util.js';
 import { lookupCad, cadValid } from './_cad.js';
 import { flushMailQueue } from './_mail.js';
+import { detectLang, translateListing, translateNote } from './_translate.js';
 
 /* ---------- დასაშვები მნიშვნელობები ---------- */
 const CATS = ['land', 'invest', 'house', 'flat', 'cottage', 'villa', 'comm', 'office',
@@ -391,21 +392,58 @@ export async function onRequestPost({ request, env }) {
   if (kind === 'req') {
     const R = o.radius;
     const dLat = R / 111320, dLng = R / (111320 * Math.cos(o.lat * Math.PI / 180));
+
+    /* ⚠️ 2026-09-01, George-ის მოთხოვნით — ავტომატური თარგმანი (Workers AI).
+       note ცარიელია ხშირად — ამ შემთხვევაში AI-ს საერთოდ არ ვეხებით
+       (tr_status='skip'), თორემ ყოველ განაცხადეზე ცარიელი გამოძახება
+       ტყუილად დაწერდა quota-ს/დროს. AI-ის ავარიაზე (ქსელი/მოდელი) ჩანაწერი
+       მაინც ინახება ორიგინალით — tr_status='failed', მომხმარებელი არასდროს
+       ბლოკირდება თარგმანის გაუმართაობის გამო. */
+    const reqOrigLang = detectLang(o.note);
+    let reqNoteTr = null, reqTrStatus = 'skip';
+    if (o.note) {
+      const tr = await translateNote(env, o.note, reqOrigLang);
+      if (tr.ok) { reqNoteTr = tr.note_tr || null; reqTrStatus = 'done' }
+      else reqTrStatus = 'failed';
+    }
+
     await env.DB.prepare(
       `INSERT INTO req (id,user_id,cat,deal,period,lat,lng,radius,bn,bs,be,bw,
-                        area_min,area_max,price_min,price_max,attrs,note,status,created,expires)
-       VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,'draft',?19,?20)`
+                        area_min,area_max,price_min,price_max,attrs,note,status,created,expires,
+                        orig_lang,note_tr,tr_status)
+       VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,'draft',?19,?20,?21,?22,?23)`
     ).bind(id, u.id, o.cat, o.deal, o.period, o.lat, o.lng, R,
            o.lat + dLat, o.lat - dLat, o.lng + dLng, o.lng - dLng,
            o.amin, o.amax, o.pmin, o.pmax,
-           JSON.stringify(o.attrs), o.note, t, exp).run();
+           JSON.stringify(o.attrs), o.note, t, exp,
+           reqOrigLang, reqNoteTr, reqTrStatus).run();
   } else {
     /* საზღვარი: გამყიდველის დახაზული უპირატესია, თუ არა — რეესტრის გეომეტრია */
     const poly = o.poly || cadPoly;
+    const nameVal = o.anon ? 'ვიზიტორი' : (str(b.name, 90) || null);
+
+    /* ⚠️ 2026-09-01, George-ის მოთხოვნით — ავტომატური თარგმანი (Workers AI).
+       სათაური+აღწერა+საკონტაქტო სახელი ერთ AI-გამოძახებაში ითარგმნება
+       (იხ. _translate.js), რომ განაცხადის დამატება ერთზე მეტჯერ არ
+       "ელოდოს" AI-ს. წარუმატებლობაზე (tr_status='failed') განცხადება
+       მაინც ინახება ორიგინალით — უბრალოდ თარგმანის გარეშე, სანამ admin
+       ხელახლა არ სცდის (backfill endpoint). */
+    const lstOrigLang = detectLang((o.ttl || '') + ' ' + (o.dsc || ''));
+    let ttlTr = null, dscTr = null, nameTr = null, lstTrStatus = 'pending';
+    const trOut = await translateListing(env, { ttl: o.ttl, dsc: o.dsc, name: nameVal }, lstOrigLang);
+    if (trOut.ok) {
+      ttlTr = trOut.ttl_tr || null; dscTr = trOut.dsc_tr || null; nameTr = trOut.name_tr || null;
+      lstTrStatus = 'done';
+    } else {
+      lstTrStatus = 'failed';
+    }
+
     await env.DB.prepare(
       `INSERT INTO lst (id,user_id,cat,deal,period,cad,addr,cad_ok,lat,lng,poly,loc,reg,
-                        area,price,ttl,dsc,photos,attrs,tel,contact_name,decl,visibility,status,src_req,created,expires)
-       VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?25,?26,'draft',?22,?23,?24)`
+                        area,price,ttl,dsc,photos,attrs,tel,contact_name,decl,visibility,status,src_req,created,expires,
+                        orig_lang,ttl_tr,dsc_tr,contact_name_tr,tr_status)
+       VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?25,?26,'draft',?22,?23,?24,
+               ?27,?28,?29,?30,?31)`
     ).bind(id, u.id, o.cat, o.deal, o.period,
            o.cad || null,
            cadAddr,                                   /* ← რეესტრიდან, არა ფორმიდან */
@@ -414,8 +452,9 @@ export async function onRequestPost({ request, env }) {
            poly ? JSON.stringify(poly) : null,
            o.loc, o.reg, o.area, o.price, o.ttl, o.dsc,
            JSON.stringify(o.photos), JSON.stringify(o.attrs),
-           telShown, o.anon ? 'ვიზიტორი' : (str(b.name, 90) || null),
-           str(b.src_req, 40) || null, t, exp, declJson, o.visibility).run();
+           telShown, nameVal,
+           str(b.src_req, 40) || null, t, exp, declJson, o.visibility,
+           lstOrigLang, ttlTr, dscTr, nameTr, lstTrStatus).run();
   }
 
   /* --- დადასტურების კოდი / ავტო-დადასტურება (comp_ok) ---

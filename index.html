@@ -82,12 +82,12 @@ gtag('config', 'G-N30XKZCDCT');
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.09.01-0100"></script>
+<script src="i18n.js?v=2026.09.01-0200"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.09.01-0100';
+window.MM_BUILD = '2026.09.01-0200';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1317,11 +1317,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.09.01-0100">
+<footer data-build="2026.09.01-0200">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.09.01-0100</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.09.01-0200</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -2242,6 +2242,15 @@ function hovBox(){
  return hovEl;
 }
 const PIN_ICON='<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="10" r="2.4" fill="currentColor"/></svg>';
+/* ⚠️ 2026-09-01, George-ის მოთხოვნით — ავტომატური თარგმანი (Workers AI,
+   იხ. functions/api/_translate.js). /api/geo.js თითოეულ lst/req
+   ჩანაწერს აბრუნებს `lang` (ორიგინალის ენა) და *_tr (ნათარგმნი) ველებით.
+   trPick აჩვენებს თარგმანს მხოლოდ მაშინ, თუ მიმდინარე LANG სხვაა და
+   თარგმანი საერთოდ არსებობს (queue-ში/ავარიის დროს ცარიელია) — თორემ
+   ორიგინალი ტექსტი ჩანს, ისე როგორც აქამდე. */
+function trPick(itemLang,orig,tr){
+ return (typeof LANG!=='undefined'&&LANG!==(itemLang||'ka')&&tr)?tr:(orig||'');
+}
 
 function hovHTML(o){
  /* ⚠️ 2026-08-27, George-ის მოთხოვნით — გასაქირავებელ განცხადებას
@@ -2257,7 +2266,7 @@ function hovHTML(o){
   '</div>'+
   '<div class="hv-b">'+
    '<div class="hv-p">'+(m!=null?'$'+fmt(m):'$'+fmt(o.p))+(m!=null?'<small>/'+T('მ²')+' · $'+fmt(o.p)+'</small>':dealSuffix(o))+'</div>'+
-   '<div class="hv-t">'+T(o.ttl)+'</div>'+
+   '<div class="hv-t">'+T(trPick(o.lang,o.ttl,o.ttl_tr))+'</div>'+
    '<div class="hv-l">'+PIN_ICON+'<span>'+T(o.loc)+(o.reg&&o.reg!==o.loc?', '+T(o.reg):'')+'</span></div>'+
    '<div class="hv-r"><span><b>'+fmt(o.a)+'</b> '+T('მ²')+'</span>'+
      (o.k?'<span>'+T('საკადასტრო კოდი')+' <b>✓</b></span>':'')+'</div>'+
@@ -2506,9 +2515,10 @@ function lbOpen(o,start){
  const list=photosOf(o); if(!list.length)return;
  LB={list,i:Math.max(0,Math.min(list.length-1,start||0)),z:1,x:0,y:0};
  const b=lbBox();
- el('lbx-t').textContent=o.ttl||'';
+ el('lbx-t').textContent=trPick(o.lang,o.ttl,o.ttl_tr);
  /* აღწერა და ძირითადი ფაქტები სურათის ქვეშ */
- el('lbx-d').innerHTML=(o.desc?'<div>'+T(o.desc)+'</div>':'')+
+ const lbxDesc=trPick(o.lang,o.desc,o.desc_tr);
+ el('lbx-d').innerHTML=(lbxDesc?'<div>'+T(lbxDesc)+'</div>':'')+
    '<div class="facts">'+
      '<span><b>$'+fmt(o.p)+'</b>'+(perM2(o)!=null?' · $'+fmt(perM2(o))+'/'+T('მ²'):'')+'</span>'+
      '<span><b>'+fmt(o.a)+'</b> '+T('მ²')+'</span>'+
@@ -3603,7 +3613,7 @@ function openReq(r){
      („თუ შენი განცხადება...") — ყველაზე ბოლოს, CTA-მდე. escHtml()
      სავალდებულოა — ეს მომხმარებლის ტექსტია. */
   (r.note?'<div class="blk"><div class="h"><span class="dot"></span>რას ეძებს — მისი სიტყვებით</div>'+
-   '<div class="rqnote">'+escHtml(r.note)+'</div></div>':'')+
+   '<div class="rqnote">'+escHtml(trPick(r.lang,r.note,r.note_tr))+'</div></div>':'')+
   '<div class="note">თუ შენი განცხადება ამ არეალშია და ფასი ჯდება — შეთავაზება პირდაპირ მყიდველთან მიდის, შუამავლის გარეშე.</div>'+
   '<div class="cta">'+
    '<div class="cta-row"><button class="call" id="rq-offer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M14 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>შეთავაზების გაგზავნა</button></div>'+
@@ -3750,7 +3760,7 @@ function openCard(o){
    if(!n)return '<div class="gal" style="cursor:default"><div class="ph">'+T('ფოტო ჯერ არ არის')+'</div>'+
      '<div class="kind">'+(TN[o.t]||o.t)+(isRent(o)?' · '+T('ქირავდება'):'')+'</div></div>';
    return '<div class="gal" id="gal0">'+
-     '<img class="gp" id="galimg" src="'+ph[0]+'" alt="'+o.ttl+'" loading="lazy">'+
+     '<img class="gp" id="galimg" src="'+ph[0]+'" alt="'+trPick(o.lang,o.ttl,o.ttl_tr)+'" loading="lazy">'+
      '<div class="kind">'+(TN[o.t]||o.t)+(isRent(o)?' · '+T('ქირავდება'):'')+'</div>'+
      (n>1?'<div class="cnt" id="galcnt">1 / '+n+'</div>':'')+
      (n>1?'<button class="ga p" id="ga-p" aria-label="'+T('წინა')+'">‹</button>'+
@@ -3764,7 +3774,7 @@ function openCard(o){
  })()+
  '<div class="introw">'+interestHTML(o.id)+'</div>'+
  '<div class="price">$'+fmt(o.p)+dealSuffix(o)+'</div>'+
- '<h1 class="ttl">'+o.ttl+'</h1>'+
+ '<h1 class="ttl">'+trPick(o.lang,o.ttl,o.ttl_tr)+'</h1>'+
  '<div class="addr"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="margin-top:3px;flex:0 0 auto"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="2"/></svg><span>'+(o.loc||o.reg||T('მდებარეობა არ არის მითითებული'))+(o.loc&&o.reg&&o.reg!==o.loc?', '+o.reg:'')+'</span></div>'+
  '<div class="blk" id="kv">'+
    /* ⚠️ 2026-08-26, George-ის მოთხოვნით — ეს სათაური მხოლოდ მიწისთვის
@@ -3773,7 +3783,7 @@ function openCard(o){
       საქმის ცენტრში. კატეგორიის მიხედვით ვარჩევთ. */
    '<div class="h">'+(o.t==='land'?'ნაკვეთის მონაცემები':'განცხადების დეტალები')+'</div>'+
    '<div class="r"><span>ფართობი</span><span>'+fmt(o.a)+' მ²</span></div>'+
-   '<div class="r"><span>გამყიდველი</span><span>'+(o.own?firstName(o.own):T('ვიზიტორი'))+'</span></div>'+
+   '<div class="r"><span>გამყიდველი</span><span>'+(o.own?firstName(trPick(o.lang,o.own,o.own_tr)):T('ვიზიტორი'))+'</span></div>'+
    (o.k?'<button class="kvb" id="kvshow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="4" y="10.5" width="16" height="10" rx="2.2" stroke="currentColor" stroke-width="1.9"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" stroke="currentColor" stroke-width="1.9"/></svg>საკადასტრო მონაცემების ჩვენება</button>'
        :'<div class="note">საკადასტრო კოდი არ არის მითითებული.</div>')+
  '</div>'+
@@ -3795,7 +3805,7 @@ function openCard(o){
     მოთხოვნის ბარათს (openReq → "რას ეძებს — მისი სიტყვებით").
     escHtml() სავალდებულოა — ეს მომხმარებლის ტექსტია. */
  (o.desc?'<div class="blk"><div class="h"><span class="dot"></span>აღწერა</div>'+
-   '<div class="rqnote">'+escHtml(o.desc)+'</div></div>':'')+
+   '<div class="rqnote">'+escHtml(trPick(o.lang,o.desc,o.desc_tr))+'</div></div>':'')+
  viewsBlock(o)+
  investBlock(o)+
  /* marketBlock(o)+ — დროებით გამორთული (გიორგი, 22.08) */
@@ -4160,7 +4170,7 @@ function paintList(){
    '<div class="li-th"></div>'+
    '<div class="li-i">'+
      '<div class="li-p">$'+fmt(perM2(o))+'<span>/მ² · $'+fmt(o.p)+'</span></div>'+
-     '<div class="li-t">'+o.ttl+'</div>'+
+     '<div class="li-t">'+trPick(o.lang,o.ttl,o.ttl_tr)+'</div>'+
      '<div class="li-m">'+o.loc+' · '+fmt(o.a)+' მ²'+(o.days===0?' · <b style="color:var(--brand)">დღეს</b>':(o.days<=3?' · '+o.days+' დღის წინ':''))+'</div>'+
    '</div>'+
    '<svg class="li-a" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+

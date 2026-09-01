@@ -17,11 +17,11 @@
  * kind-ზე, ეს ფაილი შეიძლება წაიშალოს (submit.js/me.js ახალ/რედაქტირებულ
  * ჩანაწერებს ისედაც თავად თარგმნის).
  */
-import { J, adminOk } from './_util.js';
+import { J, authed } from './_util.js';
 import { detectLang, translateListing, translateNote } from './_translate.js';
 
 export async function onRequestGet({ request, env }) {
-  if (!adminOk(request, env)) return J({ error: 'unauthorized' }, 401);
+  if (!await authed(request, env)) return J({ error: 'unauthorized' }, 401);
   if (!env.DB) return J({ error: 'no-db' }, 500);
 
   const qs = new URL(request.url).searchParams;

@@ -446,7 +446,19 @@ function draw(){
   '<div class="mapbox"><div id="map"></div><button class="exp" id="mexp" title="გადიდება">⤢</button></div>'+
   '<div class="who">'+
    '<div class="av">◍</div>'+
-   '<div class="i"><div class="nm">'+(u.name||'—')+'</div>'+
+   /* ⚠️ 2026-09-01, George-ის შენიშვნით — აქ აქამდე ყოველთვის
+      ანგარიშის (users.name) სახელი ჩანდა, თუნდაც კონკრეტულ
+      განცხადებას/მოთხოვნას სხვა საკონტაქტო სახელი (contact_name)
+      ჰქონოდა მითითებული (მაგ. g.papiashvili@hotmail.com-ის ახალი
+      უფლების გამოყენებით სხვა სახელით დადებული განცხადება) — ადმინის
+      პანელი კი ძველ, ანგარიშის სახელს (Eliso) აჩვენებდა, თითქოს
+      საკონტაქტო სახელი საერთოდ არ შეცვლილა. ახლა უპირატესობა
+      o.contact_name-ს ენიჭება (რეალურად ეს ჩანს საჯარო გვერდზეც),
+      ანგარიშის სახელი კი მცირე ფრჩხილში რჩება მოდერაციისთვის
+      (ვინ დგას ანგარიშის მიღმა), თუ ის განსხვავდება. */
+   '<div class="i"><div class="nm">'+(o.contact_name||u.name||'—')+
+     (o.contact_name&&o.contact_name!==u.name?' <span style="font-weight:400;color:#93A09B;font-size:12px">(ანგარიში: '+(u.name||'—')+')</span>':'')+
+    '</div>'+
     '<div class="em">'+(u.email||'')+'</div>'+
     '<div class="st">რეგისტრაცია: '+(u.created||'—')+'<br>'+(u.total||0)+' განცხადება · '+(u.rejected||0)+' უარი</div></div>'+
    /* ⚠️ 2026-08-26, George-ის მოთხოვნით: comp_ok ნიშნავს "ადმინის

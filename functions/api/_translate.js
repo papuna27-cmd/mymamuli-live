@@ -47,6 +47,31 @@ function firstJsonObject(s) {
   return JSON.parse(s.slice(i, j + 1));
 }
 
+/* ⚠️ 2026-09-01 — Cloudflare-ის `@cf/meta/llama-3.3-70b-instruct-fp8-fast`
+   ბრუნებს OpenAI-სტილის chat-completion ობიექტს. აღმოჩნდა, რომ როცა
+   მოდელს JSON-ის დაბრუნებას ვთხოვთ, Cloudflare `r.response`-ს უკვე
+   **წინასწარ დაპარსილ ობიექტად** აბრუნებს (არა სტრიქონად!) — ამიტომ
+   ჩვენი ძველი "String(r.response) → JSON.parse" ლოგიკა "[object Object]"-ს
+   ცდილობდა პარსვას და ყოველთვის "no-json" შეცდომას იძლეოდა. ეს helper-ი
+   ორივე შემთხვევას (უკვე-ობიექტი, ან სტრიქონი choices[0].message.content-ში)
+   ითვალისწინებს. */
+function extractJsonResponse(r) {
+  if (r && typeof r.response === 'object' && r.response !== null) return r.response;
+  const text = (r && typeof r.response === 'string' && r.response)
+    || (r && r.choices && r.choices[0] && r.choices[0].message && r.choices[0].message.content)
+    || '';
+  return firstJsonObject(stripFence(text));
+}
+
+/* იგივე რეალობა plain-text (არა-JSON) მოთხოვნისთვის (translateNote). */
+function extractTextResponse(r) {
+  if (r && typeof r.response === 'string') return r.response;
+  if (r && r.choices && r.choices[0] && r.choices[0].message && typeof r.choices[0].message.content === 'string') {
+    return r.choices[0].message.content;
+  }
+  return '';
+}
+
 const ANON_NAMES = new Set(['ვიზიტორი', 'Visitor']);
 
 /**
@@ -95,7 +120,7 @@ export async function translateListing(env, f, origLang) {
       ],
       max_tokens: 2048
     });
-    const parsed = firstJsonObject(stripFence(r && r.response));
+    const parsed = extractJsonResponse(r);
     return {
       ok: true,
       ttl_tr: String(parsed.title ?? '').trim(),
@@ -132,7 +157,7 @@ export async function translateNote(env, note, origLang) {
       ],
       max_tokens: 1024
     });
-    return { ok: true, note_tr: stripFence(String((r && r.response) || '')).trim() };
+    return { ok: true, note_tr: stripFence(extractTextResponse(r)).trim() };
   } catch (e) {
     return { ok: false, reason: String((e && e.message) || e) };
   }

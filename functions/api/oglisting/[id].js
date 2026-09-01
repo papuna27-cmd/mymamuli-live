@@ -101,8 +101,18 @@ export async function onRequestGet({ params, request, env }) {
   try { photos = JSON.parse(l.photos || '[]') || [] } catch (_) {}
   const coverUrl = absUrl(photos[0]);
 
+  /* ⚠️ 2026-09-01 (3): ბარი, ისევე როგორც reqmap.js-ის ჩარჩო-ფენა,
+     ცალკე width/height-ის მითითების გარეშე დაისმება (top:0,left:0) —
+     images/mymamuli-listing-bar-1200x630.png თვითონაცაა ზუსტად 1200×630
+     (გამჭვირვალე ყველგან, გარდა ქვედა 112px-ისა), ანუ ჯერზე
+     ემთხვევა საბოლოო canvas-ს. ცალკე {width:1200,height:112}-ის
+     მითითებამ (პირველი ვერსია) draw()-ს აიძულა 1200×630 წყარო
+     1200×112-ში „ჩაეტია" (fit-ის ნაგულისხმევი ქცევა aspect-ratio-ს
+     ინარჩუნებს, არ ჭიმავს) — შედეგად ბარი პრაქტიკულად აღარ ჩანდა
+     (ლაივზე პიქსელების პირდაპირი შემოწმებით დადასტურდა: ბარის ფერი
+     ბოლო ზოლში საერთოდ არ გვხვდებოდა). */
   const drawLayers = [
-    { url: BAR_ASSET, top: H - BAR_H, left: 0, width: W, height: BAR_H },
+    { url: BAR_ASSET, top: 0, left: 0 },
     ...priceGlyphLayers(l)
   ];
 

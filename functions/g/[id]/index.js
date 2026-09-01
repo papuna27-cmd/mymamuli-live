@@ -287,16 +287,24 @@ export async function onRequestGet({ params, request, env }) {
      (og:title/twitter:title/<title>) სტრუქტურული შაბლონით: „იყიდება/
      ქირავდება {კატეგორია} , {ოთახი ან მ²} , {ქალაქი-ში} - ${ფასი}".
      გვერდის ხილულ H1-ს (ქვემოთ `title`) არ ვცვლით — მხოლოდ სოც.
-     ქსელების გასაზიარებელი სათაური იცვლება. */
+     ქსელების გასაზიარებელი სათაური იცვლება.
+     ⚠️ 2026-09-01 (2), George-ის მოთხოვნით — Facebook-ის „Create post"
+     ფანჯარა გრძელ სათაურებს თავისით კვეცავს (მაგ. ~55-60 სიმბოლოზე),
+     ეს ჩვენგან არ კონტროლდება. მაგრამ რიგის შეცვლა კონტროლდება: ადრე
+     ქალაქი ბოლოს იდგა (ფართობის და ფასის შემდეგ) და სწორედ ის იჭრებოდა
+     "..."-ით — გადმოვწიეთ კატეგორიის შემდეგ, ფართობამდე/ფასამდე, რომ
+     შეკვეცისას სწორედ ის გადარჩეს. ფასი ისედაც ჩანს სურათზე (ბრენდირებული
+     ბარი, functions/api/oglisting/[id].js) — ტექსტში ბოლოში დარჩენა/
+     დაკარგვა ნაკლებად კრიტიკულია, ვიდრე ქალაქის დაკარგვა. */
   const feature = listingFeature(l.cat, l.area, attrsObj, lang);
   const cityLoc = cityLocative(l.loc, lang) || addrFallbackLoc(l.addr);
   const dealVerb = l.deal === 'rent' ? t.forRent : t.forSale;
   const fullTitle = lang === 'en'
     ? (dealVerb + ': ' + catNom +
-       (feature ? ', ' + feature : '') + (cityLoc ? ', ' + cityLoc : '') +
+       (cityLoc ? ', ' + cityLoc : '') + (feature ? ', ' + feature : '') +
        (priceTxt ? ' - ' + priceTxt : ''))
     : (dealVerb + ' ' + catNom +
-       (feature ? ' , ' + feature : '') + (cityLoc ? ' , ' + cityLoc : '') +
+       (cityLoc ? ' , ' + cityLoc : '') + (feature ? ' , ' + feature : '') +
        (priceTxt ? ' - ' + priceTxt : ''));
 
   const rows = [

@@ -208,9 +208,14 @@ export async function onRequestGet({ params, request, env }) {
   const redirectHome = () => Response.redirect(SITE, 302);
   if (!env.DB) return redirectHome();
 
-  const lang = new URL(request.url).searchParams.get('lang') === 'en' ? 'en' : 'ka';
+  const qs = new URL(request.url).searchParams;
+  const lang = qs.get('lang') === 'en' ? 'en' : 'ka';
   const t = T[lang];
-  const bot = isBotUA(request.headers.get('user-agent'));
+  /* ?debug=1 — ადმინისთვის: აჩვენებს ბოტისთვის განკუთვნილ სრულ OG
+     გვერდს ნამდვილი ბრაუზერითაც (SPA დეპ-ლინკზე გადამისამართების
+     გარეშე), რომ meta-თეგები პირდაპირ დავათვალიეროთ (FB-ის
+     crawler-ს ვერ ვბაძავთ ლაივზე UA-ს შეცვლის გარეშე). */
+  const bot = isBotUA(request.headers.get('user-agent')) || qs.get('debug') === '1';
 
   if (/^r_[a-z0-9]+$/.test(id)) return requestPage(id, env, lang, bot);
   if (!/^l_[a-z0-9]+$/.test(id)) return redirectHome();

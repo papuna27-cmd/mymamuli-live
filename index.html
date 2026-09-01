@@ -82,12 +82,12 @@ gtag('config', 'G-N30XKZCDCT');
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.09.01-0200"></script>
+<script src="i18n.js?v=2026.09.01-0300"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.09.01-0200';
+window.MM_BUILD = '2026.09.01-0300';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -513,7 +513,19 @@ body.drawing .catbar{opacity:.25;pointer-events:none}
    მემკვიდრეობით მოდის, ფერი კი მწვანეა (არა ქარვისფერი), რომ
    გასაყიდი ვიზუალურად განსხვავდებოდეს მაძიებლისგან. */
 .reqlbl.lstlbl{background:var(--brand);box-shadow:0 2px 10px rgba(15,107,79,.45)}
-.reqlbl.lstlbl.hotpin{box-shadow:0 2px 10px rgba(15,107,79,.45),0 0 0 var(--hr,0px) var(--hg,transparent)}
+/* ⚠️ 2026-09-01, ROOT CAUSE ნაპოვნია George-ის მოხსენებულ ბაგზე
+   ("ფასების დაფა ხანდახან სულ მწვანედ ჩანს, ტექსტის გარეშე") —
+   .pinlbl.hotpin (ზემოთ, 501-502 ხაზები) ტექსტისა და ჩარჩოს ფერს
+   heat()-ის ფერზე აყენებს, რომლის საწყისი მნიშვნელობა (0 ნახვა
+   დღეს) ზუსტად --brand-ის იგივეა: rgb(15,107,79) — იგივე, რაც ამ
+   მწვანე შევსებული დაფის ფონია (.reqlbl.lstlbl, ხაზი 515). შედეგად
+   ტექსტი ფონში ქრებოდა ნებისმიერ განცხადებაზე, რომელსაც დღეს ჯერ არ
+   უყურებია (ანუ თითქმის ყველაზე, ამიტომაც ჩანდა "ხანდახან" — სინამდვილეში
+   თითქმის ყოველთვის, უბრალოდ შემთხვევით შესამჩნევი). ეს წესი (3-კლასიანი,
+   უფრო სპეციფიკური ვიდრე .pinlbl.hotpin-ის 2-კლასიანი) აბრუნებს
+   თეთრ ტექსტს/ჩარჩოს — heat-ის ეფექტი მხოლოდ box-shadow-ის ნათებად
+   რჩება, რაც თავიდანვე იყო ჩანაფიქრი. */
+.reqlbl.lstlbl.hotpin{color:#fff;border-color:#fff;box-shadow:0 2px 10px rgba(15,107,79,.45),0 0 0 var(--hr,0px) var(--hg,transparent)}
 .reqlbl.lstlbl.seen{background:#EEF1F0;border-color:#B9C4C0;color:#7C8B85;box-shadow:0 1px 4px rgba(14,26,22,.14)}
 
 /* ზოლის სიმაღლე ცვალებადია (ერთი ან ორი რიგი) — ამიტომ დინამიური ტოპი */
@@ -1317,11 +1329,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.09.01-0200">
+<footer data-build="2026.09.01-0300">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.09.01-0200</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.09.01-0300</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>

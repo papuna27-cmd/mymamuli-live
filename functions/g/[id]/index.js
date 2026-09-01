@@ -138,6 +138,25 @@ const imgType = url => {
    ლოკატივი („თბილისი" → „თბილისში"). უცნობი/თავისუფალი ტექსტისთვის —
    უცვლელად ვტოვებთ, ვიდრე საერთოდ გამოვტოვოთ. ინგლისურისთვის — CITY_SLUGS-ის
    მე-3 სვეტი (en სახელი), თუ ცნობილია. */
+/* ⚠️ 2026-09-01, George-ის მოთხოვნით — FB გაზიარებისას ქალაქი საერთოდ
+   არ ჩანდა საკადასტრო კოდით შევსებულ განცხადებებზე (l.loc/l.reg ცარიელი
+   რჩება ამ ნაკადში — მხოლოდ l.addr ივსება, იხ. task #213-ის
+   addrbox-ის ავტომატური შევსება). Root cause დადასტურდა პირდაპირ D1-ში:
+   l.loc/l.reg === null, l.addr კი სავსეა („მუნიციპალიტეტი X , დაბა Y ,
+   ბლოკი.../ნაკვეთი..."). ამიტომ, როცა loc/reg ცარიელია, ვიღებთ
+   მუნიციპალიტეტს + დასახლებულ პუნქტს პირდაპირ addr-იდან (ბლოკის/
+   ნაკვეთის ნომრების გამოკლებით) — უკეთესია, ვიდრე ქალაქის საერთოდ
+   არქონა. */
+function addrFallbackLoc(addr) {
+  if (!addr) return '';
+  const skip = /^(ბლოკი|ნაკვეთი|უბანი|კვარტალი)\b/i;
+  const parts = String(addr).split(',')
+    .map(s => s.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .filter(p => !skip.test(p));
+  return parts.slice(0, 2).join(', ');
+}
+
 function cityLocative(nameOrSlug, lang) {
   if (!nameOrSlug) return '';
   const hit = CITY_SLUGS.find(c => c[0] === nameOrSlug || c[1] === nameOrSlug);
@@ -249,7 +268,7 @@ export async function onRequestGet({ params, request, env }) {
      აზრი არა აქვს — მთლიან ფასს ვაჩვენებთ, პერიოდის აღნიშვნით. */
   const priceTxt = l.price ? '$' + num(l.price) + (l.deal === 'rent' ? (l.period === 'year' ? t.perYear : t.perMonth) : '') : '';
   const perM2 = (l.deal !== 'rent' && l.price && l.area) ? '$' + Math.round(l.price / l.area) + (lang === 'en' ? ' / m²' : ' / მ²') : '';
-  const locTxt = [l.loc, l.reg].filter(Boolean).join(', ');
+  const locTxt = [l.loc, l.reg].filter(Boolean).join(', ') || addrFallbackLoc(l.addr);
   const desc = lang === 'ka'
     ? ([l.dsc, locTxt, l.cad ? ('საკადასტრო კოდი ' + l.cad) : '']
         .filter(Boolean).join('. ').slice(0, 300) ||
@@ -265,7 +284,7 @@ export async function onRequestGet({ params, request, env }) {
      გვერდის ხილულ H1-ს (ქვემოთ `title`) არ ვცვლით — მხოლოდ სოც.
      ქსელების გასაზიარებელი სათაური იცვლება. */
   const feature = listingFeature(l.cat, l.area, attrsObj, lang);
-  const cityLoc = cityLocative(l.loc, lang);
+  const cityLoc = cityLocative(l.loc, lang) || addrFallbackLoc(l.addr);
   const dealVerb = l.deal === 'rent' ? t.forRent : t.forSale;
   const fullTitle = lang === 'en'
     ? (dealVerb + ': ' + catNom +
@@ -326,7 +345,7 @@ ${l.price ? `<meta property="product:price:amount" content="${l.price}">
   datePosted: l.created ? new Date(l.created).toISOString().slice(0, 10) : undefined,
   offers: l.price ? { '@type': 'Offer', price: l.price, priceCurrency: 'USD', availability: 'https://schema.org/InStock', url } : undefined,
   geo: (l.lat && l.lng) ? { '@type': 'GeoCoordinates', latitude: l.lat, longitude: l.lng } : undefined,
-  address: { '@type': 'PostalAddress', addressLocality: l.loc || '', addressRegion: l.reg || '', addressCountry: 'GE' },
+  address: { '@type': 'PostalAddress', addressLocality: l.loc || addrFallbackLoc(l.addr), addressRegion: l.reg || '', addressCountry: 'GE' },
   identifier: l.cad || id,
   provider: { '@type': 'Organization', name: 'MyMamuli.ge', url: SITE + '/' }
 })}</script>

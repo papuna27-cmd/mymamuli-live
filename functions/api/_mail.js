@@ -43,7 +43,12 @@ const SUBJ = {
   digest:   d => `${(d.items || []).length} ახალი შეთავაზება შენს არეალში`,
   expiring: 'შენი განცხადება 3 დღეში იხურება',
   review:   'როგორ იყო შენი გამოცდილება?',
-  admin_new: d => `🆕 ახალი ${d.kind === 'req' ? 'მოთხოვნა' : 'განცხადება'} — MyMamuli.ge`
+  admin_new: d => `🆕 ახალი ${d.kind === 'req' ? 'მოთხოვნა' : 'განცხადება'} — MyMamuli.ge`,
+  /* ⚠️ 2026-09-02 — იხ. _templates.js-ის კომენტარი: ეს სამივე კვდომაინის
+     ან submit-ის subject აქამდე საერთოდ არ არსებობდა. */
+  hold:     'შენი განცხადება დროებით შეჩერებულია',
+  blocked:  'MyMamuli.ge — ანგარიში დროებით შეჩერებულია',
+  checkin:  'შეესაბამებოდა შენს მოთხოვნას?'
 };
 
 /**
@@ -76,6 +81,10 @@ export function render(kind, d = {}) {
     edit_listing_url:  d.editLink   || `${SITE}/#post`,
     expiration_date:   esc(d.expDate),
     rejection_reason:  esc(d.reason),
+    hold_reason:       esc(d.reason) || 'დამატებით მოწმდება.',
+    block_reason:      esc(d.reason) || 'ადმინისტრაციამ დაბლოკვა გადაწყვიტა.',
+    checkin_summary:   esc(d.summary),
+    checkin_matches_url: d.allLink || `${SITE}/?req=${d.reqId || ''}`,
 
     /* გაზიარება */
     share_facebook_url: 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link),
@@ -160,6 +169,36 @@ export async function flushMailQueue(env, limit = 40) {
       }
     }
 
+    /* ⚠️ 2026-09-02 — 'hold' შესაძლოა lst-იც იყოს, req-იც (mod.js
+       applyAction()-ს ორივესთვის ერთი გზა აქვს) — შესაბამისად სათაური
+       ცალკეა ორივესთვის. */
+    if (m.kind === 'hold' && data.id) {
+      if (data.kind === 'lst') {
+        const l = await env.DB.prepare(`SELECT ttl,loc,reg FROM lst WHERE id=?1`).bind(data.id).first();
+        if (l) data.title = [l.ttl, [l.loc, l.reg].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
+      } else if (data.kind === 'req') {
+        const r = await env.DB.prepare(`SELECT deal FROM req WHERE id=?1`).bind(data.id).first();
+        if (r) data.title = r.deal === 'rent' ? 'მაძიებელი (ქირავნობა)' : 'მაძიებელი (ყიდვა)';
+      }
+    }
+
+    /* ⚠️ 2026-09-02 — 'checkin' (people.js → action:'ask') მხოლოდ reqId-ს
+       ინახავს (მოკლედ, თორემ mailq.payload დღეში ასობით ჩანაწერს
+       დაზოგავს) — შეჯამება (ბიუჯეტი/ფართობი/რადიუსი) აქ ვამატებთ,
+       ზუსტად იმავე ფორმატით, რასაც submit.js-ის admin_new იყენებს. */
+    if (m.kind === 'checkin' && data.reqId) {
+      const r = await env.DB.prepare(
+        `SELECT price_min,price_max,area_min,area_max,radius FROM req WHERE id=?1`
+      ).bind(data.reqId).first();
+      if (r) {
+        data.summary = [
+          r.price_max ? '$' + (r.price_min || 0).toLocaleString() + '–$' + r.price_max.toLocaleString() : '',
+          (r.area_min || r.area_max) ? (r.area_min || 0) + '–' + (r.area_max || 0) + ' მ²' : '',
+          r.radius ? (r.radius >= 1000 ? (r.radius / 1000).toFixed(1) + ' კმ' : r.radius + ' მ') + ' რადიუსი' : ''
+        ].filter(Boolean).join(' · ') || 'შენი მოთხოვნა';
+      }
+    }
+
     const msg = render(m.kind, data);
     if (!msg) {
       await env.DB.prepare(`UPDATE mailq SET status='failed', err=?2 WHERE id=?1`)
@@ -178,7 +217,15 @@ export async function flushMailQueue(env, limit = 40) {
       failed++;
     }
   }
-  return { sent, failed, left: (rows.results || []).length - sent - failed };
+  /* ⚠️ 2026-09-02 — ბაგის გასწორება: (rows.results||[]).length - sent - failed
+     ყოველთვის 0 იყო, რადგან ამოღებული limit-ის ყოველი მწკრივი ან sent-ში,
+     ან failed-ში ხვდება — დარჩენილი კი, თუ საერთოდ არსებობს, სწორედ ის
+     არის, რაც ამ LIMIT-ის მიღმაა და საერთოდ არ წამოგვირთმევია. ადმინის
+     პანელი ამ რიცხვს პირდაპირ აჩვენებს (mail.js) — რეალური რიცხვი
+     საჭიროა, თორემ ყოველთვის "დარჩენილია: 0" ცრუდ ეჩვენება მაშინაც,
+     როცა რიგში ასობით წერილი ელოდება შემდეგ flush-ს. */
+  const leftRow = await env.DB.prepare(`SELECT COUNT(*) AS n FROM mailq WHERE status='queued'`).first();
+  return { sent, failed, left: leftRow?.n || 0 };
 }
 
 /**

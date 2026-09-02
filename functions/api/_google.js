@@ -69,13 +69,17 @@ async function importPrivateKey(pem) {
    კონკრეტული, უსაფრთხო (არავითარი გასაღების მასალის გარეშე) დეტალი
    აჩვენოს — წინააღმდეგ შემთხვევაში ყოველი წარუმატებლობა ერთნაირად
    ბუნდოვანი „auth-failed"-ივით გამოიყურება და დიაგნოსტიკა ბრმა
-   ცდა-შეცდომად იქცევა. */
-let LAST_AUTH_ERR = null;
-export function lastAuthError() { return LAST_AUTH_ERR; }
-
-async function getAccessToken(env, scopes) {
-  LAST_AUTH_ERR = null;
-  if (!env.GOOGLE_SA_EMAIL || !env.GOOGLE_SA_PRIVATE_KEY) { LAST_AUTH_ERR = 'no-secrets'; return null }
+   ცდა-შეცდომად იქცევა.
+   ⚠️ 2026-09-02 — ეს აქამდე module-level ცვლადში ინახებოდა
+   (`let LAST_AUTH_ERR`), რაც race condition-ს ქმნიდა: Cloudflare
+   Workers-ს ერთსა და იმავე isolate-ში ერთდროულად რამდენიმე request-ის
+   დამუშავება შეუძლია, ანუ ორი ერთდროული ადმინის /api/ga-stats
+   მოთხოვნის დროს ერთს შეეძლო მეორის შეცდომის ტექსტი დაეწერა და
+   პირიქითაც — არასწორი დიაგნოსტიკა გამოჩენილიყო. ახლა თითოეული
+   გამოძახება საკუთარ, ლოკალურ `errBox` ობიექტს იღებს პარამეტრად და
+   მასში წერს — გლობალური გაზიარებული მდგომარეობის გარეშე. */
+async function getAccessToken(env, scopes, errBox) {
+  if (!env.GOOGLE_SA_EMAIL || !env.GOOGLE_SA_PRIVATE_KEY) { errBox.err = 'no-secrets'; return null }
   const now = Math.floor(Date.now() / 1000);
   const header = { alg: 'RS256', typ: 'JWT' };
   const claim = {
@@ -88,11 +92,11 @@ async function getAccessToken(env, scopes) {
   const unsigned = b64urlStr(JSON.stringify(header)) + '.' + b64urlStr(JSON.stringify(claim));
   let key;
   try { key = await importPrivateKey(env.GOOGLE_SA_PRIVATE_KEY) }
-  catch (e) { LAST_AUTH_ERR = 'key-import-failed: ' + (e && e.message ? e.message : String(e)); return null }
+  catch (e) { errBox.err = 'key-import-failed: ' + (e && e.message ? e.message : String(e)); return null }
   let sig;
   try {
     sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(unsigned));
-  } catch (e) { LAST_AUTH_ERR = 'sign-failed: ' + (e && e.message ? e.message : String(e)); return null }
+  } catch (e) { errBox.err = 'sign-failed: ' + (e && e.message ? e.message : String(e)); return null }
   const jwt = unsigned + '.' + b64url(sig);
 
   const r = await fetch(TOKEN_URL, {
@@ -103,18 +107,20 @@ async function getAccessToken(env, scopes) {
   });
   if (!r.ok) {
     const t = await r.text().catch(() => '');
-    LAST_AUTH_ERR = 'token-endpoint-' + r.status + ': ' + t.slice(0, 200);
+    errBox.err = 'token-endpoint-' + r.status + ': ' + t.slice(0, 200);
     return null;
   }
   const j = await r.json().catch(() => null);
-  if (!j || !j.access_token) { LAST_AUTH_ERR = 'no-access-token-in-response'; return null }
+  if (!j || !j.access_token) { errBox.err = 'no-access-token-in-response'; return null }
   return j.access_token;
 }
 
 /* GA4 Data API — POST properties/{id}:runReport
-   https://developers.google.com/analytics/devguides/reporting/data/v1 */
-export async function gaRunReport(env, propertyId, body) {
-  const token = await getAccessToken(env, ['https://www.googleapis.com/auth/analytics.readonly']);
+   https://developers.google.com/analytics/devguides/reporting/data/v1
+   `errBox` — არასავალდებულო {err} ობიექტი; წარუმატებლობისას მასში
+   იწერება მიზეზი (მოთხოვნის-სპეციფიკური, არა გაზიარებული). */
+export async function gaRunReport(env, propertyId, body, errBox = {}) {
+  const token = await getAccessToken(env, ['https://www.googleapis.com/auth/analytics.readonly'], errBox);
   if (!token) return null;
   const r = await fetch(
     `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
@@ -126,7 +132,7 @@ export async function gaRunReport(env, propertyId, body) {
   );
   if (!r.ok) {
     const t = await r.text().catch(() => '');
-    LAST_AUTH_ERR = 'ga-api-' + r.status + ': ' + t.slice(0, 200);
+    errBox.err = 'ga-api-' + r.status + ': ' + t.slice(0, 200);
     return null;
   }
   return r.json();
@@ -134,8 +140,8 @@ export async function gaRunReport(env, propertyId, body) {
 
 /* Search Console API — POST sites/{siteUrl}/searchAnalytics/query
    https://developers.google.com/webmaster-tools/v1/searchanalytics/query */
-export async function gscQuery(env, siteUrl, body) {
-  const token = await getAccessToken(env, ['https://www.googleapis.com/auth/webmasters.readonly']);
+export async function gscQuery(env, siteUrl, body, errBox = {}) {
+  const token = await getAccessToken(env, ['https://www.googleapis.com/auth/webmasters.readonly'], errBox);
   if (!token) return null;
   const r = await fetch(
     `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
@@ -147,7 +153,7 @@ export async function gscQuery(env, siteUrl, body) {
   );
   if (!r.ok) {
     const t = await r.text().catch(() => '');
-    LAST_AUTH_ERR = 'gsc-api-' + r.status + ': ' + t.slice(0, 200);
+    errBox.err = 'gsc-api-' + r.status + ': ' + t.slice(0, 200);
     return null;
   }
   return r.json();

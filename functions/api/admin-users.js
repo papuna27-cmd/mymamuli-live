@@ -12,7 +12,7 @@
  *    სრული ტელეფონი (phone_full) კი ჩანს — ეს განზრახაა, რომ ადმინმა
  *    დარეკოს გამოცხადებულ მომხმარებელს, თუ რამის დაზუსტება სჭირდება.
  */
-import { J, authed, denied, str } from './_util.js';
+import { J, authed, denied, str, sha, normPhone } from './_util.js';
 
 export async function onRequestGet({ request, env }) {
   if (!await authed(request, env)) return denied();
@@ -76,8 +76,16 @@ export async function onRequestPost({ request, env }) {
   if (action === 'edit') {
     const name = str(b.name, 90);
     const phoneFull = str(b.phone_full, 32);
-    await env.DB.prepare(`UPDATE users SET name=?2, phone_full=?3 WHERE id=?1`)
-      .bind(id, name || null, phoneFull || null).run();
+    /* ⚠️ 2026-09-02 — ბაგის გასწორება: ადმინის მიერ ნომრის ჩასწორება
+       აქამდე მხოლოდ phone_full-ს (ჩვენებისთვის) ანახლებდა, phone_hash კი
+       (ტელეფონით შესვლისთვის — auth.js, და დუბლიკატის შემოწმებისთვის —
+       submit.js) ძველ, არასწორ ნომერზე რჩებოდა. ტელეფონის შესწორების
+       შემდეგ მომხმარებელს ახალი ნომრით შესვლა აღარ შეეძლო, ძველი კი
+       კვლავ "დაკავებულად" ითვლებოდა. */
+    const phoneHash = phoneFull && normPhone(phoneFull).length >= 6
+      ? await sha('tel:' + normPhone(phoneFull)) : null;
+    await env.DB.prepare(`UPDATE users SET name=?2, phone_full=?3, phone_hash=?4 WHERE id=?1`)
+      .bind(id, name || null, phoneFull || null, phoneHash).run();
     return J({ ok: true });
   }
 

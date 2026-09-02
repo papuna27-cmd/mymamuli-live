@@ -23,7 +23,7 @@
  *    აჩვენოს, გატეხილი გვერდის ნაცვლად.
  */
 import { J, authed, denied } from './_util.js';
-import { gaRunReport, gscQuery, lastAuthError } from './_google.js';
+import { gaRunReport, gscQuery } from './_google.js';
 
 const GA_PROPERTY = '551076700';
 const GSC_SITE = 'sc-domain:mymamuli.ge';
@@ -54,6 +54,10 @@ export async function onRequestGet({ request, env }) {
     return J(out);
   }
 
+  /* ⚠️ 2026-09-02 — ლოკალური, ამ request-ისთვის საკუთარი errBox (იხ.
+     _google.js-ის კომენტარი) — აღარ ვეყრდნობით გაზიარებულ module-level
+     მდგომარეობას, რომელიც ერთდროული მოთხოვნების დროს ერევოდა. */
+  const errBox = {};
   try {
     const [overview, overviewPrev, events, pages, sources, devices, gscTotals, gscQ] = await Promise.all([
       gaRunReport(env, GA_PROPERTY, {
@@ -62,11 +66,11 @@ export async function onRequestGet({ request, env }) {
           { name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' },
           { name: 'averageSessionDuration' }, { name: 'bounceRate' }
         ]
-      }),
+      }, errBox),
       gaRunReport(env, GA_PROPERTY, {
         dateRanges: [prevRange],
         metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' }]
-      }),
+      }, errBox),
       gaRunReport(env, GA_PROPERTY, {
         dateRanges: [range],
         dimensions: [{ name: 'eventName' }],
@@ -75,31 +79,31 @@ export async function onRequestGet({ request, env }) {
           filter: { fieldName: 'eventName', inListFilter: { values: KEY_EVENTS } }
         },
         limit: KEY_EVENTS.length
-      }),
+      }, errBox),
       gaRunReport(env, GA_PROPERTY, {
         dateRanges: [range],
         dimensions: [{ name: 'pagePath' }],
         metrics: [{ name: 'screenPageViews' }],
         orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
         limit: 10
-      }),
+      }, errBox),
       gaRunReport(env, GA_PROPERTY, {
         dateRanges: [range],
         dimensions: [{ name: 'sessionDefaultChannelGroup' }],
         metrics: [{ name: 'sessions' }],
         orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
         limit: 8
-      }),
+      }, errBox),
       gaRunReport(env, GA_PROPERTY, {
         dateRanges: [range],
         dimensions: [{ name: 'deviceCategory' }],
         metrics: [{ name: 'sessions' }]
-      }),
-      gscQuery(env, GSC_SITE, { startDate: range.startDate, endDate: range.endDate, dimensions: [] }),
+      }, errBox),
+      gscQuery(env, GSC_SITE, { startDate: range.startDate, endDate: range.endDate, dimensions: [] }, errBox),
       gscQuery(env, GSC_SITE, {
         startDate: range.startDate, endDate: range.endDate,
         dimensions: ['query'], rowLimit: 20
-      })
+      }, errBox)
     ]);
 
     /* ერთ-ერთი API-ც რომ ჩავარდეს (მაგ. წვდომა ჯერ არ გააქტიურდა
@@ -115,7 +119,7 @@ export async function onRequestGet({ request, env }) {
     out.gsc = gscTotals;
     out.gscQueries = gscQ;
 
-    if (!overview && !gscTotals) { out.error = 'auth-failed'; out.debug = lastAuthError(); }
+    if (!overview && !gscTotals) { out.error = 'auth-failed'; out.debug = errBox.err || null; }
   } catch (e) {
     out.error = 'fetch-failed';
     out.debug = String((e && e.message) || e).slice(0, 200);

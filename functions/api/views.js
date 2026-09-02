@@ -15,7 +15,7 @@
  * დღე ითვლება თბილისის დროით (UTC+4), რომ „დღეს" ქართულ დღეს ნიშნავდეს.
  */
 
-import { authed } from './_util.js';
+import { authed, limited } from './_util.js';
 
 const TZ = 4 * 3600 * 1000;
 const dayKey = (shift = 0) =>
@@ -47,11 +47,30 @@ export async function onRequestPost({ request, env }) {
 
   let body = {};
   try { body = await request.json(); } catch (_) {}
-  const ids = Array.isArray(body.ids) ? body.ids.slice(0, 300) : [];
+  /* ⚠️ 2026-09-02 — ids[]-ის თითოეულ ელემენტს სიგრძის ჭერი არ ჰქონდა
+     (მხოლოდ მასივის სიგრძეს — 300-მდე). ვინმეს შეეძლო 300 უზარმაზარი
+     სტრიქონი გამოეგზავნა, რაც IN(...) query-ს დიდ, უსარგებლო SQL-ს
+     დაატანდა. ID-ები ჩვენთან ყოველთვის მოკლეა (`l-…`/`r-…`), ამიტომ
+     64 სიმბოლო მეტისმეტად საკმარისია. */
+  const ids = Array.isArray(body.ids)
+    ? body.ids.filter(x => typeof x === 'string' && x.length && x.length <= 64).slice(0, 300)
+    : [];
   const hit = typeof body.hit === 'string' ? body.hit.slice(0, 64) : null;
   const today = dayKey();
 
-  if (hit) {
+  /* ⚠️ 2026-09-02 — ნახვის მთვლელს (hit) აქამდე ლიმიტი საერთოდ არ
+     ჰქონდა, დანარჩენ ჩამწერ endpoint-ებისგან განსხვავებით (submit.js,
+     _lead.js და ა.შ. ყველანი limited()-ს იყენებენ). ვინმეს შეეძლო
+     ერთი განცხადების/მოთხოვნის ნახვების რაოდენობა ხელოვნურად
+     გაებერა — IP-ზე წუთში 60 დათვლაც საკმარისზე მეტია რეალური
+     დათვალიერებისთვის (ერთდროულად ბევრი ბარათის გახსნისასაც).
+     ლიმიტს ვახვედრებთ მხოლოდ ჩაწერას (hit) — ids-ის ნახვების
+     ამოკითხვა ქვემოთ ამის მიუხედავად გრძელდება, თორემ თვითონ
+     ჩვენება ტყუილად შეფერხდებოდა ზედმეტი მოთხოვნის დროსაც. */
+  const ip = request.headers.get('cf-connecting-ip') || '0';
+  const hitAllowed = hit ? !(await limited(env, 'view:' + ip, 60, 60e3)) : false;
+
+  if (hit && hitAllowed) {
     await env.DB.batch([
       env.DB.prepare(
         `INSERT INTO view_total (id, total, first_seen, last_seen) VALUES (?1, 1, ?2, ?2)

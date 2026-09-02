@@ -42,6 +42,8 @@
  * ?debug=1&preview=1 — საბოლოო კომპოზიტური სურათი პირდაპირ (ბრაუზერში სანახავად).
  * ?debug=1&rawimg=1 — მხოლოდ Geoapify-ის საბაზო რუკა, ტესტირებისთვის.
  */
+import { authed, limited } from '../_util.js';
+
 const SITE = 'https://mymamuli.ge';
 
 /* ბრენდირებული ჩარჩოები — header/footer სურათები, შუათანა y:106–493
@@ -95,7 +97,13 @@ export async function onRequestGet({ params, request, env }) {
   const id = String(params.id || '');
   const url = new URL(request.url);
   const lang = url.searchParams.get('lang') === 'en' ? 'en' : 'ka';
-  const debug = url.searchParams.get('debug') === '1';
+  /* ⚠️ 2026-09-02 — "ადმინისთვის" კომენტარი აქამდე რეალურად არაფრით
+     არ ესრულებოდა: ნებისმიერს შეეძლო ?debug=1&rawimg=1-ით ჩვენი
+     ფასიანი (Geoapify) API-ის გამოძახება Cloudflare-ის image-cache-ის
+     გვერდის ავლით, ან ?testmarker=/testgeom=/testzoom=/teststyle=-ით
+     ამ გამოძახების პარამეტრების საკუთარი სურვილით შეცვლა. ახლა
+     რეალურადაც ადმინის სესია/გასაღები სჭირდება. */
+  const debug = url.searchParams.get('debug') === '1' && await authed(request, env);
 
   const frameOnly = (dealKey) => Response.redirect(`${SITE}${FRAME[dealKey || 'buy'][lang]}`, 302);
 

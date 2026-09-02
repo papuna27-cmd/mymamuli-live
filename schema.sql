@@ -39,6 +39,13 @@ CREATE TABLE IF NOT EXISTS users (
   block_why   TEXT,
   created     INTEGER NOT NULL,
   last_seen   INTEGER
+  -- ⚠️ 2026-09-02 — დოკუმენტაციის ჩამორჩენა: production ბაზას ამ
+  -- ცხრილში ასევე აქვს `balance REAL DEFAULT 0` სვეტი (კაბინეტის
+  -- ბალანსისთვის, იხ. functions/api/auth.js whoami()) — დამატებულია
+  -- უფრო გვიან, პირდაპირ D1-ზე, და ეს ფაილი მაშინ არ განახლებულა.
+  -- აქ განზრახ არ ვამატებთ სვეტს ამ CREATE TABLE-ში, რომ ეს ფაილი
+  -- ნებისმიერ დროს თავიდან გაშვებადი დარჩეს ცოცხალ სქემასთან
+  -- კონფლიქტის გარეშე — უბრალოდ ეს არის შენიშვნა მომავალი წამკითხველისთვის.
 );
 
 -- ───────── ერთჯერადი კოდები ─────────
@@ -46,6 +53,12 @@ CREATE TABLE IF NOT EXISTS token (
   id      TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
   kind    TEXT NOT NULL,                        -- verify_email | login
+  -- ⚠️ 2026-09-02 — `hash` ჩვეულებრივ არის sha256 ჰექსი, მაგრამ
+  -- submit.js-ის ანგარიშის-გატაცების ფიქსის შემდეგ, როცა ანონიმური
+  -- გაგზავნა პაროლს პასუხისმგებელი (passwordless) არსებულ ანგარიშზე
+  -- აყენებს, ეს ველი შეიძლება იყოს JSON სტრიქონი
+  -- `{"h":"<codeHash>","pp":"<passHash>:<passSalt>"}` — რომ პაროლი
+  -- დადასტურებამდე არსად ჩაიწეროს (იხ. submit.js → verify()).
   hash    TEXT NOT NULL,
   ref     TEXT,                                 -- რომელ ჩანაწერს ეხება (r_… / l_…)
   ref_kind TEXT,                                -- req | lst

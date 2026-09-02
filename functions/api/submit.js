@@ -271,6 +271,11 @@ export async function onRequestPost({ request, env }) {
 
   /* --- მომხმარებელი --- */
   let u = await env.DB.prepare(`SELECT * FROM users WHERE email_norm=?1`).bind(email).first();
+  /* ⚠️ 2026-09-02 — იხ. კომენტარი ქვემოთ (!u.pass ტოტი): თუ ეს მოთხოვნა
+     არსებულ, პაროლის-გარეშე ანგარიშზე ახალ პაროლს აყენებს, ის ბაზაში
+     დაუყოვნებლივ არ იწერება — მხოლოდ ელფოსტის კოდის დადასტურების
+     შემდეგ (needsCodeForPass). */
+  let pendingPass = null;
   /* ⚠️ 2026-08-27, George-ის მოთხოვნით — GA4 `sign_up` key event-ისთვის
      კლიენტმა უნდა იცოდეს, ეს ნამდვილად ახალი ანგარიშია თუ უკვე
      არსებულის მორიგი განცხადება/მოთხოვნა. `u` ქვემოთ ორივე შემთხვევაში
@@ -312,11 +317,23 @@ export async function onRequestPost({ request, env }) {
        მოეთხოვება (cookie უკვე ადასტურებს, ვინც არის). */
     if (!sessUser && kind === 'req') {
       if (!u.pass) {
+        /* ⚠️ 2026-09-02 — უსაფრთხოების ხარვეზის გასწორება: აქამდე პაროლი
+           მაშინვე ეწერებოდა ბაზაში ნებისმიერი წარმდგენის მიერ, თუ
+           მითითებული ელფოსტა ეკუთვნოდა არსებულ, პაროლის-გარეშე ანგარიშს
+           (ასეთი ჩნდება, თუ ვინმეს ადრე მხოლოდ ანონიმური განცხადება
+           გაუგზავნია). საკმარისი იყო მსხვერპლის ელფოსტის ცოდნა, რომ
+           თავდამსხმელს საკუთარი პაროლი დაეყენებინა და შემდეგ იმ
+           ანგარიშზე შესულიყო (ტელეფონი, განცხადებები, კაბინეტი).
+           ახლა პაროლი ბაზაში მხოლოდ ელფოსტის კოდის რეალური დადასტურების
+           შემდეგ იწერება — needsCodeForPass-ის საშუალებით ქვემოთ ამ
+           ერთადერთ შემთხვევაში ვუვლით გვერდს გლობალურ ავტო-დადასტურებას
+           (`if(true)`) და ვამოწმებთ ნამდვილად ამ მეილის პატრონია თუ არა
+           წარმდგენი, ისევე, როგორც ჩვეულებრივი (ბაიპასამდელი) ნაკადი
+           მუშაობდა. საკოდირებელი პაროლი დროებით token.hash-ში ინახება
+           (JSON, კოდის ჰეშთან ერთად) — ცალკე სვეტი D1-ში არ დაგვჭირდა. */
         const passSalt = randId('', 16);
         const passHash = await hashPass(passRaw, passSalt);
-        await env.DB.prepare(`UPDATE users SET pass=?2, salt=?3 WHERE id=?1`)
-          .bind(u.id, passHash, passSalt).run();
-        u.pass = passHash; u.salt = passSalt;
+        pendingPass = { hash: passHash, salt: passSalt };
       } else {
         /* უკვე დაფიქსირებული პაროლი — უნდა დაემთხვეს (ეს = შესვლა).
            მცდელობებს ვზღუდავთ, თორემ ეს ველი პაროლის გამოცნობის
@@ -491,7 +508,15 @@ export async function onRequestPost({ request, env }) {
      ადრინდელი `sessUser && !compOk` ნაცვლად) — რომ George-მა
      ელფოსტაზეც დაინახოს ყოველი ახალი, არავერიფიცირებული ჩანაწერი და
      დროულად შეამოწმოს mod.html-ში, კოდის ლოდინის გარეშეც. */
-  if (true) {
+  /* ⚠️ 2026-09-02 — გამონაკლისის გამონაკლისი: `pendingPass` არსებობს
+     მხოლოდ მაშინ, თუ ეს მოთხოვნა უცხო (!sessUser) ვინმეს მიერ არსებულ,
+     პაროლის-გარეშე ანგარიშზე ახალ პაროლს აყენებს — ანუ ზუსტად ის
+     შემთხვევა, სადაც ზემოთაღწერილი გლობალური ბაიპასი ანგარიშის
+     გატაცების არხად იქცეოდა (იხ. კომენტარი პაროლის ბლოკთან, ზემოთ).
+     ამ ერთადერთ შემთხვევაში ბაიპასს არ ვიყენებთ და ჩვეულებრივ,
+     კოდით-დადასტურების გზას ვუშვებთ ქვემოთ — პაროლი ბაზაში მხოლოდ
+     კოდის სწორად შეყვანის შემდეგ ჯდება (იხ. verify()). */
+  if (!pendingPass) {
     const table = kind === 'req' ? 'req' : 'lst';
     const stmts = [
       env.DB.prepare(`UPDATE users SET email_ok=1 WHERE id=?1`).bind(u.id),
@@ -537,11 +562,18 @@ export async function onRequestPost({ request, env }) {
 
   /* crypto.getRandomValues — Math.random() პროგნოზირებადია და კოდიც მასთან ერთად. */
   const code = randCode(6);
+  const codeHash = await sha(code + ':' + u.id);
+  /* ⚠️ 2026-09-02 — pendingPass (იხ. კომენტარი ზემოთ) ცალკე D1 სვეტს არ
+     საჭიროებს: token.hash ისედაც უბრალო TEXT ველია, ამიტომ როცა
+     დასადგენი პაროლიც გვაქვს, hash-ში პლატანური ჰეშის მაგივრად პატარა
+     JSON ჯდება ({h: კოდის ჰეში, pp: "პაროლის ჰეში:მარილი"}) — verify()
+     ორივე ფორმას (უბრალო სტრიქონიც, JSON-იც) ცნობს. */
+  const tokenHash = pendingPass ? JSON.stringify({ h: codeHash, pp: pendingPass.hash + ':' + pendingPass.salt }) : codeHash;
   await env.DB.batch([
     env.DB.prepare(
       `INSERT INTO token (id,user_id,kind,hash,ref,ref_kind,expires,created)
        VALUES (?1,?2,'verify_email',?3,?4,?5,?6,?7)`
-    ).bind(randId('t_'), u.id, await sha(code + ':' + u.id), id, kind, t + 15 * 60e3, t),
+    ).bind(randId('t_'), u.id, tokenHash, id, kind, t + 15 * 60e3, t),
     env.DB.prepare(
       `INSERT INTO mailq (user_id,to_addr,kind,payload,created) VALUES (?1,?2,'verify',?3,?4)`
     ).bind(u.id, email, JSON.stringify({ code, id, kind }), t)
@@ -594,8 +626,19 @@ async function verify(env, b, ip, kick) {
     return J({ error: 'too-many-tries' }, 429);
   }
 
+  /* ⚠️ 2026-09-02 — tk.hash ან უბრალო კოდის ჰეშია, ან (თუ ამ ტოკენს
+     დასადგენი პაროლიც ახლდა — იხ. submit()-ის კომენტარი) პატარა JSON
+     {h, pp}. ორივე ფორმა უნდა ვცნოთ, თორემ ეს კონკრეტული ტოკენი
+     არასდროს დადასტურდება. */
+  let codeHash = tk.hash, pendingPass = null;
+  if (tk.hash && tk.hash[0] === '{') {
+    try {
+      const parsed = JSON.parse(tk.hash);
+      if (parsed && parsed.h) { codeHash = parsed.h; pendingPass = parsed.pp || null; }
+    } catch (_) {}
+  }
   const h = await sha(code + ':' + u.id);
-  if (!safeEq(h, tk.hash)) {
+  if (!safeEq(h, codeHash)) {
     await env.DB.prepare(`UPDATE token SET tries=tries+1 WHERE id=?1`).bind(tk.id).run();
     return J({ error: 'wrong-code', left: MAX_TRIES - tk.tries - 1 }, 400);
   }
@@ -607,6 +650,14 @@ async function verify(env, b, ip, kick) {
     env.DB.prepare(`UPDATE token SET used=1 WHERE id=?1`).bind(tk.id),
     env.DB.prepare(`UPDATE users SET email_ok=1 WHERE id=?1`).bind(u.id)
   ];
+  /* ⚠️ 2026-09-02 — პაროლი ბაზაში ზუსტად აქ ჯდება: მხოლოდ მას შემდეგ,
+     რაც კოდის დამთხვევით დადასტურდა, რომ ეს ელფოსტა ნამდვილად
+     წარმდგენს ეკუთვნის (და არა ვინმეს, ვინც უბრალოდ იცოდა სხვისი
+     ელფოსტა). იხ. submit()-ის pendingPass-ის კომენტარი. */
+  if (pendingPass) {
+    const [ph, ps] = pendingPass.split(':');
+    if (ph && ps) stmts.push(env.DB.prepare(`UPDATE users SET pass=?2, salt=?3 WHERE id=?1`).bind(u.id, ph, ps));
+  }
   if (tk.ref && (tk.ref_kind === 'req' || tk.ref_kind === 'lst')) {
     const table = tk.ref_kind === 'req' ? 'req' : 'lst';
     stmts.push(
@@ -688,7 +739,7 @@ async function resendCode(env, b, ip, kick) {
   if (!u) return J({ ok: true });   /* არ ვამხელთ, არსებობს თუ არა ანგარიში */
 
   const tk = await env.DB.prepare(
-    `SELECT id, ref, ref_kind FROM token
+    `SELECT id, hash, ref, ref_kind FROM token
       WHERE user_id=?1 AND kind='verify_email' AND used=0 AND ref IS NOT NULL
       ORDER BY created DESC LIMIT 1`
   ).bind(u.id).first();
@@ -696,9 +747,21 @@ async function resendCode(env, b, ip, kick) {
 
   const code = randCode(6);
   const t = now();
+  const newCodeHash = await sha(code + ':' + u.id);
+  /* ⚠️ 2026-09-02 — თუ ძველ hash-ს pendingPass ჰქონდა ჩამალული (JSON,
+     იხ. კომენტარი ზემოთ submit-ის ტოკენის შექმნასთან), ახალი კოდის
+     დაწერისას ის არ უნდა დაიკარგოს — თორემ „კოდის თავიდან გაგზავნა"
+     დააჩუმებდა ადრე დაგეგმილ პაროლის დაყენებას. */
+  let newHash = newCodeHash;
+  if (tk.hash && tk.hash[0] === '{') {
+    try {
+      const old = JSON.parse(tk.hash);
+      if (old && old.pp) newHash = JSON.stringify({ h: newCodeHash, pp: old.pp });
+    } catch (_) {}
+  }
   await env.DB.batch([
     env.DB.prepare(`UPDATE token SET hash=?2, tries=0, expires=?3 WHERE id=?1`)
-      .bind(tk.id, await sha(code + ':' + u.id), t + 15 * 60e3),
+      .bind(tk.id, newHash, t + 15 * 60e3),
     env.DB.prepare(
       `INSERT INTO mailq (user_id,to_addr,kind,payload,created) VALUES (?1,?2,'verify',?3,?4)`
     ).bind(u.id, email, JSON.stringify({ code, id: tk.ref, kind: tk.ref_kind }), t)

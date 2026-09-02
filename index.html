@@ -82,12 +82,12 @@ gtag('config', 'G-N30XKZCDCT');
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.09.02-0400"></script>
+<script src="i18n.js?v=2026.09.02-0500"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.09.02-0400';
+window.MM_BUILD = '2026.09.02-0500';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -95,7 +95,7 @@ console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
 {"@context":"https://schema.org","@type":"WebSite","name":"MyMamuli.ge","url":"https://mymamuli.ge/","inLanguage":"ka","description":"გასაყიდი მიწის ნაკვეთები, სახლები და კომერციული ფართები საქართველოში — ოფიციალური საკადასტრო საზღვრებით."}
 </script>
 <script type="application/ld+json" id="ld-org">
-{"@context":"https://schema.org","@type":"Organization","name":"MyMamuli.ge","url":"https://mymamuli.ge/","logo":"https://mymamuli.ge/og/default.jpg","email":"info@mymamuli.ge"}
+{"@context":"https://schema.org","@type":"Organization","name":"MyMamuli.ge","url":"https://mymamuli.ge/","logo":"https://mymamuli.ge/icons/icon-512.png","email":"info@mymamuli.ge"}
 </script>
 <style>
 :root{
@@ -1052,6 +1052,11 @@ body.foot-min .ftog svg{transform:rotate(180deg)}
 .fslim a{color:var(--mute);text-decoration:none;cursor:pointer}
 .fslim a:hover{color:var(--brand)}
 .fsoc{display:inline-flex;align-items:center;color:inherit}
+/* ⚠️ 2026-09-02 — Google/Instagram/LinkedIn ჯერ რეალურ ბმულს არ ეთმობა
+   (George-ისგან ლოდინშია — TZ-4). აქამდე href="#" target="_blank"
+   იყო: აწკაპუნებელი ჩანდა, მაგრამ ცარიელ ახალ ტაბს ხსნიდა. ახლა href
+   საერთოდ არა აქვთ (ბმული არ არის), ვიზუალურად უცვლელი. */
+.fsoc[aria-disabled]{opacity:.45;cursor:default}
 .fsoc svg{display:block}
 .fslim .fbtn{height:22px;font-size:10.5px;padding:0 9px}
 body.foot-min footer{padding:5px 20px calc(5px + env(safe-area-inset-bottom))}
@@ -1352,17 +1357,17 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.09.02-0400">
+<footer data-build="2026.09.02-0500">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.09.02-0400</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.09.02-0500</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
     <a href="#post" class="fbtn pri" data-modal="post">+ განათავსე უფასოდ</a>
     <a href="/how-it-works" data-modal="main">მთავარი</a>
-    <a href="/how-it-works" data-modal="how">როგორ მუშაობს</a>
+    <a href="/how-it-works" data-modal="main">როგორ მუშაობს</a>
     <a href="#want" data-modal="want">ვეძებ</a>
     <div class="sp">
       <a href="/terms" data-modal="terms">წესები</a>
@@ -1370,9 +1375,9 @@ body.foot-min .fslim{display:flex}
       <a href="mailto:info@mymamuli.ge">info@mymamuli.ge</a>
       <!-- 2026-08-28: Facebook დაემატა (George-ის რეალური გვერდი). Google/Instagram/LinkedIn — TODO, ჯერ არ არსებობს რეალური ბმული. -->
       <a class="fsoc" href="https://www.facebook.com/mymamuli.ge/" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.5V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12Z"/></svg></a>
-      <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="Google" title="Google"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 12.23c0-.76-.07-1.5-.2-2.2H12v4.16h5.4a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 3-4.32 3-7.48Z"/><path d="M12 22c2.7 0 4.97-.9 6.63-2.42l-3.24-2.5c-.9.6-2.05.96-3.39.96-2.6 0-4.8-1.76-5.6-4.12H3.06v2.6A10 10 0 0 0 12 22Z"/><path d="M6.4 13.92a6 6 0 0 1 0-3.84v-2.6H3.06a10 10 0 0 0 0 9.04l3.34-2.6Z"/><path d="M12 5.98c1.47 0 2.8.5 3.83 1.5l2.87-2.87A9.96 9.96 0 0 0 12 2a10 10 0 0 0-8.94 5.48l3.34 2.6C7.2 7.73 9.4 5.98 12 5.98Z"/></svg></a>
-      <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
-      <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C20.9 8.65 22 11.1 22 14.5V21h-4v-5.8c0-1.38-.03-3.15-1.92-3.15-1.93 0-2.22 1.5-2.22 3.05V21H9z"/></svg></a>
+      <a class="fsoc" aria-label="Google" title="Google — მალე" aria-disabled="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 12.23c0-.76-.07-1.5-.2-2.2H12v4.16h5.4a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 3-4.32 3-7.48Z"/><path d="M12 22c2.7 0 4.97-.9 6.63-2.42l-3.24-2.5c-.9.6-2.05.96-3.39.96-2.6 0-4.8-1.76-5.6-4.12H3.06v2.6A10 10 0 0 0 12 22Z"/><path d="M6.4 13.92a6 6 0 0 1 0-3.84v-2.6H3.06a10 10 0 0 0 0 9.04l3.34-2.6Z"/><path d="M12 5.98c1.47 0 2.8.5 3.83 1.5l2.87-2.87A9.96 9.96 0 0 0 12 2a10 10 0 0 0-8.94 5.48l3.34 2.6C7.2 7.73 9.4 5.98 12 5.98Z"/></svg></a>
+      <a class="fsoc" aria-label="Instagram" title="Instagram — მალე" aria-disabled="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
+      <a class="fsoc" aria-label="LinkedIn" title="LinkedIn — მალე" aria-disabled="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C20.9 8.65 22 11.1 22 14.5V21h-4v-5.8c0-1.38-.03-3.15-1.92-3.15-1.93 0-2.22 1.5-2.22 3.05V21H9z"/></svg></a>
     </div>
   </div>
   <div class="fmain">
@@ -1393,7 +1398,7 @@ body.foot-min .fslim{display:flex}
     <div class="fcol fc3">
       <h5>საიტი</h5>
       <a href="/how-it-works" data-modal="main">მთავარი</a>
-      <a href="/how-it-works" data-modal="how">როგორ მუშაობს</a>
+      <a href="/how-it-works" data-modal="main">როგორ მუშაობს</a>
       <a href="#want" data-modal="want">ვეძებ<i class="fnew">ახალი</i></a>
     </div>
     <!-- 2026-08-25: George-ის მოთხოვნით — ეს ბმულები აღარ ჩანს ვიზუალურად
@@ -1413,9 +1418,9 @@ body.foot-min .fslim{display:flex}
         <a href="mailto:info@mymamuli.ge">info@mymamuli.ge</a>
         <!-- 2026-08-28: Facebook დაემატა (George-ის რეალური გვერდი). Google/Instagram/LinkedIn — TODO, ჯერ არ არსებობს რეალური ბმული. -->
         <a class="fsoc" href="https://www.facebook.com/mymamuli.ge/" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.5V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12Z"/></svg></a>
-        <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="Google" title="Google"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 12.23c0-.76-.07-1.5-.2-2.2H12v4.16h5.4a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 3-4.32 3-7.48Z"/><path d="M12 22c2.7 0 4.97-.9 6.63-2.42l-3.24-2.5c-.9.6-2.05.96-3.39.96-2.6 0-4.8-1.76-5.6-4.12H3.06v2.6A10 10 0 0 0 12 22Z"/><path d="M6.4 13.92a6 6 0 0 1 0-3.84v-2.6H3.06a10 10 0 0 0 0 9.04l3.34-2.6Z"/><path d="M12 5.98c1.47 0 2.8.5 3.83 1.5l2.87-2.87A9.96 9.96 0 0 0 12 2a10 10 0 0 0-8.94 5.48l3.34 2.6C7.2 7.73 9.4 5.98 12 5.98Z"/></svg></a>
-        <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
-        <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C20.9 8.65 22 11.1 22 14.5V21h-4v-5.8c0-1.38-.03-3.15-1.92-3.15-1.93 0-2.22 1.5-2.22 3.05V21H9z"/></svg></a>
+        <a class="fsoc" aria-label="Google" title="Google — მალე" aria-disabled="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 12.23c0-.76-.07-1.5-.2-2.2H12v4.16h5.4a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 3-4.32 3-7.48Z"/><path d="M12 22c2.7 0 4.97-.9 6.63-2.42l-3.24-2.5c-.9.6-2.05.96-3.39.96-2.6 0-4.8-1.76-5.6-4.12H3.06v2.6A10 10 0 0 0 12 22Z"/><path d="M6.4 13.92a6 6 0 0 1 0-3.84v-2.6H3.06a10 10 0 0 0 0 9.04l3.34-2.6Z"/><path d="M12 5.98c1.47 0 2.8.5 3.83 1.5l2.87-2.87A9.96 9.96 0 0 0 12 2a10 10 0 0 0-8.94 5.48l3.34 2.6C7.2 7.73 9.4 5.98 12 5.98Z"/></svg></a>
+        <a class="fsoc" aria-label="Instagram" title="Instagram — მალე" aria-disabled="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
+        <a class="fsoc" aria-label="LinkedIn" title="LinkedIn — მალე" aria-disabled="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C20.9 8.65 22 11.1 22 14.5V21h-4v-5.8c0-1.38-.03-3.15-1.92-3.15-1.93 0-2.22 1.5-2.22 3.05V21H9z"/></svg></a>
       </span>
       <span class="m"><a href="/terms" data-modal="terms">წესები</a><span class="dv">·</span><a href="/privacy" data-modal="priv">კონფიდენციალურობა</a></span>
       <span class="m cp"><span class="onl" id="live"><span class="dt"></span><b>—</b> ონლაინ</span><span class="dv">·</span>© 2026 MyMamuli.ge</span>
@@ -1439,9 +1444,9 @@ body.foot-min .fslim{display:flex}
   <!-- 2026-08-28: Facebook დაემატა (George-ის რეალური გვერდი). Google/Instagram/LinkedIn — TODO, ჯერ არ არსებობს რეალური ბმული. -->
   <span class="fsocrow">
     <a class="fsoc" href="https://www.facebook.com/mymamuli.ge/" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.5V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12Z"/></svg></a>
-    <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="Google" title="Google"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 12.23c0-.76-.07-1.5-.2-2.2H12v4.16h5.4a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 3-4.32 3-7.48Z"/><path d="M12 22c2.7 0 4.97-.9 6.63-2.42l-3.24-2.5c-.9.6-2.05.96-3.39.96-2.6 0-4.8-1.76-5.6-4.12H3.06v2.6A10 10 0 0 0 12 22Z"/><path d="M6.4 13.92a6 6 0 0 1 0-3.84v-2.6H3.06a10 10 0 0 0 0 9.04l3.34-2.6Z"/><path d="M12 5.98c1.47 0 2.8.5 3.83 1.5l2.87-2.87A9.96 9.96 0 0 0 12 2a10 10 0 0 0-8.94 5.48l3.34 2.6C7.2 7.73 9.4 5.98 12 5.98Z"/></svg></a>
-    <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
-    <a class="fsoc" href="#" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C20.9 8.65 22 11.1 22 14.5V21h-4v-5.8c0-1.38-.03-3.15-1.92-3.15-1.93 0-2.22 1.5-2.22 3.05V21H9z"/></svg></a>
+    <a class="fsoc" aria-label="Google" title="Google — მალე" aria-disabled="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 12.23c0-.76-.07-1.5-.2-2.2H12v4.16h5.4a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 3-4.32 3-7.48Z"/><path d="M12 22c2.7 0 4.97-.9 6.63-2.42l-3.24-2.5c-.9.6-2.05.96-3.39.96-2.6 0-4.8-1.76-5.6-4.12H3.06v2.6A10 10 0 0 0 12 22Z"/><path d="M6.4 13.92a6 6 0 0 1 0-3.84v-2.6H3.06a10 10 0 0 0 0 9.04l3.34-2.6Z"/><path d="M12 5.98c1.47 0 2.8.5 3.83 1.5l2.87-2.87A9.96 9.96 0 0 0 12 2a10 10 0 0 0-8.94 5.48l3.34 2.6C7.2 7.73 9.4 5.98 12 5.98Z"/></svg></a>
+    <a class="fsoc" aria-label="Instagram" title="Instagram — მალე" aria-disabled="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
+    <a class="fsoc" aria-label="LinkedIn" title="LinkedIn — მალე" aria-disabled="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C20.9 8.65 22 11.1 22 14.5V21h-4v-5.8c0-1.38-.03-3.15-1.92-3.15-1.93 0-2.22 1.5-2.22 3.05V21H9z"/></svg></a>
   </span>
   <div class="fmg">
     <button class="fmb go" data-modal="post">+ განათავსე</button>
@@ -2674,7 +2679,9 @@ function paintTray(){
    return '<div class="tchip'+(active&&active.id===o.id?' on':'')+'" data-id="'+o.id+'">'+
     (ph?'<img src="'+ph+'" alt="" loading="lazy">':'<img alt="">')+
     '<span class="ti2"><b>'+(perM2(o)!=null?'$'+fmt(perM2(o))+'/'+T('მ²'):'$'+fmt(o.p))+'</b>'+
-      '<span>'+T(o.loc)+' · '+fmt(o.a)+' '+T('მ²')+'</span></span>'+
+      /* ⚠️ 2026-09-02 — იხ. კომენტარი openCard()-ის pk-m-თან: o.loc
+         null-იც შეიძლება იყოს, T(null) მაინც null-ს აბრუნებს ka-ზე. */
+      '<span>'+(o.loc?T(o.loc)+' · ':'')+fmt(o.a)+' '+T('მ²')+'</span></span>'+
     '<button class="tx" data-x="'+o.id+'" aria-label="'+T('წაშლა')+'">✕</button></div>';
   }).join('')+
   '<button class="tclr" id="tclr">'+T('გასუფთავება')+'</button>'+
@@ -3492,7 +3499,10 @@ function seoFor(o){
     როგორც ბარათზე) აზრს კარგავს; მის მაგივრად "/თვე"-ს ვწერთ. */
  const priceTxt='$'+fmt(o.p)+(isRent(o)?' / '+(o.period==='year'?'წელი':'თვე'):(o.a?' ($'+fmt(o.p/o.a)+'/მ²)':''));
  const t=o.ttl+' — $'+fmt(o.p)+(isRent(o)?'/'+(o.period==='year'?'წელი':'თვე'):'')+' | MyMamuli.ge';
- const desc=o.ttl+'. ფასი '+priceTxt+', '+o.loc+
+ /* ⚠️ 2026-09-02 — o.loc null-ის შემთხვევაში (მისამართი/კადასტრო
+    ველი ცარიელია) ეს მანამდე "...ფასი $X, null." ტექსტს აწერდა
+    პირდაპირ SEO meta description-ში. */
+ const desc=o.ttl+'. ფასი '+priceTxt+(o.loc?', '+o.loc:'')+
    (o.k?'. საკადასტრო კოდი '+o.k+', ოფიციალური საზღვარი საჯარო რეესტრიდან.':'.')+' შუამავლების გარეშე — MyMamuli.ge';
  const url='https://mymamuli.ge/g/'+o.id;
  document.title=t;
@@ -3518,7 +3528,11 @@ function seoFor(o){
   "@context":"https://schema.org","@type":"RealEstateListing","name":o.ttl,"url":url,"description":desc,
   "datePosted":new Date().toISOString().slice(0,10),
   "offers":{"@type":"Offer","price":o.p,"priceCurrency":"USD","availability":"https://schema.org/InStock"},
-  "about":{"@type":o.t==='land'?"LandmarksOrHistoricalBuildings":"Accommodation","name":o.ttl,
+  /* ⚠️ 2026-09-02 — ბაგის გასწორება: მიწის ნაკვეთი "LandmarksOrHistoricalBuildings"-ად
+     (ძეგლი/ისტორიული ნაგებობა) იყო მონიშნული — ალბათ სხვა მაგალითიდან
+     კოპირებული შეცდომით. "Place" ნეიტრალური და schema.org-ის მიხედვით
+     კორექტული ტიპია ჩვეულებრივი მიწის ნაკვეთისთვის. */
+  "about":{"@type":o.t==='land'?"Place":"Accommodation","name":o.ttl,
     "floorSize":{"@type":"QuantitativeValue","value":o.a,"unitCode":"MTK"}},
   "geo":{"@type":"GeoCoordinates","latitude":o.lat,"longitude":o.lng},
   "address":{"@type":"PostalAddress","addressLocality":o.loc,"addressRegion":o.reg||'',"addressCountry":"GE"},
@@ -3579,6 +3593,10 @@ gripEl.addEventListener('touchend',e=>{
 addEventListener('keydown',e=>{if(e.key==='Escape')closeCard()});
 
 function marketBlock(o){
+ /* ⚠️ 2026-09-02 — o.loc შესაძლოა null იყოს (მისამართის ველი ცარიელია);
+    matchLoc ინახავს, რომელი გასაღები (o.loc თუ o.reg) რეალურად
+    დაემთხვა MKT-ს — ტექსტში ის უნდა ჩანდეს, არა უპირობოდ o.loc. */
+ const matchLoc=MKT[o.loc]?o.loc:(MKT[o.reg]?o.reg:null);
  const m=MKT[o.loc]||MKT[o.reg];
  if(!m)return '<div class="blk"><div class="h">რაიონის სტატისტიკა</div><div class="note">ამ ადგილისთვის დამოუკიდებელი კვლევითი მონაცემი არ ქვეყნდება.</div></div>';
  const arrow=m.c>=0?'▲':'▼', cls=m.c>=0?'ok':'', sign=m.c>=0?'+':'';
@@ -3594,7 +3612,7 @@ function marketBlock(o){
    '<div class="lbl"><span>ბაზარზე იაფი</span><span>ბაზარზე ძვირი</span></div>'+
    '<div class="track"><div class="avg"></div><div class="pin" style="left:'+pos.toFixed(1)+'%"></div></div>'+
    '<div class="verdict '+(good?'g':'r')+'">'+(good?'ბაზრის საშუალოზე '+Math.abs(diff).toFixed(0)+'% იაფი':'ბაზრის საშუალოზე '+diff.toFixed(0)+'% ძვირი')+'</div>'+
-   '<div class="sub">ეს ობიექტი $'+fmt(own)+'/მ² · '+o.loc+' საშუალო $'+fmt(m.p)+'/მ²</div></div>';
+   '<div class="sub">ეს ობიექტი $'+fmt(own)+'/მ² · '+(matchLoc||'')+' საშუალო $'+fmt(m.p)+'/მ²</div></div>';
  }
  return '<div class="blk">'+
   '<div class="h"><span class="dot"></span>'+o.loc.toUpperCase()+' — ბაზრის მაჩვენებელი</div>'+
@@ -3916,7 +3934,11 @@ function openCard(o){
     '<div class="pk-i">'+
       '<div class="pk-p">$'+fmt(o.p)+(!isRent(o)&&perM2(o)!=null?'<small>$'+fmt(perM2(o))+'/მ²</small>':'<small>'+dealSuffix(o)+'</small>')+'</div>'+
       '<div class="pk-t">'+o.ttl+'</div>'+
-      '<div class="pk-m">'+o.loc+' · '+fmt(o.a)+' მ²'+(isRent(o)?' · '+T('ქირავდება'):(o.k?' · '+(TN[o.t]||o.t):''))+'</div>'+
+      /* ⚠️ 2026-09-02 — ბაგის გასწორება: o.loc ბაზაში ხშირად null-ია
+         (მისამართი/კადასტრო ველი შევსებული არ იყო — იხ. კომენტარი
+         form.html-ში, ttl-ის აწყობასთან). null+' · '-ის კონკატენაცია
+         JS-ში ლიტერალურ "null · "-ს ბეჭდავდა პირდაპირ ბარათზე. */
+      '<div class="pk-m">'+(o.loc?o.loc+' · ':'')+fmt(o.a)+' მ²'+(isRent(o)?' · '+T('ქირავდება'):(o.k?' · '+(TN[o.t]||o.t):''))+'</div>'+
     '</div></div>'+
   '<div class="pk-b">'+
     '<button class="pri" id="pk-tel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6.5 3.5h3l1.6 4-2 1.4a12 12 0 0 0 6 6l1.4-2 4 1.6v3c0 1-.8 1.9-1.9 1.8C10.6 19.6 4.4 13.4 3.7 5.4 3.6 4.3 4.5 3.5 5.5 3.5h1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>ნომრის ჩვენება</button>'+
@@ -4240,7 +4262,7 @@ function paintList(){
    '<div class="li-i">'+
      '<div class="li-p">$'+fmt(perM2(o))+'<span>/მ² · $'+fmt(o.p)+'</span></div>'+
      '<div class="li-t">'+trPick(o.lang,o.ttl,o.ttl_tr)+'</div>'+
-     '<div class="li-m">'+o.loc+' · '+fmt(o.a)+' მ²'+(o.days===0?' · <b style="color:var(--brand)">დღეს</b>':(o.days<=3?' · '+o.days+' დღის წინ':''))+'</div>'+
+     '<div class="li-m">'+(o.loc?o.loc+' · ':'')+fmt(o.a)+' მ²'+(o.days===0?' · <b style="color:var(--brand)">დღეს</b>':(o.days<=3?' · '+o.days+' დღის წინ':''))+'</div>'+
    '</div>'+
    '<svg class="li-a" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
   '</div>').join('')+'</div>';

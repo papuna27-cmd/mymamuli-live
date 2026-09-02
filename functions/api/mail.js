@@ -69,7 +69,11 @@ export async function onRequestGet({ request, env }) {
      ტიპის (approved და ა.შ.) წერილებით ივსებოდა. */
   const stF = url.searchParams.get('status');
   const kF = url.searchParams.get('kind');
-  const lim = Math.min(Number(url.searchParams.get('limit')) || 20, 200);
+  /* ⚠️ 2026-09-02 — ბაგის გასწორება: ?limit=-1 (ან ნებისმიერი უარყოფითი
+     რიცხვი) Math.min(-1,200)-ის შედეგად -1-ივე რჩებოდა, SQLite-ში კი
+     უარყოფითი LIMIT ნიშნავს "შეუზღუდავს" — ანუ mailq-ის მთელი ცხრილი
+     ბრუნდებოდა 200-კაციანი ჭერის ნაცვლად. Math.max(1,...) ამას კეტავს. */
+  const lim = Math.max(1, Math.min(Number(url.searchParams.get('limit')) || 20, 200));
   const conds = [], args = [];
   if (stF) { conds.push(`status=?${args.length + 1}`); args.push(stF) }
   if (kF) { conds.push(`kind=?${args.length + 1}`); args.push(kF) }

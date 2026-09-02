@@ -14,7 +14,7 @@
  * ⚠️ თუ გადამისამართება ვერ მოხერხდა, მაინც ვუშვებთ განცხადებაზე —
  *    გატეხილი ბმული უარესია, ვიდრე დაკარგული სტატისტიკა.
  */
-import { sha } from './_util.js';
+import { sha, safeEq } from './_util.js';
 
 const SITE = 'https://mymamuli.ge';
 
@@ -43,7 +43,11 @@ export async function onRequestGet({ request, env }) {
   const go = () => Response.redirect(dest, 302);
 
   if (!env.DB || !reqId || !lstId) return go();
-  if (sig !== await sign(env, reqId, lstId)) return go();
+  /* ⚠️ 2026-09-02 — დანარჩენ მთელ პროექტში ხელმოწერილი/საიდუმლო
+     მნიშვნელობები safeEq()-ით (დროზე-მუდმივი შედარება) მოწმდება,
+     აქ კი ჩვეულებრივ !==-ს იყენებდა. თავად ეს ბმული მგრძნობიარეს
+     არაფერს ხსნის, მაგრამ თანმიმდევრულობისთვის ესეც safeEq()-ზეა. */
+  if (!safeEq(sig, await sign(env, reqId, lstId))) return go();
 
   try {
     const t = Date.now();

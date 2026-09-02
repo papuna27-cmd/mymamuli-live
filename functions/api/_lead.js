@@ -24,13 +24,21 @@ export async function takeLead(request, env, kind, shape) {
   const tel = normPhone(b.tel);
   if (tel.length < 9) return J({ error: 'bad-phone' }, 400);
 
+  /* ⚠️ 2026-09-02 — ბაგის გასწორება: limited() აქამდე ვალიდაციამდე
+     იძახებოდა, ანუ ნებისმიერ ხელოვნურ/არასწორ (bmax/price არასწორი
+     და ა.შ.) მოთხოვნასაც ეხარჯებოდა იგივე ლიმიტის „ჭურჭელი", რომელსაც
+     ნამდვილი მომხმარებელი იყენებდა — შემტევს შეეძლო ვინმეს ნომერზე
+     (ან თავისივე IP-ზე) ლიმიტი წუთებში ამოეწურა უსარგებლო მონაცემებით,
+     და შემდეგ ნამდვილ მომხმარებელს ვეღარ დაეგზავნა მოთხოვნა. ახლა
+     ჯერ shape()-ით ვამოწმებთ ვალიდურობას, და მხოლოდ ვალიდურ
+     მოთხოვნას ვხარჯავთ ლიმიტიდან. */
+  const data = shape(b);
+  if (data.error) return J({ error: 'invalid', fields: data.error }, 400);
+
   const ip = request.headers.get('cf-connecting-ip') || '0';
   /* ერთი ნომერი — დღეში 5; ერთი IP — საათში 10 */
   if (await limited(env, 'lead-ip:' + ip, 10, 3600e3)) return J({ error: 'too-many' }, 429);
   if (await limited(env, 'lead-tel:' + tel, 5, 86400e3)) return J({ error: 'too-many' }, 429);
-
-  const data = shape(b);
-  if (data.error) return J({ error: 'invalid', fields: data.error }, 400);
 
   const id = randId(kind === 'req' ? 'ld_r_' : 'ld_o_', 8);
   await env.DB.prepare(

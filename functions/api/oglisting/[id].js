@@ -37,6 +37,8 @@
  * ?debug=1 — ადმინისთვის: JSON დიაგნოსტიკა.
  * ?debug=1&preview=1 — საბოლოო კომპოზიტური სურათი პირდაპირ ბრაუზერში.
  */
+import { authed } from '../_util.js';
+
 const SITE = 'https://mymamuli.ge';
 const W = 1200, H = 630, BAR_H = 112;
 const BAR_ASSET = `${SITE}/images/mymamuli-listing-bar-1200x630.png?v1`;
@@ -88,7 +90,11 @@ function priceGlyphLayers(l) {
 export async function onRequestGet({ params, request, env }) {
   const id = String(params.id || '');
   const url = new URL(request.url);
-  const debug = url.searchParams.get('debug') === '1';
+  /* ⚠️ 2026-09-02 — ეს დიაგნოსტიკური რეჟიმი კომენტარშივე "ადმინისთვის"-ია
+     მონიშნული, მაგრამ აქამდე რეალურად არავინ ამოწმებდა — ნებისმიერს
+     შეეძლო ?debug=1-ით შიდა URL-ების ნახვა. ახლა რეალურადაც მხოლოდ
+     ადმინისთვისაა (სესიის cookie ან x-admin-key). */
+  const debug = url.searchParams.get('debug') === '1' && await authed(request, env);
 
   if (!/^l_[a-z0-9]+$/.test(id) || !env.DB) return Response.redirect(FALLBACK_COVER, 302);
 

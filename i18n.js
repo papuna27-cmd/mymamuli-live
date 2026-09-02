@@ -375,6 +375,8 @@ const I18N = {
 "სახლები და ბინები": "Houses & apartments",
 "კონფიდენციალურობა": "Privacy",
 "⧉ ბმულის კოპირება": "⧉ Copy link",
+"კოპირება": "Copy",
+"ნომერი დაკოპირდა": "Number copied",
 "განცხადებების სია": "All listings",
 "PRO-ს გააქტიურება": "Activate PRO",
 "1 · რუკა, არა სია": "1 · A map, not a list",

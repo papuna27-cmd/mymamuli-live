@@ -248,7 +248,7 @@ export const legal = {
     metaDescription: 'The terms Assembleo works under: quotes and estimates, what is included, access requirements, cancellations, liability and payment.',
     h1: 'Terms of service',
     updated: '2026-01-15',
-    lede: 'Plain-language terms for work carried out by ' + site.legalName + '. Booking a job means you accept them.',
+    lede: `Plain-language terms for work carried out by ${site.legalName} Booking a job means you accept them.`,
     sections: [
       {
         h2: 'Quotes and estimates',

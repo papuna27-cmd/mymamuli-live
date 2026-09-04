@@ -1,0 +1,61 @@
+---
+/** Accordion built on <details>. Zero JS, works with search-in-page. */
+import type { Faq } from '../data/faqs';
+interface Props { items: Faq[]; heading?: string; id?: string; }
+const { items, heading = 'Questions people ask', id = 'faq' } = Astro.props;
+---
+
+<section class="section section--surface" id={id} aria-labelledby={`${id}-h`}>
+  <div class="wrap">
+    <h2 id={`${id}-h`}>{heading}</h2>
+    <div class="faq rule-list">
+      {items.map((f, i) => (
+        <details class="faq__item" name={id} open={i === 0}>
+          <summary class="faq__q">
+            <span>{f.q}</span>
+            <span class="faq__mark" aria-hidden="true"></span>
+          </summary>
+          <div class="faq__a"><p>{f.a}</p></div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq { margin-top: var(--s-6); }
+  .faq__item { border-bottom: 1px solid var(--line); }
+  .faq__q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    min-height: 60px;
+    padding-block: var(--s-4);
+    font-size: var(--t-md);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq__q::-webkit-details-marker { display: none; }
+  .faq__q:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: -3px; }
+  .faq__mark {
+    position: relative;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+  .faq__mark::before,
+  .faq__mark::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 2px;
+    background: var(--slate);
+    transition: transform 160ms var(--ease);
+  }
+  .faq__mark::after { transform: rotate(90deg); }
+  .faq__item[open] .faq__mark::after { transform: rotate(0deg); }
+  .faq__a { padding-bottom: var(--s-5); }
+  .faq__a p { max-width: var(--prose); color: var(--slate); }
+</style>

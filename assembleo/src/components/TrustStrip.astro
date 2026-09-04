@@ -1,0 +1,43 @@
+---
+interface Props { items: Array<{ label: string; verified: boolean }>; }
+const { items } = Astro.props;
+---
+
+<div class="trust">
+  <div class="wrap">
+    <ul class="trust__list">
+      {items.map((i) => (
+        <li class="trust__item">
+          {i.verified && (
+            <svg class="trust__tick" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          )}
+          <span>{i.label}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .trust { background: var(--surface); border-bottom: 1px solid var(--line); }
+  .trust__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3) var(--s-5);
+    padding-block: var(--s-4);
+  }
+  .trust__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--t-sm);
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .trust__tick { color: var(--verified); flex-shrink: 0; }
+  @media (min-width: 768px) {
+    .trust__list { justify-content: space-between; gap: var(--s-6); }
+  }
+</style>

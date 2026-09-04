@@ -1,0 +1,30 @@
+{
+  "name": "assembleo-site",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=assembleo",
+    "og": "node scripts/og.mjs",
+    "audit": "node scripts/audit.mjs",
+    "check:mobile": "node scripts/mobile-check.mjs",
+    "check:amber": "node scripts/amber-check.mjs",
+    "shots": "node scripts/shots.mjs",
+    "verify": "npm run build && npm run audit && npm run check:mobile && npm run check:amber"
+  },
+  "dependencies": {
+    "@astrojs/preact": "^6.0.5",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.1",
+    "preact": "^10.29.8"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "playwright": "^1.62.1",
+    "typescript": "^5.9.2"
+  }
+}

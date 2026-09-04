@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LegalPage from '../components/LegalPage.astro';
+import { legal } from '../data/copy';
+
+const doc = legal.privacy;
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Privacy', href: '/privacy' },
+];
+---
+
+<BaseLayout title={doc.title} description={doc.metaDescription} path="/privacy" crumbs={crumbs}>
+  <LegalPage doc={doc} />
+</BaseLayout>

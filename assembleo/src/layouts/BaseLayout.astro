@@ -1,0 +1,168 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ActionBar from '../components/ActionBar.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { site } from '../data/site';
+import { localBusiness, breadcrumbs as crumbSchema, webPage, abs, type Crumb } from '../lib/schema';
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Canonical path, e.g. "/services/assembly". Always starts with "/". */
+  path: string;
+  /** Path under /og/. One well-designed default per section. */
+  ogImage?: string;
+  noindex?: boolean;
+  schemas?: object[];
+  /** Visible breadcrumbs + BreadcrumbList. Omit on the homepage. */
+  crumbs?: Crumb[];
+  wide?: boolean;
+}
+
+const {
+  title,
+  description,
+  path,
+  ogImage = '/og/default.png',
+  noindex = false,
+  schemas = [],
+  crumbs,
+} = Astro.props;
+
+const canonical = abs(path);
+const gtmId = import.meta.env.PUBLIC_GTM_ID;
+
+// Length budgets from the brief. Surfaced at build time, never to the user.
+if (import.meta.env.DEV || import.meta.env.PROD) {
+  if (title.length > 60) console.warn(`[seo] title ${title.length} chars (>60): ${path}`);
+  if (description.length > 155) console.warn(`[seo] description ${description.length} chars (>155): ${path}`);
+}
+
+const allSchemas = [
+  localBusiness(),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${site.url}/#website`,
+    url: site.url,
+    name: site.name,
+    inLanguage: site.locale,
+    publisher: { '@id': `${site.url}/#business` },
+  },
+  webPage(title, description, path),
+  ...(crumbs && crumbs.length ? [crumbSchema(crumbs)] : []),
+  ...schemas,
+];
+---
+
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <meta name="theme-color" content="#12283C" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Display face only. The text face loads with swap and does not block. -->
+    <link
+      rel="preload"
+      href="/fonts/archivo-latin-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_CA" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={abs(ogImage)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name} — ${site.tagline}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={abs(ogImage)} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Consent Mode defaults, set BEFORE GTM loads. Nothing is stored until consent. -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'granted',
+        security_storage: 'granted',
+        wait_for_update: 500,
+      });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', true);
+    </script>
+
+    {
+      gtmId && (
+        <script is:inline define:vars={{ gtmId }}>
+          (function (w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+            var f = d.getElementsByTagName(s)[0],
+              j = d.createElement(s),
+              dl = l != 'dataLayer' ? '&l=' + l : '';
+            j.async = true;
+            j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+            f.parentNode.insertBefore(j, f);
+          })(window, document, 'script', 'dataLayer', gtmId);
+        </script>
+      )
+    }
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(allSchemas)} />
+  </head>
+
+  <body>
+    {
+      gtmId && (
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            height="0"
+            width="0"
+            style="display:none;visibility:hidden"
+            title="Google Tag Manager"
+          />
+        </noscript>
+      )
+    }
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <Header path={path} />
+
+    <main id="main">
+      {crumbs && crumbs.length > 0 && <Breadcrumbs crumbs={crumbs} />}
+      <slot />
+    </main>
+
+    <Footer />
+    <ActionBar path={path} />
+  </body>
+</html>

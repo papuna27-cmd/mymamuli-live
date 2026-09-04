@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import ServiceRows from '../components/ServiceRows.astro';
+import { notFound } from '../data/copy';
+import { site, telHref } from '../data/site';
+---
+
+<BaseLayout
+  title={notFound.title}
+  description={notFound.metaDescription}
+  path="/404"
+  noindex
+>
+  <PageHero h1={notFound.h1} lede={notFound.lede} />
+
+  <section class="section section--surface" aria-labelledby="nf-h">
+    <div class="wrap">
+      <h2 id="nf-h" class="visually-hidden">Services</h2>
+      <ServiceRows />
+      <ul class="rule-list nf__more">
+        <li>
+          <a class="rule-row" href="/calculator">
+            <span>
+              <span class="rule-row__title">Price calculator</span>
+              <span class="rule-row__sub">Delivery and moving, priced on distance</span>
+            </span>
+            <svg class="rule-row__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+          </a>
+        </li>
+        <li>
+          <a class="rule-row" href="/contact">
+            <span>
+              <span class="rule-row__title">Book a job</span>
+              <span class="rule-row__sub">Fixed price back within two hours</span>
+            </span>
+            <svg class="rule-row__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+          </a>
+        </li>
+      </ul>
+      <p class="nf__call">
+        Or call <a class="textlink" href={telHref}>{site.phoneDisplay}</a> and we will point you at the right thing.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf__more { margin-top: var(--s-8); }
+  .nf__call { margin-top: var(--s-8); }
+</style>

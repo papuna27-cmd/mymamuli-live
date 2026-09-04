@@ -1,0 +1,111 @@
+---
+import { site, footerNav, telHref } from '../data/site';
+import { cities } from '../data/cities';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer on-ink">
+  <div class="wrap">
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <p class="wordmark">{site.name}</p>
+        <p class="site-footer__tag">{site.tagline}.</p>
+        <p class="site-footer__contact">
+          <a href={telHref}>{site.phoneDisplay}</a>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+        </p>
+      </div>
+
+      <nav aria-labelledby="f-services">
+        <h2 id="f-services" class="site-footer__h">Services</h2>
+        <ul>{footerNav.services.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+      </nav>
+
+      <nav aria-labelledby="f-company">
+        <h2 id="f-company" class="site-footer__h">Company</h2>
+        <ul>{footerNav.company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+      </nav>
+
+      <nav aria-labelledby="f-areas">
+        <h2 id="f-areas" class="site-footer__h">Service areas</h2>
+        <ul>{cities.map((c) => <li><a href={`/service-areas/${c.slug}`}>{c.name}</a></li>)}</ul>
+      </nav>
+    </div>
+
+    <div class="site-footer__base">
+      <p class="legal">
+        © {year} {site.legalName}. {site.address.city}, {site.address.regionName}.
+        {' '}{site.facts.liabilityCover} liability insured · WSIB covered crew.
+      </p>
+      <ul class="site-footer__legal">
+        {footerNav.legal.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        <li>
+          <a href={site.social.facebook} rel="noopener noreferrer nofollow" target="_blank">Facebook</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { padding-block: var(--s-14) var(--s-10); }
+  .site-footer__grid { display: grid; gap: var(--s-8); }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--t-lg);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .site-footer__tag { color: rgba(244, 246, 248, 0.78); font-size: var(--t-sm); margin-top: var(--s-2); max-width: 34ch; }
+  .site-footer__contact { display: flex; flex-direction: column; margin-top: var(--s-3); }
+  .site-footer__contact a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--signal);
+  }
+  .site-footer__h {
+    font-family: var(--font-text);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: rgba(244, 246, 248, 0.6);
+    margin-bottom: var(--s-1);
+  }
+  .site-footer nav a {
+    display: flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-size: var(--t-sm);
+    text-decoration: none;
+    color: rgba(244, 246, 248, 0.92);
+  }
+  .site-footer nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .site-footer__base {
+    margin-top: var(--s-10);
+    padding-top: var(--s-6);
+    border-top: 1px solid rgba(244, 246, 248, 0.16);
+    display: grid;
+    gap: var(--s-3);
+  }
+  .site-footer__base .legal { color: rgba(244, 246, 248, 0.6); }
+  .site-footer__legal { display: flex; flex-wrap: wrap; gap: var(--s-5); }
+  .site-footer__legal a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-size: var(--t-sm);
+    color: rgba(244, 246, 248, 0.92);
+  }
+
+  @media (min-width: 560px) {
+    .site-footer__grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 1024px) {
+    .site-footer__grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: var(--s-10); }
+    .site-footer__base { grid-template-columns: 1fr auto; align-items: center; }
+  }
+</style>

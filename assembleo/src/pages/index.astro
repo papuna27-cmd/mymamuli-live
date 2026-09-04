@@ -1,0 +1,183 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ServiceRows from '../components/ServiceRows.astro';
+import Steps from '../components/Steps.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Calculator from '../islands/Calculator';
+import Reviews from '../islands/Reviews';
+import { home } from '../data/copy';
+import { site, telHref } from '../data/site';
+import { getReviews } from '../lib/api';
+import { faqs } from '../data/faqs';
+import { faqPage } from '../lib/schema';
+
+const reviews = await getReviews();
+---
+
+<BaseLayout
+  title={home.title}
+  description={home.metaDescription}
+  path="/"
+  ogImage="/og/default.png"
+  schemas={[faqPage(faqs.general!)]}
+>
+  <section class="hero on-ink">
+    <div class="wrap hero__inner">
+      <div>
+        <h1 class="hero-title">{home.hero.h1}</h1>
+        <p class="lede hero__support">{home.hero.support}</p>
+        <div class="hero__actions">
+          <a class="btn btn--signal btn--block" href={home.hero.primary.href}>{home.hero.primary.label}</a>
+          <a class="btn btn--ghost btn--block" href={telHref}>{home.hero.secondary.label}</a>
+        </div>
+      </div>
+
+      <dl class="hero__facts">
+        {home.hero.facts.map((f) => (
+          <div>
+            <dt>{f.k}</dt>
+            <dd class="num">{f.v}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <TrustStrip items={home.trust} />
+
+  <section class="section section--paper" aria-labelledby="svc-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="svc-h">{home.services.h2}</h2>
+        <p class="lede section-intro">{home.services.intro}</p>
+      </div>
+      <ServiceRows />
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="how-h">{home.steps.h2}</h2></div>
+      <Steps items={home.steps.items} />
+    </div>
+  </section>
+
+  <section class="section section--paper" id="quote" aria-labelledby="quote-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="quote-h">{home.quote.h2}</h2>
+        <p class="lede section-intro">{home.quote.intro}</p>
+      </div>
+      <Calculator
+        client:visible
+        services={['delivery', 'moving']}
+        variant="compact"
+        heading="What is the job?"
+        headingLevel="h3"
+      />
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="brands-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="brands-h">{home.brands.h2}</h2>
+        <p class="lede section-intro">{home.brands.intro}</p>
+      </div>
+      <ul class="brands">
+        {site.brands.map((b) => <li class="brands__item">{b}</li>)}
+      </ul>
+      <dl class="kv brands__facts">
+        <div><dt>Working since</dt><dd>{site.founded}</dd></div>
+        <div><dt>Jobs completed</dt><dd>{site.facts.jobsCompleted}</dd></div>
+        <div><dt>Insurance</dt><dd>{site.facts.liabilityCover} commercial general liability, WSIB covered crew</dd></div>
+        <div><dt>Quote turnaround</dt><dd>{site.facts.responseTime} during working hours</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="revs-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="revs-h">{home.reviews.h2}</h2></div>
+      <Reviews
+        client:visible
+        reviews={reviews.reviews}
+        rating={reviews.rating}
+        count={reviews.count}
+        profileUrl={reviews.profileUrl}
+      />
+    </div>
+  </section>
+
+  <CtaBand
+    heading={home.closing.h2}
+    body={home.closing.intro}
+    primary={{ label: 'Send us the job', href: '/contact' }}
+  />
+</BaseLayout>
+
+<style>
+  /* The one heavy block on the site. Boldness is spent here and nowhere else. */
+  .hero {
+    padding-block: var(--s-10) var(--s-14);
+  }
+  .hero-title { max-width: 14ch; }
+  .hero__support {
+    margin-top: var(--s-5);
+    max-width: 40ch;
+    font-size: var(--t-md);
+  }
+  .hero__actions {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-8);
+  }
+
+  /* Wide screens only. The phone hero stays a headline and one action. */
+  .hero__facts { display: none; }
+
+  @media (min-width: 768px) {
+    .hero { padding-block: var(--s-18) var(--s-24); }
+    .hero__actions { display: flex; flex-wrap: wrap; gap: var(--s-4); }
+  }
+
+  @media (min-width: 1024px) {
+    .hero__inner {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: var(--s-24);
+      align-items: end;
+    }
+    .hero__facts {
+      display: block;
+      border-top: 1px solid rgba(244, 246, 248, 0.24);
+    }
+    .hero__facts > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--s-4);
+      padding-block: var(--s-3);
+      border-bottom: 1px solid rgba(244, 246, 248, 0.24);
+    }
+    .hero__facts dt { font-size: var(--t-sm); color: rgba(244, 246, 248, 0.72); }
+    .hero__facts dd { font-size: var(--t-base); font-weight: 600; }
+  }
+
+  .brands {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-3);
+  }
+  .brands__item {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--t-base);
+    padding: var(--s-2) var(--s-4);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    color: var(--ink);
+  }
+  .brands__facts { margin-top: var(--s-8); }
+</style>

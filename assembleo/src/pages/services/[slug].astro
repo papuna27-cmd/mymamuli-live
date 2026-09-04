@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ScopeBlock from '../../components/ScopeBlock.astro';
+import IncludedLists from '../../components/IncludedLists.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import RelatedLinks from '../../components/RelatedLinks.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Calculator from '../../islands/Calculator';
+import { detailServices, type Service } from '../../data/services';
+import { getFaqs } from '../../data/faqs';
+import { faqPage, serviceSchema } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return detailServices.map((service) => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+interface Props { service: Service; }
+const { service } = Astro.props;
+const items = getFaqs(service.slug);
+
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/services/assembly' },
+  { label: service.name, href: service.href },
+];
+---
+
+<BaseLayout
+  title={service.title}
+  description={service.metaDescription}
+  path={service.href}
+  ogImage="/og/services.png"
+  crumbs={crumbs}
+  schemas={[serviceSchema(service), faqPage(items)]}
+>
+  <PageHero h1={service.h1} lede={service.lede} badge={service.limit} />
+
+  <!-- The limit is stated as loudly as the offer, above everything else. -->
+  <section class="section section--tight section--surface" aria-labelledby="scope-h">
+    <div class="wrap">
+      <h2 id="scope-h" class="visually-hidden">{service.scopeTitle}</h2>
+      <ScopeBlock title={service.scopeTitle} body={service.scope} />
+    </div>
+  </section>
+
+  {service.calculator && (
+    <section class="section section--paper" id="calculator" aria-labelledby="calc-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="calc-h">What it costs</h2>
+          <p class="lede section-intro">{service.priceNote}</p>
+        </div>
+        <Calculator
+          client:visible
+          services={[service.calculator]}
+          initial={service.calculator}
+          heading={service.calculator === 'moving' ? 'Price a move' : 'Price a delivery'}
+          headingLevel="h3"
+        />
+      </div>
+    </section>
+  )}
+
+  <section class="section section--surface" aria-labelledby="incl-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="incl-h">What you get for the price</h2></div>
+      <IncludedLists
+        included={service.included}
+        extra={service.extra}
+        notIncluded={service.notIncluded}
+      />
+    </div>
+  </section>
+
+  {service.itemGroups && (
+    <section class="section section--paper" aria-labelledby="items-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="items-h">Things we put together every week</h2>
+          <p class="lede section-intro">
+            Not an exhaustive list. If it arrived flat in a box, ask us.
+          </p>
+        </div>
+        <div class="groups">
+          {service.itemGroups.map((g) => (
+            <section class="groups__col">
+              <h3 class="groups__h">{g.group}</h3>
+              <ul class="groups__list">{g.examples.map((e) => <li>{e}</li>)}</ul>
+            </section>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {!service.calculator && (
+    <section class="section section--surface" aria-labelledby="price-h">
+      <div class="wrap">
+        <div class="section-head"><h2 id="price-h">What it costs</h2></div>
+        <p class="lede prose">{service.priceNote}</p>
+        <p style="margin-top: var(--s-6)">
+          <a class="btn btn--signal btn--block" href={service.cta.href}>{service.cta.label}</a>
+        </p>
+      </div>
+    </section>
+  )}
+
+  <FaqBlock items={items} heading={`${service.name} questions`} id="faq" />
+
+  <RelatedLinks current={service.slug} />
+
+  <CtaBand
+    heading="Ready when you are"
+    body={`Send us the job and you will have a fixed price back within two hours during working hours.`}
+    primary={{ label: service.cta.label, href: service.cta.href }}
+  />
+</BaseLayout>
+
+<style>
+  .groups { display: grid; gap: var(--s-6); }
+  .groups__col { border-top: 1px solid var(--line); padding-top: var(--s-4); }
+  .groups__h { font-size: var(--t-base); font-weight: 700; }
+  .groups__list { margin-top: var(--s-2); display: grid; gap: var(--s-1); }
+  .groups__list li { font-size: var(--t-sm); color: var(--slate); }
+  @media (min-width: 768px) {
+    .groups { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--s-8); }
+  }
+</style>

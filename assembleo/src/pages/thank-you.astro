@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { thankYou } from '../data/copy';
+import { site, telHref } from '../data/site';
+---
+
+<BaseLayout
+  title={thankYou.title}
+  description={thankYou.metaDescription}
+  path="/thank-you"
+  noindex
+>
+  <PageHero h1={thankYou.h1} lede={thankYou.lede} />
+
+  <section class="section section--surface" aria-labelledby="next-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="next-h">What happens next</h2></div>
+      <ol class="ty__steps">
+        {thankYou.next.map((s, i) => (
+          <li class="ty__step">
+            <span class="ty__num num" aria-hidden="true">{i + 1}</span>
+            <span>{s}</span>
+          </li>
+        ))}
+      </ol>
+
+      <div class="scope ty__urgent">
+        <p class="scope__title">In a hurry?</p>
+        <p>{thankYou.urgent}</p>
+        <p class="ty__actions">
+          <a class="btn btn--signal btn--block" href={telHref}>Call {site.phoneDisplay}</a>
+        </p>
+      </div>
+
+      <p class="ty__back">
+        <a class="textlink" href="/">Back to the homepage</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ty__steps { display: grid; gap: var(--s-4); max-width: var(--prose); }
+  .ty__step { display: grid; grid-template-columns: auto 1fr; gap: var(--s-4); align-items: start; }
+  .ty__num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--t-lg);
+    color: var(--signal);
+    min-width: 1.2em;
+  }
+  .ty__urgent { margin-top: var(--s-10); max-width: var(--prose); }
+  .ty__actions { margin-top: var(--s-5); }
+  .ty__back { margin-top: var(--s-6); }
+</style>

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.env
+# ...but the non-secret template is meant to be committed.
+!.env.example
+.env.production
+.DS_Store
+*.log
+screenshots/

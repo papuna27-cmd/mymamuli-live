@@ -1,0 +1,42 @@
+---
+interface Doc {
+  h1: string;
+  lede: string;
+  updated: string;
+  sections: Array<{ h2: string; body: string[] }>;
+}
+interface Props { doc: Doc; }
+const { doc } = Astro.props;
+const updated = new Date(doc.updated).toLocaleDateString('en-CA', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+---
+
+<section class="phero">
+  <div class="wrap">
+    <h1>{doc.h1}</h1>
+    <p class="lede legal__lede">{doc.lede}</p>
+    <p class="small legal__updated">Last updated <time datetime={doc.updated}>{updated}</time></p>
+  </div>
+</section>
+
+<section class="section section--surface">
+  <div class="wrap">
+    <div class="legal__body">
+      {doc.sections.map((s) => (
+        <section class="legal__section">
+          <h2 class="legal__h">{s.h2}</h2>
+          <div class="prose stack">{s.body.map((p) => <p>{p}</p>)}</div>
+        </section>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .phero { padding-block: var(--s-10) var(--s-8); background: var(--paper); }
+  .legal__lede { margin-top: var(--s-4); max-width: var(--prose); }
+  .legal__updated { margin-top: var(--s-3); }
+  .legal__body { display: grid; gap: var(--s-10); max-width: var(--prose); }
+  .legal__h { font-size: var(--t-lg); font-family: var(--font-display); font-weight: 800; margin-bottom: var(--s-3); }
+</style>

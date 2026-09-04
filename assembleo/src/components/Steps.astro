@@ -1,0 +1,36 @@
+---
+interface Props { items: Array<{ title: string; body: string }>; }
+const { items } = Astro.props;
+---
+
+<ol class="steps">
+  {items.map((s, i) => (
+    <li class="steps__item">
+      <span class="steps__num" aria-hidden="true">{i + 1}</span>
+      <div>
+        <h3 class="steps__title">{s.title}</h3>
+        <p class="steps__body">{s.body}</p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .steps { display: grid; gap: var(--s-6); counter-reset: step; }
+  .steps__item { display: grid; grid-template-columns: auto 1fr; gap: var(--s-4); align-items: start; }
+  .steps__num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--t-2xl);
+    line-height: 0.9;
+    color: var(--signal);
+    min-width: 1.2em;
+    font-variant-numeric: tabular-nums;
+  }
+  .steps__title { font-size: var(--t-lg); font-weight: 600; }
+  .steps__body { color: var(--slate); margin-top: 2px; max-width: 46ch; }
+  @media (min-width: 768px) {
+    .steps { grid-template-columns: repeat(3, 1fr); gap: var(--s-8); }
+    .steps__item { grid-template-columns: 1fr; gap: var(--s-3); }
+  }
+</style>

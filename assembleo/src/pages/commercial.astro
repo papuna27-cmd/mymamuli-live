@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import ScopeBlock from '../components/ScopeBlock.astro';
+import IncludedLists from '../components/IncludedLists.astro';
+import FaqBlock from '../components/FaqBlock.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+import BookingForm from '../islands/BookingForm';
+import { commercial } from '../data/copy';
+import { getService } from '../data/services';
+import { faqs } from '../data/faqs';
+import { faqPage, serviceSchema } from '../lib/schema';
+
+const service = getService('commercial');
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Commercial', href: '/commercial' },
+];
+---
+
+<BaseLayout
+  title={commercial.title}
+  description={commercial.metaDescription}
+  path="/commercial"
+  ogImage="/og/commercial.png"
+  crumbs={crumbs}
+  schemas={[serviceSchema(service), faqPage(faqs.commercial!)]}
+>
+  <PageHero h1={commercial.h1} lede={commercial.lede}>
+    <p class="phero__cta">
+      <a class="btn btn--signal btn--block" href="#quote">Request a quote</a>
+    </p>
+  </PageHero>
+
+  <section class="section section--tight section--surface" aria-labelledby="scope-h">
+    <div class="wrap">
+      <h2 id="scope-h" class="visually-hidden">{service.scopeTitle}</h2>
+      <ScopeBlock title={service.scopeTitle} body={service.scope} />
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="seg-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="seg-h">Who we work for</h2></div>
+      <ul class="rule-list rule-list--split">
+        {commercial.segments.map((s) => (
+          <li class="rule-row" style="grid-template-columns: 1fr">
+            <span>
+              <span class="rule-row__title">{s.name}</span>
+              <span class="rule-row__sub">{s.body}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="why-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="why-h">{commercial.why.h2}</h2></div>
+      <dl class="kv">
+        {commercial.why.rows.map((r) => (
+          <div><dt>{r.k}</dt><dd>{r.v}</dd></div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="incl-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="incl-h">What a commercial job covers</h2></div>
+      <IncludedLists
+        included={service.included}
+        extra={service.extra}
+        notIncluded={service.notIncluded}
+      />
+    </div>
+  </section>
+
+  <section class="section section--surface" id="quote" aria-labelledby="quote-h">
+    <div class="wrap cols-2">
+      <div>
+        <div class="section-head">
+          <h2 id="quote-h">{commercial.quote.h2}</h2>
+          <p class="lede section-intro">{commercial.quote.intro}</p>
+        </div>
+        <dl class="kv">
+          {service.itemGroups?.map((g) => (
+            <div><dt>{g.group}</dt><dd>{g.examples.join(' · ')}</dd></div>
+          ))}
+        </dl>
+      </div>
+      <div class="panel">
+        <BookingForm
+          client:visible
+          variant="commercial"
+          heading="Tell us about the site"
+          headingLevel="h3"
+        />
+      </div>
+    </div>
+  </section>
+
+  <FaqBlock items={faqs.commercial!} heading="Commercial questions" id="faq" />
+  <RelatedLinks current="commercial" />
+</BaseLayout>
+
+<style>
+  .phero__cta { margin-top: var(--s-6); }
+</style>

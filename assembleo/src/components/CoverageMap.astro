@@ -1,0 +1,166 @@
+---
+/**
+ * Coverage map. Inline SVG generated from the real coordinates in
+ * data/cities.ts, projected with a local equirectangular projection so relative
+ * positions and the distance rings are accurate rather than decorative.
+ * No image request, no JS, scales to any width.
+ *
+ * Labels are placed by a small greedy solver: each city tries right, left,
+ * above then below, and takes the first slot that collides with nothing already
+ * placed. Without it the GTA cluster overlaps itself.
+ */
+import { cities } from '../data/cities';
+import { site } from '../data/site';
+
+const KM_PER_DEG_LAT = 111.32;
+const KM_PER_DEG_LON = 111.32 * Math.cos((43.6 * Math.PI) / 180);
+
+const depot = { lat: site.geo.lat, lng: site.geo.lng };
+
+// Mississauga is the depot; plotting both would stack two markers.
+const plotted = cities
+  .filter((c) => c.slug !== 'mississauga')
+  .map((c) => ({
+    name: c.name,
+    xKm: (c.lng - depot.lng) * KM_PER_DEG_LON,
+    yKm: (depot.lat - c.lat) * KM_PER_DEG_LAT,
+  }));
+
+// One ring only. The frame is ~57 x 77 km, so a 40 km ring (80 km across) runs
+// off the canvas and its label with it — an unlabelled ring is just noise.
+const RINGS = [20];
+const PAD_X_KM = 9;
+const PAD_Y_KM = 6;
+
+const minX = Math.min(0, ...plotted.map((p) => p.xKm)) - PAD_X_KM;
+const maxX = Math.max(0, ...plotted.map((p) => p.xKm)) + PAD_X_KM;
+const minY = Math.min(0, ...plotted.map((p) => p.yKm)) - PAD_Y_KM;
+const maxY = Math.max(0, ...plotted.map((p) => p.yKm)) + PAD_Y_KM;
+
+const W = 460;
+const pad = 14;
+const scale = (W - pad * 2) / (maxX - minX);
+const H = Math.round((maxY - minY) * scale + pad * 2);
+
+const px = (xKm: number) => pad + (xKm - minX) * scale;
+const py = (yKm: number) => pad + (yKm - minY) * scale;
+
+const dx = px(0);
+const dy = py(0);
+
+const CHAR = 6.5; // ~12px IBM Plex Sans semibold
+const LH = 13;
+
+interface Box { x: number; y: number; w: number; h: number; }
+const overlaps = (a: Box, b: Box) =>
+  a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+
+// Reserved first: the depot marker and its two-line label.
+const taken: Box[] = [
+  { x: dx - 46, y: dy - 12, w: 92, h: 46 },
+];
+
+// Ring labels sit on the due-west axis, which no city occupies.
+const ringLabels = RINGS.map((r) => {
+  const x = dx - r * scale + 5;
+  const box = { x, y: dy - 14, w: `${r} km`.length * 5.6, h: 12 };
+  taken.push(box);
+  return { r, x, y: dy - 4 };
+}).filter((l) => l.x > 2);
+
+const CANDIDATES = [
+  { ox: 10, oy: 4, anchor: 'start' as const },
+  { ox: -10, oy: 4, anchor: 'end' as const },
+  { ox: 0, oy: -11, anchor: 'middle' as const },
+  { ox: 0, oy: 20, anchor: 'middle' as const },
+];
+
+const placed = plotted.map((p) => {
+  const x = px(p.xKm);
+  const y = py(p.yKm);
+  const w = p.name.length * CHAR;
+
+  let choice = CANDIDATES[0]!;
+  for (const c of CANDIDATES) {
+    const lx = c.anchor === 'start' ? x + c.ox : c.anchor === 'end' ? x + c.ox - w : x - w / 2;
+    const box = { x: lx, y: y + c.oy - LH + 3, w, h: LH };
+    if (box.x < 2 || box.x + box.w > W - 2) continue;
+    if (!taken.some((t) => overlaps(box, t))) { choice = c; break; }
+  }
+
+  const lx = choice.anchor === 'start' ? x + choice.ox : choice.anchor === 'end' ? x + choice.ox - w : x - w / 2;
+  taken.push({ x: lx, y: y + choice.oy - LH + 3, w, h: LH });
+  // The marker itself is an obstacle for later labels.
+  taken.push({ x: x - 5, y: y - 5, w: 10, h: 10 });
+
+  return { ...p, x, y, tx: x + choice.ox, ty: y + choice.oy, anchor: choice.anchor };
+});
+
+const cityList = cities.map((c) => c.name).join(', ');
+---
+
+<figure class="covmap">
+  <svg
+    viewBox={`0 0 ${W} ${H}`}
+    width={W}
+    height={H}
+    role="img"
+    aria-labelledby="covmap-t covmap-d"
+    class="covmap__svg"
+  >
+    <title id="covmap-t">Assembleo service area across the Greater Toronto Area</title>
+    <desc id="covmap-d">
+      A schematic map centred on the {site.address.city} depot, with a 20 kilometre ring for
+      scale, showing {cityList}.
+    </desc>
+
+    <rect width={W} height={H} fill="var(--surface)" />
+
+    {RINGS.map((r) => (
+      <circle cx={dx} cy={dy} r={r * scale} fill="none" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4" />
+    ))}
+    {ringLabels.map((l) => (
+      <text x={l.x} y={l.y} text-anchor="start" class="covmap__ring">{l.r} km</text>
+    ))}
+
+    {placed.map((p) => (
+      <line x1={dx} y1={dy} x2={p.x} y2={p.y} stroke="var(--line)" stroke-width="1" />
+    ))}
+    {placed.map((p) => (
+      <>
+        <circle cx={p.x} cy={p.y} r="4" fill="var(--ink)" />
+        <text x={p.tx} y={p.ty} text-anchor={p.anchor} class="covmap__city">{p.name}</text>
+      </>
+    ))}
+
+    <circle cx={dx} cy={dy} r="7" fill="var(--signal)" stroke="var(--ink)" stroke-width="2" />
+    <text x={dx} y={dy + 22} text-anchor="middle" class="covmap__depot">{site.address.city}</text>
+    <text x={dx} y={dy + 35} text-anchor="middle" class="covmap__ring">depot</text>
+  </svg>
+
+  <figcaption class="small covmap__cap">
+    The ring is 20 km straight-line from our {site.address.city} depot, for scale. Jobs are
+    priced on the driving distance between your two addresses, not on distance from us.
+  </figcaption>
+</figure>
+
+<style>
+  .covmap { margin: 0; }
+  .covmap__svg {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--surface);
+  }
+  .covmap__city {
+    font-family: var(--font-text);
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--ink);
+  }
+  .covmap__ring { font-family: var(--font-text); font-size: 10px; fill: var(--slate); }
+  .covmap__depot { font-family: var(--font-text); font-size: 12px; font-weight: 700; fill: var(--ink); }
+  .covmap__cap { margin-top: var(--s-3); max-width: var(--prose); }
+</style>

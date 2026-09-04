@@ -1,0 +1,97 @@
+---
+/**
+ * Local landing pages. Adding a row to src/data/cities.ts creates a new page
+ * here — no new code, which is the point of the template.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ServiceRows from '../../components/ServiceRows.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Calculator from '../../islands/Calculator';
+import { cities, type City } from '../../data/cities';
+import { faqs } from '../../data/faqs';
+import { faqPage } from '../../lib/schema';
+import { site } from '../../data/site';
+import { CURBSIDE_NOTICE } from '../../data/services';
+
+export function getStaticPaths() {
+  return cities.map((city) => ({ params: { city: city.slug }, props: { city } }));
+}
+
+interface Props { city: City; }
+const { city } = Astro.props;
+
+const path = `/service-areas/${city.slug}`;
+const title = `Furniture Assembly & Delivery in ${city.name} | Assembleo`;
+const description = `Flat-pack assembly, store-to-door delivery and curbside furniture moving in ${city.name}. Insured crews and a price in about thirty seconds.`;
+
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Service areas', href: '/about#areas' },
+  { label: city.name, href: path },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  path={path}
+  crumbs={crumbs}
+  schemas={[faqPage(faqs.general!)]}
+>
+  <PageHero
+    h1={`Furniture assembly, delivery and moving in ${city.name}`}
+    lede={`We build, collect and move furniture across ${city.name} and the rest of ${city.region}. ${city.driveTime === 'same day, most days' ? 'Same-day slots most days.' : `We are ${city.driveTime}.`}`}
+  />
+
+  <section class="section section--tight section--surface" aria-labelledby="local-h">
+    <div class="wrap">
+      <h2 id="local-h" class="visually-hidden">Working in {city.name}</h2>
+      <div class="scope">
+        <p class="scope__title">What to know about {city.name} jobs</p>
+        <p>{city.note}</p>
+      </div>
+      <p class="small city__areas">
+        We cover {city.areas.slice(0, -1).join(', ')} and {city.areas.at(-1)}, plus everywhere else
+        inside {city.name}.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="svc-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="svc-h">What we do in {city.name}</h2>
+      </div>
+      <ServiceRows />
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="calc-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="calc-h">Price a {city.name} job</h2>
+        <p class="lede section-intro">
+          Delivery and moving are priced on the driving distance between your two addresses, so a
+          local {city.name} job usually lands on the minimum.
+        </p>
+      </div>
+      <Calculator client:visible services={['delivery', 'moving']} heading="Estimate a job" headingLevel="h3" />
+      <p class="small city__curbside">{CURBSIDE_NOTICE}</p>
+    </div>
+  </section>
+
+  <FaqBlock items={faqs.general!} heading={`Questions from ${city.name} customers`} id="faq" />
+
+  <CtaBand
+    heading={`Book a crew in ${city.name}`}
+    body={`Send us the job and you will have a fixed price back within two hours. Our vans are based in ${site.address.city}.`}
+    primary={{ label: 'Book a job', href: '/contact' }}
+  />
+</BaseLayout>
+
+<style>
+  .city__areas { margin-top: var(--s-5); max-width: var(--prose); }
+  .city__curbside { margin-top: var(--s-5); max-width: var(--prose); }
+</style>

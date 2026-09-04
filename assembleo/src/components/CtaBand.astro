@@ -1,0 +1,32 @@
+---
+import { site, telHref } from '../data/site';
+interface Props { heading: string; body: string; primary?: { label: string; href: string }; }
+const {
+  heading,
+  body,
+  primary = { label: 'Get a quote', href: '/contact' },
+} = Astro.props;
+---
+
+<section class="ctaband on-ink" aria-labelledby="ctaband-h">
+  <div class="wrap ctaband__inner">
+    <div>
+      <h2 id="ctaband-h">{heading}</h2>
+      <p class="lede ctaband__body">{body}</p>
+    </div>
+    <div class="ctaband__actions">
+      <a class="btn btn--signal btn--block btn--keep" href={primary.href}>{primary.label}</a>
+      <a class="btn btn--ghost btn--block btn--keep" href={telHref}>Call {site.phoneDisplay}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ctaband { padding-block: var(--s-14); }
+  .ctaband__body { margin-top: var(--s-3); }
+  .ctaband__actions { display: grid; gap: var(--s-3); margin-top: var(--s-6); }
+  @media (min-width: 768px) {
+    .ctaband__inner { display: grid; grid-template-columns: 1fr auto; gap: var(--s-10); align-items: center; }
+    .ctaband__actions { margin-top: 0; min-width: 260px; }
+  }
+</style>

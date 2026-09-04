@@ -1,0 +1,48 @@
+---
+import type { Crumb } from '../lib/schema';
+interface Props { crumbs: Crumb[]; }
+const { crumbs } = Astro.props;
+const trail = crumbs.slice(0, -1);
+const current = crumbs[crumbs.length - 1];
+---
+
+<nav class="crumbs" aria-label="Breadcrumb">
+  <div class="wrap">
+    <ol>
+      {trail.map((c) => (
+        <li>
+          <a href={c.href}>{c.label}</a>
+          <span aria-hidden="true">/</span>
+        </li>
+      ))}
+      <li><span aria-current="page">{current?.label}</span></li>
+    </ol>
+  </div>
+</nav>
+
+<style>
+  .crumbs {
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    font-size: var(--t-sm);
+  }
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    padding-block: var(--s-1);
+    color: var(--slate);
+  }
+  .crumbs li { display: flex; align-items: center; gap: var(--s-2); }
+  .crumbs a {
+    /* Full 44px tap target without making the bar tall. */
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    text-decoration: none;
+    color: var(--slate);
+  }
+  .crumbs a:hover { color: var(--ink); text-decoration: underline; }
+  .crumbs [aria-current='page'] { color: var(--ink); font-weight: 500; }
+</style>

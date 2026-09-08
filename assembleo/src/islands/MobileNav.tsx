@@ -142,7 +142,7 @@ export default function MobileNav({ items, phone, phoneDisplay, path }: Props) {
               </ul>
             </nav>
             <div class="navsheet__actions">
-              <a class="btn btn--signal btn--block" href="/calculator">Get a quote</a>
+              <a class="btn btn--signal btn--block" href="#estimate">Price my job</a>
               <a class="btn btn--ghost btn--block" href={`tel:${phone}`}>Call {phoneDisplay}</a>
             </div>
           </div>

@@ -1,105 +1,242 @@
 ---
+import { Picture } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ServiceRows from '../components/ServiceRows.astro';
 import Steps from '../components/Steps.astro';
-import TrustStrip from '../components/TrustStrip.astro';
-import CtaBand from '../components/CtaBand.astro';
-import Calculator from '../islands/Calculator';
+import Estimator from '../islands/Estimator';
+import BookingForm from '../islands/BookingForm';
 import Reviews from '../islands/Reviews';
-import { home } from '../data/copy';
+
 import { site, telHref } from '../data/site';
+import {
+  alsoServe, commercialSegments, extras, included, retailerNote, retailers, steps, trustPoints,
+} from '../data/assembly';
 import { getReviews } from '../lib/api';
 import { faqs } from '../data/faqs';
 import { faqPage } from '../lib/schema';
 
+import heroImg from '../assets/photos/hero-assembly.jpg';
+import homeImg from '../assets/photos/home-bedroom.jpg';
+import segGym from '../assets/photos/seg-gym.jpg';
+import segClinic from '../assets/photos/seg-clinic.jpg';
+import segHotel from '../assets/photos/seg-hotel.jpg';
+import segOffice from '../assets/photos/seg-office.jpg';
+
+const segImages: Record<string, ImageMetadata> = {
+  'seg-gym': segGym, 'seg-clinic': segClinic, 'seg-hotel': segHotel, 'seg-office': segOffice,
+};
+
 const reviews = await getReviews();
+const years = site.facts.yearsActive;
+
+const title = 'Furniture Assembly Ontario | Home & Commercial | Assembleo';
+const description =
+  `Furniture assembly across Ontario for homes, gyms, clinics, hotels and offices. ${years} years, insured and WSIB-covered crews. Price your job in 30 seconds.`;
 ---
 
-<BaseLayout
-  title={home.title}
-  description={home.metaDescription}
-  path="/"
-  ogImage="/og/default.png"
-  schemas={[faqPage(faqs.general!)]}
->
+<BaseLayout title={title} description={description} path="/" schemas={[faqPage(faqs.general!)]}>
+  <!-- ============================================================ hero -->
   <section class="hero on-ink">
-    <div class="wrap hero__inner">
-      <div>
-        <h1 class="hero-title">{home.hero.h1}</h1>
-        <p class="lede hero__support">{home.hero.support}</p>
-        <div class="hero__actions">
-          <a class="btn btn--signal btn--block" href={home.hero.primary.href}>{home.hero.primary.label}</a>
-          <a class="btn btn--ghost btn--block" href={telHref}>{home.hero.secondary.label}</a>
-        </div>
-      </div>
-
-      <dl class="hero__facts">
-        {home.hero.facts.map((f) => (
-          <div>
-            <dt>{f.k}</dt>
-            <dd class="num">{f.v}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
-  </section>
-
-  <TrustStrip items={home.trust} />
-
-  <section class="section section--paper" aria-labelledby="svc-h">
-    <div class="wrap">
-      <div class="section-head">
-        <h2 id="svc-h">{home.services.h2}</h2>
-        <p class="lede section-intro">{home.services.intro}</p>
-      </div>
-      <ServiceRows />
-    </div>
-  </section>
-
-  <section class="section section--surface" aria-labelledby="how-h">
-    <div class="wrap">
-      <div class="section-head"><h2 id="how-h">{home.steps.h2}</h2></div>
-      <Steps items={home.steps.items} />
-    </div>
-  </section>
-
-  <section class="section section--paper" id="quote" aria-labelledby="quote-h">
-    <div class="wrap">
-      <div class="section-head">
-        <h2 id="quote-h">{home.quote.h2}</h2>
-        <p class="lede section-intro">{home.quote.intro}</p>
-      </div>
-      <Calculator
-        client:visible
-        services={['delivery', 'moving']}
-        variant="compact"
-        heading="What is the job?"
-        headingLevel="h3"
+    <div class="hero__media">
+      <Picture
+        src={heroImg}
+        alt="An assembler fixing a metal bracket to a flat-pack panel with a screwdriver"
+        widths={[640, 960, 1400, 2000]}
+        sizes="100vw"
+        formats={['avif', 'webp']}
+        fallbackFormat="jpg"
+        quality={52}
+        loading="eager"
+        fetchpriority="high"
+        class="hero__img"
       />
     </div>
-  </section>
 
-  <section class="section section--surface" aria-labelledby="brands-h">
-    <div class="wrap">
-      <div class="section-head">
-        <h2 id="brands-h">{home.brands.h2}</h2>
-        <p class="lede section-intro">{home.brands.intro}</p>
+    <div class="wrap hero__inner">
+      <p class="hero__eyebrow">Ontario · {years} years · Insured</p>
+      <h1 class="hero-title">Furniture assembly,<br />done properly.</h1>
+      <p class="hero__support">
+        Homes, gyms, clinics, hotels and offices. Flat prices, insured crews, and the cardboard
+        leaves with us.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--signal btn--block" href="#estimate">Price my job</a>
+        <a class="btn btn--ghost btn--block" href={telHref}>Call {site.phoneDisplay}</a>
       </div>
-      <ul class="brands">
-        {site.brands.map((b) => <li class="brands__item">{b}</li>)}
+      <ul class="hero__chips">
+        <li>{site.facts.liabilityCover} liability insured</li>
+        <li>WSIB covered</li>
+        <li>{site.facts.rating} ★ · {site.facts.reviewCount} reviews</li>
       </ul>
-      <dl class="kv brands__facts">
-        <div><dt>Working since</dt><dd>{site.founded}</dd></div>
-        <div><dt>Jobs completed</dt><dd>{site.facts.jobsCompleted}</dd></div>
-        <div><dt>Insurance</dt><dd>{site.facts.liabilityCover} commercial general liability, WSIB covered crew</dd></div>
-        <div><dt>Quote turnaround</dt><dd>{site.facts.responseTime} during working hours</dd></div>
-      </dl>
     </div>
   </section>
 
-  <section class="section section--paper" aria-labelledby="revs-h">
+  <!-- ======================================================= retailers -->
+  <section class="retail" aria-labelledby="retail-h">
     <div class="wrap">
-      <div class="section-head"><h2 id="revs-h">{home.reviews.h2}</h2></div>
+      <h2 id="retail-h" class="retail__h">Bought it anywhere? We build it.</h2>
+      <ul class="retail__list">
+        {retailers.map((r) => <li class="retail__item">{r}</li>)}
+      </ul>
+      <p class="legal retail__note">{retailerNote}</p>
+    </div>
+  </section>
+
+  <!-- ======================================================== two paths -->
+  <section class="section section--paper" id="what" aria-labelledby="what-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="what-h">Two kinds of job</h2>
+        <p class="lede section-intro">
+          Same crew, same standard. The difference is how it is priced and when we turn up.
+        </p>
+      </div>
+
+      <div class="paths">
+        <article class="path">
+          <Picture
+            src={homeImg}
+            alt="A finished bedroom with an assembled nightstand, armchair and bed"
+            widths={[420, 640, 900]}
+            sizes="(min-width: 768px) 46vw, 92vw"
+            formats={['avif', 'webp']} fallbackFormat="jpg" quality={58}
+            loading="lazy" class="path__img"
+          />
+          <div class="path__body">
+            <h3 class="path__title">Homes</h3>
+            <p>
+              Flat-pack from any retailer: wardrobes, beds, desks, dressers, patio sets and home
+              gyms. Priced per item, so you know the number before we arrive.
+            </p>
+            <a class="textlink" href="#estimate">Price it yourself</a>
+          </div>
+        </article>
+
+        <article class="path">
+          <Picture
+            src={segOffice}
+            alt="An open-plan office fitted out with rows of assembled desks and chairs"
+            widths={[420, 640, 900]}
+            sizes="(min-width: 768px) 46vw, 92vw"
+            formats={['avif', 'webp']} fallbackFormat="jpg" quality={58}
+            loading="lazy" class="path__img"
+          />
+          <div class="path__body">
+            <h3 class="path__title">Commercial</h3>
+            <p>
+              Gyms, clinics, hotels, offices and warehouses. Quoted individually on unit count and
+              site conditions, scheduled around your hours, invoiced on terms.
+            </p>
+            <a class="textlink" href="#commercial">See commercial work</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================== commercial -->
+  <section class="section section--surface" id="commercial" aria-labelledby="com-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="com-h">Commercial assembly</h2>
+        <p class="lede section-intro">
+          Volume work for sites that cannot close. One contact, a fixed project price, and a crew
+          that works evenings, weekends or overnight.
+        </p>
+      </div>
+
+      <div class="segs">
+        {commercialSegments.map((s) => (
+          <article class="seg">
+            <Picture
+              src={segImages[s.image]!}
+              alt={`${s.name} fitted out by Assembleo`}
+              widths={[380, 560, 760]}
+              sizes="(min-width: 1024px) 24vw, (min-width: 640px) 46vw, 92vw"
+              formats={['avif', 'webp']} fallbackFormat="jpg" quality={55}
+              loading="lazy" class="seg__img"
+            />
+            <h3 class="seg__title">{s.name}</h3>
+            <p class="seg__blurb">{s.blurb}</p>
+            <ul class="seg__points">{s.points.map((p) => <li>{p}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+
+      <div class="alsoWrap">
+        <p class="alsoWrap__h">We also fit out</p>
+        <ul class="also">{alsoServe.map((a) => <li>{a}</li>)}</ul>
+      </div>
+
+      <div class="comCta">
+        <p class="comCta__text">
+          Commercial jobs are not priced by the item. Send a furniture list, a PO or a floor plan and
+          you get a fixed project price and the dates we can hold.
+        </p>
+        <a class="btn btn--ink btn--block" href="#book">Request a commercial quote</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================== steps -->
+  <section class="section section--paper" id="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="how-h">How it works</h2></div>
+      <Steps items={steps} />
+    </div>
+  </section>
+
+  <!-- ======================================================= estimator -->
+  <section class="section section--surface" id="estimate" aria-labelledby="est-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="est-h">What will it cost?</h2>
+        <p class="lede section-intro">
+          Pick what you need built. You get a real range in about thirty seconds, with no contact
+          details asked for.
+        </p>
+      </div>
+      <Estimator client:visible />
+    </div>
+  </section>
+
+  <!-- =========================================================== scope -->
+  <section class="section section--paper" aria-labelledby="scope-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="scope-h">What the price covers</h2></div>
+      <div class="scopeGrid">
+        <div>
+          <h3 class="scopeGrid__h">Included in every job</h3>
+          <ul class="ticks">{included.map((i) => <li>{i}</li>)}</ul>
+        </div>
+        <div>
+          <h3 class="scopeGrid__h">Costs extra — ask when you book</h3>
+          <ul class="ticks ticks--extra">{extras.map((i) => <li>{i}</li>)}</ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= why -->
+  <section class="section section--surface" id="why" aria-labelledby="why-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="why-h">Why people book us twice</h2>
+      </div>
+      <ul class="why">
+        {trustPoints.map((t) => (
+          <li class="why__item">
+            <h3 class="why__title">{t.title}</h3>
+            <p class="why__body">{t.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ========================================================= reviews -->
+  <section class="section section--paper" aria-labelledby="rev-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="rev-h">What customers say</h2></div>
       <Reviews
         client:visible
         reviews={reviews.reviews}
@@ -110,74 +247,24 @@ const reviews = await getReviews();
     </div>
   </section>
 
-  <CtaBand
-    heading={home.closing.h2}
-    body={home.closing.intro}
-    primary={{ label: 'Send us the job', href: '/contact' }}
-  />
+  <!-- ============================================================ book -->
+  <section class="section on-ink" id="book" aria-labelledby="book-h">
+    <div class="wrap bookGrid">
+      <div>
+        <h2 id="book-h">Get a fixed price</h2>
+        <p class="lede bookGrid__lede">
+          Send the list and you will have a price and a date back within two hours during working
+          hours. Nothing is charged before the job is done.
+        </p>
+        <dl class="bookGrid__facts">
+          <div><dt>Phone</dt><dd><a href={telHref}>{site.phoneDisplay}</a></dd></div>
+          <div><dt>Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+          <div><dt>Hours</dt><dd>{site.hours[0]!.display}, Mon–Fri</dd></div>
+        </dl>
+      </div>
+      <div class="panel bookGrid__panel">
+        <BookingForm client:visible variant="residential" heading="Tell us about the job" headingLevel="h3" />
+      </div>
+    </div>
+  </section>
 </BaseLayout>
-
-<style>
-  /* The one heavy block on the site. Boldness is spent here and nowhere else. */
-  .hero {
-    padding-block: var(--s-10) var(--s-14);
-  }
-  .hero-title { max-width: 14ch; }
-  .hero__support {
-    margin-top: var(--s-5);
-    max-width: 40ch;
-    font-size: var(--t-md);
-  }
-  .hero__actions {
-    display: grid;
-    gap: var(--s-3);
-    margin-top: var(--s-8);
-  }
-
-  /* Wide screens only. The phone hero stays a headline and one action. */
-  .hero__facts { display: none; }
-
-  @media (min-width: 768px) {
-    .hero { padding-block: var(--s-18) var(--s-24); }
-    .hero__actions { display: flex; flex-wrap: wrap; gap: var(--s-4); }
-  }
-
-  @media (min-width: 1024px) {
-    .hero__inner {
-      display: grid;
-      grid-template-columns: 1.35fr 1fr;
-      gap: var(--s-24);
-      align-items: end;
-    }
-    .hero__facts {
-      display: block;
-      border-top: 1px solid rgba(244, 246, 248, 0.24);
-    }
-    .hero__facts > div {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: var(--s-4);
-      padding-block: var(--s-3);
-      border-bottom: 1px solid rgba(244, 246, 248, 0.24);
-    }
-    .hero__facts dt { font-size: var(--t-sm); color: rgba(244, 246, 248, 0.72); }
-    .hero__facts dd { font-size: var(--t-base); font-weight: 600; }
-  }
-
-  .brands {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2) var(--s-3);
-  }
-  .brands__item {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: var(--t-base);
-    padding: var(--s-2) var(--s-4);
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    color: var(--ink);
-  }
-  .brands__facts { margin-top: var(--s-8); }
-</style>

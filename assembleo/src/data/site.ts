@@ -15,10 +15,10 @@ export interface NavItem {
 export const site = {
   name: 'Assembleo',
   legalName: 'Assembleo Inc.',
-  tagline: 'Furniture assembly, delivery and moving across the GTA',
+  tagline: 'Furniture assembly for homes and commercial sites across Ontario',
   url: 'https://assembleo.ca',
   locale: 'en-CA',
-  founded: 2019,
+  founded: 2022,
 
   /** PLACEHOLDER — replace with the real business line. */
   phone: '+19055550142',
@@ -53,7 +53,7 @@ export const site = {
 
   /** Hard facts used in trust copy. Keep these true — no superlatives without one. */
   facts: {
-    yearsActive: new Date().getFullYear() - 2019,
+    yearsActive: new Date().getFullYear() - 2022,
     jobsCompleted: '4,000+',
     rating: 4.9,
     reviewCount: 127,
@@ -65,32 +65,23 @@ export const site = {
 } as const;
 
 export const primaryNav: NavItem[] = [
-  {
-    label: 'Services',
-    href: '/services/assembly',
-    children: [
-      { label: 'Furniture assembly', href: '/services/assembly' },
-      { label: 'Delivery', href: '/services/delivery' },
-      { label: 'Moving', href: '/services/moving' },
-    ],
-  },
-  { label: 'Commercial', href: '/commercial' },
-  { label: 'Calculator', href: '/calculator' },
-  { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'What we assemble', href: '#what' },
+  { label: 'Commercial', href: '#commercial' },
+  { label: 'Prices', href: '#estimate' },
+  { label: 'Why us', href: '#why' },
+  { label: 'Contact', href: '#book' },
 ];
 
 export const footerNav = {
   services: [
-    { label: 'Furniture assembly', href: '/services/assembly' },
-    { label: 'Delivery', href: '/services/delivery' },
-    { label: 'Moving', href: '/services/moving' },
-    { label: 'Commercial', href: '/commercial' },
+    { label: 'Home furniture assembly', href: '#what' },
+    { label: 'Commercial assembly', href: '#commercial' },
+    { label: 'Price estimator', href: '#estimate' },
   ],
   company: [
-    { label: 'About', href: '/about' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Price calculator', href: '/calculator' },
+    { label: 'Why Assembleo', href: '#why' },
+    { label: 'How it works', href: '#how' },
+    { label: 'Get a quote', href: '#book' },
   ],
   legal: [
     { label: 'Privacy', href: '/privacy' },

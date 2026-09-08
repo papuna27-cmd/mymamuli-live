@@ -10,16 +10,9 @@
  */
 import { site, telHref } from '../data/site';
 
-interface Props { path: string; }
-const { path } = Astro.props;
-
-// On /contact the form is already on the page, so a "get a quote" button
-// would point at itself. Calling is the useful alternative there.
-const callOnly = path === '/contact';
-const primary =
-  path === '/calculator'
-    ? { label: 'Book a job', href: '/contact' }
-    : { label: 'Get a quote', href: '/calculator' };
+// Single-page site: the bar points at the on-page estimator.
+const callOnly = false;
+const primary = { label: 'Price my job', href: '#estimate' };
 ---
 
 <div class:list={['actionbar', callOnly && 'actionbar--single']} role="group" aria-label="Quick actions">

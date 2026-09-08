@@ -29,11 +29,7 @@ const server = createServer((req, res) => {
 });
 await new Promise((r) => server.listen(PORT, r));
 
-const ROUTES = [
-  '/', '/services/assembly', '/services/delivery', '/services/moving', '/commercial',
-  '/calculator', '/about', '/contact', '/thank-you', '/privacy', '/terms', '/404',
-  '/service-areas/mississauga', '/service-areas/hamilton',
-];
+const ROUTES = ['/'];
 const WIDTHS = [320, 360, 390, 430];
 
 mkdirSync('screenshots', { recursive: true });
@@ -142,7 +138,7 @@ for (const width of WIDTHS) {
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
-  for (const route of ['/', '/contact', '/terms', '/services/moving']) {
+  for (const route of ['/', '/terms']) {
     await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' });
     // scroll-behavior: smooth is on globally, so jump instantly and settle.
     await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
@@ -166,7 +162,7 @@ for (const width of WIDTHS) {
 {
   const ctx = await browser.newContext({ viewport: { width: 740, height: 360 }, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
-  for (const route of ['/', '/calculator']) {
+  for (const route of ['/']) {
     await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' });
     const r = await page.evaluate(() => {
       const bar = document.querySelector('.actionbar');
@@ -198,35 +194,30 @@ for (const width of WIDTHS) {
   await ctx.close();
 }
 
-// ---- 6. calculator: complete the flow one-handed --------------------------
+// ---- 6. estimator: complete the flow one-handed --------------------------
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
-  await page.goto(`http://localhost:${PORT}/calculator`, { waitUntil: 'networkidle' });
+  await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' });
+  await page.evaluate(() => document.getElementById('estimate')?.scrollIntoView());
+  await page.waitForSelector('.est__stepper');
 
-  // Step 0 -> pick Moving
-  await page.click('.calc__choice:nth-child(2)');
-  await page.waitForSelector('.input');
-  // No Places key configured, so the manual km input is the fallback shown.
-  const hasKm = await page.$('input[inputmode="numeric"]');
-  if (hasKm) {
-    await page.fill('input[inputmode="numeric"]', '18');
-  } else {
-    const inputs = await page.$$('.calc__formSide input[type=text]');
-    await inputs[0].fill('Mississauga, ON');
-    await inputs[1].fill('Toronto, ON');
-  }
-  await page.click('.calc__submit');
-  await page.waitForSelector('.calc__total', { timeout: 8000 });
-  const total = await page.textContent('.calc__total strong');
-  const curbside = await page.textContent('.calc__scope');
-  if (!/curbside/i.test(curbside)) bad('calculator: moving result missing the curbside notice');
-  console.log(`calculator moving result: ${total?.trim()} (curbside notice present)`);
+  const add = async (n) => {
+    const btns = await page.$$('.est__items .est__item .est__stepper button:last-child');
+    await btns[n].click();
+  };
+  await add(0); await add(2); await add(5);
+  await page.waitForSelector('.est__total strong', { timeout: 8000 });
+  const total = (await page.textContent('.est__total strong'))?.trim();
+  if (!/\$\d/.test(total || '')) bad('estimator: no total rendered');
+  console.log(`estimator total for 3 items: ${total}`);
 
-  const bookHref = await page.getAttribute('.calc__book', 'href');
-  if (!/quote=/.test(bookHref || '')) bad('calculator: Book this job does not carry a quote reference');
-
-  await page.screenshot({ path: 'screenshots/390_calculator-result.png' });
+  // The list must reach the booking form.
+  await page.click('.est__send');
+  await page.waitForTimeout(700);
+  const details = await page.inputValue('#bk-residential-details');
+  if (!/Bed frame|Dresser|Wardrobe/.test(details)) bad('estimator: list did not reach the booking form');
+  await page.screenshot({ path: 'screenshots/390_estimator.png' });
   await ctx.close();
 }
 

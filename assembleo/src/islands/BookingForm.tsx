@@ -125,6 +125,22 @@ export default function BookingForm({
     }
   }, []);
 
+  /* ---- an estimate handed over by the Estimator island ----------------- */
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem('assembleo:estimate');
+      if (stored) setDetails(stored);
+    } catch {
+      /* ignore */
+    }
+    const onEstimate = (e: Event) => {
+      const text = (e as CustomEvent<string>).detail;
+      if (typeof text === 'string' && text) setDetails(text);
+    };
+    window.addEventListener('assembleo:estimate', onEstimate);
+    return () => window.removeEventListener('assembleo:estimate', onEstimate);
+  }, []);
+
   /* ---- Turnstile ------------------------------------------------------- */
   useEffect(() => {
     if (!SITE_KEY || !tsRef.current) return undefined;

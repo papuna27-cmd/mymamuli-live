@@ -56,24 +56,9 @@ function card({ eyebrow, lines, sub }) {
 
 const CARDS = {
   default: {
-    eyebrow: 'MISSISSAUGA & THE GTA',
-    lines: ['Furniture built,', 'delivered and moved.'],
-    sub: 'Insured crews · WSIB covered · Quotes back within two hours',
-  },
-  services: {
-    eyebrow: 'ASSEMBLY · DELIVERY · MOVING',
-    lines: ['We open the box', 'so you do not have to.'],
-    sub: 'IKEA, Costco, Walmart, Wayfair, Structube and Amazon flat-pack',
-  },
-  commercial: {
-    eyebrow: 'COMMERCIAL FIT-OUT',
-    lines: ['Volume assembly', 'for sites that', 'cannot close.'],
-    sub: 'Gyms · Clinics · Hotels · Offices · Property managers · Net 30',
-  },
-  calculator: {
-    eyebrow: 'PRICE CALCULATOR',
-    lines: ['Two addresses.', 'One honest number.'],
-    sub: 'Base fee plus distance, HST shown separately. No details required.',
+    eyebrow: 'ONTARIO · HOMES & COMMERCIAL',
+    lines: ['Furniture assembly,', 'done properly.'],
+    sub: 'Insured crews · WSIB covered · Fixed prices back within two hours',
   },
 };
 

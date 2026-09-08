@@ -26,10 +26,10 @@ const year = new Date().getFullYear();
         <ul>{footerNav.company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
       </nav>
 
-      <nav aria-labelledby="f-areas">
-        <h2 id="f-areas" class="site-footer__h">Service areas</h2>
-        <ul>{cities.map((c) => <li><a href={`/service-areas/${c.slug}`}>{c.name}</a></li>)}</ul>
-      </nav>
+      <section aria-labelledby="f-areas">
+        <h2 id="f-areas" class="site-footer__h">Service area</h2>
+        <p class="site-footer__areas">{cities.map((c) => c.name).join(' · ')}, and across southern Ontario.</p>
+      </section>
     </div>
 
     <div class="site-footer__base">
@@ -67,6 +67,11 @@ const year = new Date().getFullYear();
     text-decoration: underline;
     text-underline-offset: 4px;
     text-decoration-color: var(--signal);
+  }
+  .site-footer__areas {
+    font-size: var(--t-sm);
+    color: rgba(244, 246, 248, 0.92);
+    max-width: 34ch;
   }
   .site-footer__h {
     font-family: var(--font-text);

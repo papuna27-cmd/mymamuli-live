@@ -1,0 +1,35 @@
+# Cloudflare Pages configuration for Assembleo.
+#
+# Everything here is on the free tier:
+#   Pages      — unlimited static requests, 500 builds/month
+#   Functions  — 100,000 requests/day
+#   D1         — 5 GB storage, 5M reads/day
+#   KV         — 100,000 reads/day, 1,000 writes/day
+#   Turnstile  — unlimited
+#
+# The ids below are placeholders. Create the resources, paste the real ids in,
+# and keep SECRETS OUT OF THIS FILE — set those with `wrangler pages secret put`
+# or in the dashboard under Settings → Environment variables.
+
+name = "assembleo"
+compatibility_date = "2026-09-01"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "assembleo"
+database_id = "PASTE_D1_DATABASE_ID"
+
+[[kv_namespaces]]
+binding = "RATE"
+id = "PASTE_KV_RATE_LIMIT_ID"
+
+[[kv_namespaces]]
+binding = "REVIEWS"
+id = "PASTE_KV_REVIEWS_ID"
+
+# Public build-time variables. Secrets are NOT set here.
+[vars]
+PUBLIC_SITE_URL = "https://assembleo.ca"
+PUBLIC_API_MOCK = "false"
+PUBLIC_REVIEWS_LIVE = "false"

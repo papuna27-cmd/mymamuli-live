@@ -75,7 +75,10 @@ for (const file of files) {
     try { parsed = JSON.parse(raw); } catch (e) { note(route, `invalid JSON-LD: ${e.message}`); continue; }
     const arr = Array.isArray(parsed) ? parsed : [parsed];
     const types = arr.map((o) => o['@type']);
-    if (!types.includes('MovingCompany')) note(route, 'no LocalBusiness/MovingCompany schema');
+    // LocalBusiness subtype used sitewide. Assembly work, so not MovingCompany.
+    if (!types.includes('HomeAndConstructionBusiness')) {
+      note(route, 'no LocalBusiness/HomeAndConstructionBusiness schema');
+    }
     // Reviews come from Google — AggregateRating must never be emitted.
     if (raw.includes('AggregateRating') || raw.includes('aggregateRating')) {
       note(route, 'AggregateRating emitted for third-party reviews');
@@ -84,6 +87,17 @@ for (const file of files) {
     if (!isHome && !types.includes('BreadcrumbList') && !/\/(404|thank-you)$/.test(route)) {
       note(route, 'missing BreadcrumbList');
     }
+  }
+
+  // --- FAQPage markup must match visible content (Google policy)
+  if (html.includes('"FAQPage"')) {
+    const qs = [...html.matchAll(/"@type":"Question","name":"([^"]{5,120})"/g)].map((m) => m[1]);
+    const visible = html.replace(/<script[\s\S]*?<\/script>/g, '');
+    const missing = qs.filter((q) => {
+      const probe = q.replace(/&#39;|&quot;|&amp;/g, '').slice(0, 25);
+      return !visible.includes(probe);
+    });
+    if (missing.length) note(route, `FAQPage question not visible on the page: "${missing[0]}"`);
   }
 
   // --- internal links resolve

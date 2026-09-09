@@ -21,7 +21,7 @@ export function abs(path: string): string {
 export function localBusiness() {
   return {
     '@context': 'https://schema.org',
-    '@type': 'MovingCompany',
+    '@type': 'HomeAndConstructionBusiness',
     '@id': BUSINESS_ID,
     name: site.name,
     legalName: site.legalName,

@@ -33,6 +33,7 @@ const {
 
 const canonical = abs(path);
 const gtmId = import.meta.env.PUBLIC_GTM_ID;
+const cfAnalyticsToken = import.meta.env.PUBLIC_CF_ANALYTICS_TOKEN;
 
 // Length budgets from the brief. Surfaced at build time, never to the user.
 if (import.meta.env.DEV || import.meta.env.PROD) {
@@ -136,6 +137,19 @@ const allSchemas = [
     }
 
     <script type="application/ld+json" is:inline set:html={JSON.stringify(allSchemas)} />
+
+    {
+      /* Cloudflare Web Analytics: free, cookieless, and it sets no identifiers,
+         so it needs no consent banner. Loads after paint. */
+      cfAnalyticsToken && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={`{"token": "${cfAnalyticsToken}"}`}
+        />
+      )
+    }
   </head>
 
   <body>

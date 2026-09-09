@@ -9,7 +9,8 @@
   "exclude": [
     "dist",
     "node_modules",
-    "src/pages/_archive"
+    "src/pages/_archive",
+    "functions"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",

@@ -178,8 +178,8 @@ export const thankYou = {
   h1: 'Got it. We have your request.',
   lede: `A real person reads every one of these. You will hear back ${site.facts.responseTime} during working hours, and first thing in the morning if you sent it overnight.`,
   next: [
-    'We read the details and check the crew calendar for your area.',
-    'You get a fixed price and a two-hour arrival window by email, or a call if you asked for one.',
+    'We read your item list and check the crew calendar for your area.',
+    'You get a fixed price and an arrival window by email, or a call if you asked for one.',
     'You confirm, and the slot is yours. Nothing is charged before the job is done.',
   ],
   urgent: `If it is urgent, call ${site.phoneDisplay} — that is faster than waiting on the email.`,

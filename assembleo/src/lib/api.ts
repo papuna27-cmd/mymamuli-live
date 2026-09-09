@@ -1,9 +1,8 @@
 /**
- * Typed client for the Assembleo Worker API.
+ * Typed client for the Assembleo API (Cloudflare Pages Functions).
  *
- *   POST {API_BASE}/api/quote     → QuoteResponse
- *   POST {API_BASE}/api/booking   → BookingResponse
- *   GET  {API_BASE}/api/reviews   → ReviewsPayload
+ *   POST /api/booking   → BookingResponse
+ *   GET  /api/reviews   → ReviewsPayload
  *
  * PRICING RULE: this file never computes a price. It posts inputs and renders
  * whatever breakdown the Worker returns, so rates can change server-side
@@ -23,8 +22,13 @@ import type {
 import localReviews from '../data/reviews.json';
 import { site } from '../data/site';
 
-export const API_BASE: string =
-  import.meta.env.PUBLIC_API_BASE ?? 'https://api.assembleo.ca';
+/**
+ * Empty string = same origin. The API runs as Cloudflare Pages Functions
+ * alongside the site (/api/booking, /api/reviews), so there is no CORS
+ * preflight and no second deploy. Set PUBLIC_API_BASE only if the API is ever
+ * split onto its own host.
+ */
+export const API_BASE: string = import.meta.env.PUBLIC_API_BASE ?? '';
 
 /** Set PUBLIC_API_MOCK=true to run the whole frontend without the Worker. */
 export const USE_MOCK: boolean = import.meta.env.PUBLIC_API_MOCK === 'true';
@@ -191,7 +195,7 @@ export async function getReviews(): Promise<ReviewsPayload> {
       headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
-    if (!res.ok) return fallback;
+    if (!res.ok || res.status === 204) return fallback;
     const data = (await res.json()) as Partial<ReviewsPayload>;
     if (!Array.isArray(data.reviews) || data.reviews.length === 0) return fallback;
     return {

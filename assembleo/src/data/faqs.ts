@@ -143,24 +143,40 @@ export const faqs: Record<string, Faq[]> = {
 
   general: [
     {
+      q: 'How much does furniture assembly cost?',
+      a: 'It is priced per item, not by the hour, so the number does not grow while we work. The estimator on this page gives you a real range in about thirty seconds. Small jobs come in at our $90 minimum visit before HST.',
+    },
+    {
       q: 'Which areas do you cover?',
-      a: 'Mississauga, Toronto, Brampton, Oakville, Etobicoke, Vaughan and Hamilton, plus most of what sits between them. Our vans are based in Mississauga, so the closer you are the sooner we can usually get to you.',
+      a: 'Across southern Ontario, and most often Mississauga, Toronto, Brampton, Oakville, Etobicoke, Vaughan and Hamilton. If you are further out, send the job anyway and we will tell you honestly whether it is worth the travel.',
     },
     {
-      q: 'How do I get a price?',
-      a: 'For delivery and moving, use the calculator — it gives you a breakdown in about thirty seconds. For assembly and commercial work, send the item list or the product links through the booking form and we will come back with a fixed price, usually within two hours.',
+      q: 'Do you assemble furniture from any store?',
+      a: 'Yes. Costco, Walmart, Canadian Tire, Home Depot, Staples, IKEA, Wayfair, Amazon and anything else that arrives flat in a box with an Allen key taped inside. We are not tied to any retailer.',
     },
     {
-      q: 'Is the calculator price the final price?',
-      a: 'It is an estimate based on the distance between the two addresses. It is confirmed when you book, once we know the item and the access. We do not add fees afterwards that we did not tell you about.',
+      q: 'Do I need to unbox everything before you arrive?',
+      a: 'No. Unboxing is part of the job. What helps is having the boxes in the room where the furniture is going, and the floor clear enough to lay parts out.',
+    },
+    {
+      q: 'What happens if a part is missing or damaged?',
+      a: 'We stop, photograph it, and give you the part number and the damage note you need for the retailer. You claim the part, we come back and finish once it arrives, and the return visit is half price.',
+    },
+    {
+      q: 'Do you do commercial work?',
+      a: 'Yes — gyms, clinics, hotels, offices, warehouses and retail. Commercial jobs are quoted individually on unit count and site conditions rather than per item, scheduled around your hours, and invoiced on net 30.',
+    },
+    {
+      q: 'Are you insured?',
+      a: 'We carry $2M commercial general liability and our crew is covered by WSIB. We can send both certificates to you or your property manager before we arrive.',
+    },
+    {
+      q: 'How soon can you come?',
+      a: 'Often the next day, and same day if you catch us early. Weekends and the end of the month book out first.',
     },
     {
       q: 'How do I pay?',
-      a: 'Card, e-transfer or cash on the day for residential jobs. Commercial accounts are invoiced on net 30.',
-    },
-    {
-      q: 'What if I need to reschedule?',
-      a: 'Let us know the day before and there is no charge. Same-day cancellations are charged the minimum call-out, because the slot is gone by then.',
+      a: 'Card, e-transfer or cash on completion for homes. Commercial accounts are invoiced on net 30 once approved. Nothing is charged before the job is done.',
     },
   ],
 };

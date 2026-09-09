@@ -190,6 +190,29 @@ is unmissable on `/services/moving`.
 
 ---
 
+## Backend
+
+The API runs as **Cloudflare Pages Functions on the same origin** as the site —
+no CORS, no separate Worker, no extra DNS record.
+
+| Endpoint | What it does |
+|---|---|
+| `POST /api/booking` | honeypot -> rate limit -> Turnstile -> validation -> D1 -> email |
+| `GET /api/reviews` | Google Places, cached 24 h in KV; 204 when unconfigured |
+
+Every dependency is optional except the database. Without a Turnstile key the
+honeypot and rate limiter still run; without an email key the lead is still
+stored; without a Google key the site serves the reviews baked in at build time.
+Nothing on the page breaks because a third party is missing or down.
+
+Rate limiting uses two counters per IP: **5 stored bookings/hour**, and a looser
+**40 attempts/hour**. Failed validation deliberately does not consume the
+booking budget, so a customer who mistypes their email five times is not locked
+out for an hour.
+
+Full setup — D1, KV, Turnstile, reviews, analytics, email, domain — is in
+[`DEPLOY.md`](./DEPLOY.md).
+
 ## Deploying
 
 ```bash

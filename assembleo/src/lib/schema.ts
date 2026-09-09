@@ -10,7 +10,8 @@
 import { site } from '../data/site';
 import { cities } from '../data/cities';
 import type { Faq } from '../data/faqs';
-import type { Service } from '../data/services';
+import type { ServicePage } from '../data/service-pages';
+import { MINIMUM, HOURLY_RATE } from '../data/pricing';
 
 const BUSINESS_ID = `${site.url}/#business`;
 
@@ -62,29 +63,34 @@ export function localBusiness() {
   };
 }
 
-export function serviceSchema(service: Service) {
+export function serviceSchema(service: ServicePage) {
+  const url = abs(`/services/${service.slug}`);
+  const priced = service.pricing === 'estimator';
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    '@id': `${abs(service.href)}#service`,
+    '@id': `${url}#service`,
     name: service.name,
     serviceType: service.name,
     description: service.metaDescription,
-    url: abs(service.href),
+    url,
     provider: { '@id': BUSINESS_ID },
     areaServed: cities.map((c) => ({ '@type': 'City', name: c.name })),
     offers: {
       '@type': 'Offer',
       priceCurrency: 'CAD',
-      description: service.offerDescription,
+      description: priced
+        ? `Priced per item or at $${HOURLY_RATE} an hour plus HST, with a $${MINIMUM} minimum call-out.`
+        : 'Quoted per project once we have the furniture schedule, purchase order or floor plan.',
       availability: 'https://schema.org/InStock',
-      ...(service.calculator
+      // Only the self-serve pages have a published floor; commercial work is
+      // quoted, and inventing a number for it would be a lie in the markup.
+      ...(priced
         ? {
             priceSpecification: {
               '@type': 'PriceSpecification',
               priceCurrency: 'CAD',
-              // Minimum charge before tax; the full model is on the page.
-              minPrice: service.calculator === 'delivery' ? 150 : 130,
+              minPrice: MINIMUM,
               valueAddedTaxIncluded: false,
             },
           }

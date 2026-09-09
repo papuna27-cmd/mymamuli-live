@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import CoverageMap from '../../components/CoverageMap.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { cities, gtaCities } from '../../data/cities';
+import { site } from '../../data/site';
+
+const outside = cities.filter((c) => !c.inGta);
+
+/** Grouped by regional municipality, which is how people think about the GTA. */
+const regions = [...new Set(gtaCities.map((c) => c.region))].map((region) => ({
+  region,
+  list: gtaCities.filter((c) => c.region === region),
+}));
+
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Service areas', href: '/service-areas' },
+];
+---
+
+<BaseLayout
+  title="Service Areas | Furniture Assembly Across the GTA"
+  description="Where Assembleo works: Toronto, Peel, York, Durham and Halton, plus Hamilton. Insured furniture assembly crews for homes and commercial sites."
+  path="/service-areas"
+  crumbs={crumbs}
+>
+  <PageHero
+    h1="Where we work"
+    lede={`Our vans are based in ${site.address.city}. We cover the whole Greater Toronto Area — the City of Toronto plus Peel, York, Durham and Halton — and go as far west as Hamilton.`}
+  />
+
+  <section class="section section--surface" aria-labelledby="map-h">
+    <div class="wrap">
+      <h2 id="map-h" class="visually-hidden">Coverage map</h2>
+      <CoverageMap />
+    </div>
+  </section>
+
+  {regions.map((r) => (
+    <section class="section section--tight section--paper" aria-labelledby={`r-${r.region.replace(/\W+/g, '')}`}>
+      <div class="wrap">
+        <h2 id={`r-${r.region.replace(/\W+/g, '')}`}>{r.region}</h2>
+        <ul class="rule-list rule-list--split" style="margin-top: var(--s-5)">
+          {r.list.map((c) => (
+            <li>
+              <a class="rule-row" href={`/service-areas/${c.slug}`}>
+                <span>
+                  <span class="rule-row__title">{c.name}</span>
+                  <span class="rule-row__sub">{c.areas.slice(0, 3).join(', ')} · {c.driveTime}</span>
+                </span>
+                <svg class="rule-row__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ))}
+
+  {outside.length > 0 && (
+    <section class="section section--tight section--surface" aria-labelledby="outside-h">
+      <div class="wrap">
+        <h2 id="outside-h">Just outside the GTA</h2>
+        <p class="lede section-intro">We serve these too, though the travel is longer and worth planning around.</p>
+        <ul class="rule-list rule-list--split" style="margin-top: var(--s-5)">
+          {outside.map((c) => (
+            <li>
+              <a class="rule-row" href={`/service-areas/${c.slug}`}>
+                <span>
+                  <span class="rule-row__title">{c.name}</span>
+                  <span class="rule-row__sub">{c.region} · {c.driveTime}</span>
+                </span>
+                <svg class="rule-row__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <CtaBand
+    heading="Not sure if we reach you?"
+    body="Send us the address and the job. If it is too far to be worth your money, we will say so rather than pad the price."
+    primary={{ label: 'Ask us', href: '/#book' }}
+  />
+</BaseLayout>

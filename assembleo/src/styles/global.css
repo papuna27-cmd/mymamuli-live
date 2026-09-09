@@ -1329,3 +1329,8 @@ body.quote-open .actionbar,
   border-block: 1px solid var(--line);
 }
 .est__hoursLabel { font-size: var(--t-md); font-weight: 600; }
+
+/* A photo that is already dark needs less scrim, or it reads as a black box. */
+.hero--soft .hero__media::after {
+  background: linear-gradient(180deg, rgba(18, 40, 60, 0.72) 0%, rgba(18, 40, 60, 0.46) 50%, rgba(18, 40, 60, 0.8) 100%);
+}

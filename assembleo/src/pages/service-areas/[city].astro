@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PhotoHero from '../../components/PhotoHero.astro';
+import ScopeBlock from '../../components/ScopeBlock.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Estimator from '../../islands/Estimator';
+
+import { cities, nearbyCities, type City } from '../../data/cities';
+import { servicePages } from '../../data/service-pages';
+import { faqs } from '../../data/faqs';
+import { faqPage } from '../../lib/schema';
+import { site } from '../../data/site';
+
+import heroImg from '../../assets/photos/hero-assembly.jpg';
+
+export function getStaticPaths() {
+  return cities.map((city) => ({ params: { city: city.slug }, props: { city } }));
+}
+
+interface Props { city: City; }
+const { city } = Astro.props;
+const path = `/service-areas/${city.slug}`;
+const near = nearbyCities(city, 4);
+
+const title = `Furniture Assembly in ${city.name} | Assembleo`;
+const description =
+  `Furniture assembly in ${city.name} for homes, offices, gyms, clinics and hotels. Insured crews, fixed prices, and a real estimate in about thirty seconds.`;
+
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Service areas', href: '/service-areas' },
+  { label: city.name, href: path },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  path={path}
+  crumbs={crumbs}
+  schemas={[faqPage(faqs.general!)]}
+>
+  <PhotoHero
+    image={heroImg}
+    alt="An assembler fixing a bracket to a flat-pack panel"
+    eyebrow={`${city.region} · ${city.driveTime}`}
+    h1={`Furniture assembly in ${city.name}`}
+    lede={`Homes, offices, gyms, clinics and hotels across ${city.name}. Insured crews, fixed prices, and the cardboard leaves with us.`}
+    ctaLabel="Price my job"
+    ctaHref="#estimate"
+  />
+
+  <section class="section section--surface" aria-labelledby="local-h">
+    <div class="wrap">
+      <h2 id="local-h" class="visually-hidden">Working in {city.name}</h2>
+      <ScopeBlock title={`What to know about ${city.name} jobs`} body={[city.note]} />
+      <div class="cityFacts">
+        <dl class="kv">
+          <div><dt>Region</dt><dd>{city.region}</dd></div>
+          <div><dt>From our {site.address.city} depot</dt><dd>{city.driveTime}</dd></div>
+          <div><dt>Most common work here</dt><dd>{city.commonWork}</dd></div>
+          <div><dt>Neighbourhoods we cover</dt><dd>{city.areas.join(' · ')}</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="svc-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="svc-h">What we assemble in {city.name}</h2>
+      </div>
+      <ul class="rule-list rule-list--split">
+        {servicePages.map((s) => (
+          <li>
+            <a class="rule-row" href={`/services/${s.slug}`}>
+              <span>
+                <span class="rule-row__title">{s.name}</span>
+                <span class="rule-row__sub">{s.lede.split('.')[0]}.</span>
+              </span>
+              <svg class="rule-row__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--surface" id="estimate" aria-labelledby="est-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="est-h">Price a {city.name} job</h2>
+        <p class="lede section-intro">
+          Home furniture is priced per item, or by the hour if you prefer. Commercial work in
+          {' '}{city.name} is quoted individually — send the list and we come back with a fixed price.
+        </p>
+      </div>
+      <Estimator client:visible />
+    </div>
+  </section>
+
+  <FaqBlock items={faqs.general!} heading={`Questions from ${city.name} customers`} id="faq" />
+
+  <section class="section section--paper" aria-labelledby="near-h">
+    <div class="wrap">
+      <h2 id="near-h">Nearby areas we cover</h2>
+      <ul class="rule-list rule-list--split" style="margin-top: var(--s-5)">
+        {near.map((c) => (
+          <li>
+            <a class="rule-row" href={`/service-areas/${c.slug}`}>
+              <span>
+                <span class="rule-row__title">{c.name}</span>
+                <span class="rule-row__sub">{c.region} · {c.driveTime}</span>
+              </span>
+              <svg class="rule-row__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="small cityAll">
+        <a class="textlink" href="/service-areas">Every area we cover</a>
+      </p>
+    </div>
+  </section>
+
+  <CtaBand
+    heading={`Book a crew in ${city.name}`}
+    body={`Send the list and you will have a fixed price back within two hours during working hours. Our vans are based in ${site.address.city}.`}
+    primary={{ label: 'Get a fixed price', href: '/#book' }}
+  />
+</BaseLayout>
+
+<style>
+  .cityFacts { margin-top: var(--s-8); }
+  .cityAll { margin-top: var(--s-6); }
+</style>

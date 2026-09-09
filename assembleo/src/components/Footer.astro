@@ -26,10 +26,15 @@ const year = new Date().getFullYear();
         <ul>{footerNav.company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
       </nav>
 
-      <section aria-labelledby="f-areas">
-        <h2 id="f-areas" class="site-footer__h">Service area</h2>
-        <p class="site-footer__areas">{cities.map((c) => c.name).join(' · ')}, and across southern Ontario.</p>
-      </section>
+      <nav aria-labelledby="f-areas">
+        <h2 id="f-areas" class="site-footer__h">Service areas</h2>
+        <ul class="site-footer__areaList">
+          {cities.slice(0, 10).map((c) => (
+            <li><a href={`/service-areas/${c.slug}`}>{c.name}</a></li>
+          ))}
+          <li><a href="/service-areas"><strong>All areas</strong></a></li>
+        </ul>
+      </nav>
     </div>
 
     <div class="site-footer__base">
@@ -68,11 +73,8 @@ const year = new Date().getFullYear();
     text-underline-offset: 4px;
     text-decoration-color: var(--signal);
   }
-  .site-footer__areas {
-    font-size: var(--t-sm);
-    color: rgba(244, 246, 248, 0.92);
-    max-width: 34ch;
-  }
+  /* Two columns so ten areas do not make the footer a mile long. */
+  .site-footer__areaList { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--s-4); }
   .site-footer__h {
     font-family: var(--font-text);
     font-size: var(--t-sm);

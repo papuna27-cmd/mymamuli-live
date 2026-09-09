@@ -9,9 +9,9 @@ import BookingForm from '../islands/BookingForm';
 import Reviews from '../islands/Reviews';
 
 import { site, telHref } from '../data/site';
-import {
-  alsoServe, commercialSegments, extras, included, retailerNote, steps, trustPoints,
-} from '../data/assembly';
+import { alsoServe, extras, included, retailerNote, steps, trustPoints } from '../data/assembly';
+import { commercialServices } from '../data/service-pages';
+import { gtaCities } from '../data/cities';
 import { getReviews } from '../lib/api';
 import { faqs } from '../data/faqs';
 import { faqPage } from '../lib/schema';
@@ -24,7 +24,7 @@ import segHotel from '../assets/photos/seg-hotel.jpg';
 import segOffice from '../assets/photos/seg-office.jpg';
 
 const segImages: Record<string, ImageMetadata> = {
-  'seg-gym': segGym, 'seg-clinic': segClinic, 'seg-hotel': segHotel, 'seg-office': segOffice,
+  gym: segGym, clinic: segClinic, hotel: segHotel, office: segOffice,
 };
 
 const reviews = await getReviews();
@@ -107,7 +107,7 @@ const description =
               Flat-pack from any retailer: wardrobes, beds, desks, dressers, patio sets and home
               gyms. Priced per item, so you know the number before we arrive.
             </p>
-            <a class="textlink" href="#estimate">Price it yourself</a>
+            <a class="textlink" href="/services/home-furniture">Home furniture assembly</a>
           </div>
         </article>
 
@@ -126,7 +126,7 @@ const description =
               Gyms, clinics, hotels, offices and warehouses. Quoted individually on unit count and
               site conditions, scheduled around your hours, invoiced on terms.
             </p>
-            <a class="textlink" href="#commercial">See commercial work</a>
+            <a class="textlink" href="/commercial">See commercial work</a>
           </div>
         </article>
       </div>
@@ -145,19 +145,20 @@ const description =
       </div>
 
       <div class="segs">
-        {commercialSegments.map((s) => (
+        {commercialServices.map((s) => (
           <article class="seg">
-            <Picture
-              src={segImages[s.image]!}
-              alt={`${s.name} fitted out by Assembleo`}
-              widths={[380, 560, 760]}
-              sizes="(min-width: 1024px) 24vw, (min-width: 640px) 46vw, 92vw"
-              formats={['avif', 'webp']} fallbackFormat="jpg" quality={55}
-              loading="lazy" class="seg__img"
-            />
-            <h3 class="seg__title">{s.name}</h3>
-            <p class="seg__blurb">{s.blurb}</p>
-            <ul class="seg__points">{s.points.map((p) => <li>{p}</li>)}</ul>
+            <a class="seg__link" href={`/services/${s.slug}`}>
+              <Picture
+                src={segImages[s.image]!}
+                alt={s.imageAlt}
+                widths={[380, 560, 760]}
+                sizes="(min-width: 1024px) 24vw, (min-width: 640px) 46vw, 92vw"
+                formats={['avif', 'webp']} fallbackFormat="jpg" quality={55}
+                loading="lazy" class="seg__img"
+              />
+              <h3 class="seg__title">{s.name}</h3>
+            </a>
+            <p class="seg__blurb">{s.lede}</p>
           </article>
         ))}
       </div>
@@ -172,7 +173,7 @@ const description =
           Commercial jobs are not priced by the item. Send a furniture list, a PO or a floor plan and
           you get a fixed project price and the dates we can hold.
         </p>
-        <a class="btn btn--ink btn--block" href="#book">Request a commercial quote</a>
+        <a class="btn btn--ink btn--block" href="/commercial">See commercial work</a>
       </div>
     </div>
   </section>
@@ -244,6 +245,25 @@ const description =
         count={reviews.count}
         profileUrl={reviews.profileUrl}
       />
+    </div>
+  </section>
+
+  <!-- =================================================== service areas -->
+  <section class="section section--paper" aria-labelledby="areas-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="areas-h">Where we work</h2>
+        <p class="lede section-intro">
+          The whole Greater Toronto Area, from our Mississauga depot. Each area has its own page
+          with drive times and what we mostly get called for there.
+        </p>
+      </div>
+      <ul class="areaChips">
+        {gtaCities.map((c) => (
+          <li><a href={`/service-areas/${c.slug}`}>{c.name}</a></li>
+        ))}
+      </ul>
+      <p class="small areaAll"><a class="textlink" href="/service-areas">Every area we cover</a></p>
     </div>
   </section>
 

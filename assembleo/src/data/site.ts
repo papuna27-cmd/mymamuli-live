@@ -66,23 +66,26 @@ export const site = {
 } as const;
 
 export const primaryNav: NavItem[] = [
-  { label: 'What we assemble', href: '#what' },
-  { label: 'Commercial', href: '#commercial' },
-  { label: 'Prices', href: '#estimate' },
-  { label: 'Why us', href: '#why' },
-  { label: 'Contact', href: '#book' },
+  { label: 'Home furniture', href: '/services/home-furniture' },
+  { label: 'Commercial', href: '/commercial' },
+  { label: 'Service areas', href: '/service-areas' },
+  { label: 'Prices', href: '/services/home-furniture#estimate' },
+  { label: 'Contact', href: '/#book' },
 ];
 
 export const footerNav = {
   services: [
-    { label: 'Home furniture assembly', href: '#what' },
-    { label: 'Commercial assembly', href: '#commercial' },
-    { label: 'Price estimator', href: '#estimate' },
+    { label: 'Home furniture', href: '/services/home-furniture' },
+    { label: 'Offices and workplaces', href: '/services/offices' },
+    { label: 'Gyms and fitness studios', href: '/services/gyms' },
+    { label: 'Clinics and dental offices', href: '/services/clinics' },
+    { label: 'Hotels', href: '/services/hotels' },
   ],
   company: [
-    { label: 'Why Assembleo', href: '#why' },
-    { label: 'How it works', href: '#how' },
-    { label: 'Get a quote', href: '#book' },
+    { label: 'Commercial work', href: '/commercial' },
+    { label: 'Service areas', href: '/service-areas' },
+    { label: 'Price estimator', href: '/services/home-furniture#estimate' },
+    { label: 'Get a quote', href: '/#book' },
   ],
   legal: [
     { label: 'Privacy', href: '/privacy' },

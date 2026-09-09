@@ -13,7 +13,8 @@ remove any question of implying that stock subjects are your staff.
 |---|---|---|
 | `hero-assembly.jpg` | Sleepline | https://unsplash.com/photos/nvY2UmZI_Vg |
 | `home-bedroom.jpg` | Di_An_h | https://unsplash.com/photos/g_8MrEZAvyE |
-| `seg-office.jpg` | Bernd Dittrich | https://unsplash.com/photos/pYlBAu3de0w |
-| `seg-gym.jpg` | Aalo Lens | https://unsplash.com/photos/fuyulf8cNmg |
-| `seg-hotel.jpg` | Vojtech Bruzek | https://unsplash.com/photos/Yrxr3bsPdS0 |
-| `seg-clinic.jpg` | Benyamin Bohlouli | https://unsplash.com/photos/B_sK_xgzwVA |
+| `seg-office.jpg` | Marc Wieland | https://unsplash.com/photos/56U797Gamac |
+| `seg-gym.jpg` | Ambitious Studio* / Rick Barrett | https://unsplash.com/photos/1RNQ11ZODJM |
+| `seg-hotel.jpg` | Juliana Morales Ramírez | https://unsplash.com/photos/GmW4hfTX0ns |
+| `seg-clinic.jpg` | Hush Naidoo Jade Photography | https://unsplash.com/photos/XwguHkKQqSA |
+| `seg-dental.jpg` | Sam Moghadam | https://unsplash.com/photos/I-kDEBUMAaQ |

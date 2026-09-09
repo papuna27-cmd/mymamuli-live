@@ -1,0 +1,209 @@
+---
+import { Picture } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PhotoHero from '../../components/PhotoHero.astro';
+import ScopeBlock from '../../components/ScopeBlock.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Estimator from '../../islands/Estimator';
+import BookingForm from '../../islands/BookingForm';
+
+import { servicePages, type ServicePage } from '../../data/service-pages';
+import { gtaCities } from '../../data/cities';
+import { faqPage, serviceSchema } from '../../lib/schema';
+
+import homeImg from '../../assets/photos/home-bedroom.jpg';
+import officeImg from '../../assets/photos/seg-office.jpg';
+import gymImg from '../../assets/photos/seg-gym.jpg';
+import clinicImg from '../../assets/photos/seg-clinic.jpg';
+import hotelImg from '../../assets/photos/seg-hotel.jpg';
+import dentalImg from '../../assets/photos/seg-dental.jpg';
+
+const PHOTOS: Record<string, ImageMetadata> = {
+  home: homeImg, office: officeImg, gym: gymImg, clinic: clinicImg, hotel: hotelImg,
+  dental: dentalImg,
+};
+
+export function getStaticPaths() {
+  return servicePages.map((service) => ({ params: { slug: service.slug }, props: { service } }));
+}
+
+interface Props { service: ServicePage; }
+const { service } = Astro.props;
+const path = `/services/${service.slug}`;
+const others = servicePages.filter((s) => s.slug !== service.slug);
+const anchor = service.pricing === 'estimator' ? '#estimate' : '#book';
+
+const crumbs = [
+  { label: 'Home', href: '/' },
+  ...(service.kind === 'commercial' ? [{ label: 'Commercial', href: '/commercial' }] : []),
+  { label: service.name, href: path },
+];
+---
+
+<BaseLayout
+  title={service.title}
+  description={service.metaDescription}
+  path={path}
+  crumbs={crumbs}
+  schemas={[serviceSchema(service), faqPage(service.faqs)]}
+>
+  <PhotoHero
+    image={PHOTOS[service.image]!}
+    alt={service.imageAlt}
+    eyebrow={service.kind === 'commercial' ? 'Commercial · Ontario' : 'Homes · Ontario'}
+    h1={service.h1}
+    lede={service.lede}
+    ctaLabel={service.ctaLabel}
+    ctaHref={anchor}
+    scrim={service.heroScrim ?? 'strong'}
+  />
+
+  <section class="section section--surface" aria-labelledby="intro-h">
+    <div class="wrap">
+      <h2 id="intro-h" class="visually-hidden">About this service</h2>
+      <div class="prose stack">{service.intro.map((p) => <p>{p}</p>)}</div>
+      <div class="svcScope"><ScopeBlock title={service.scopeTitle} body={service.scope} /></div>
+    </div>
+  </section>
+
+  {service.secondaryImage && (
+    <figure class="svcFig">
+      <Picture
+        src={PHOTOS[service.secondaryImage]!}
+        alt={service.secondaryAlt ?? ''}
+        widths={[480, 768, 1200, 1600]}
+        sizes="(min-width: 1024px) 1100px, 100vw"
+        formats={['avif', 'webp']}
+        fallbackFormat="jpg"
+        quality={62}
+        loading="lazy"
+      />
+      {service.secondaryCaption && <figcaption>{service.secondaryCaption}</figcaption>}
+    </figure>
+  )}
+
+  <section class="section section--paper" aria-labelledby="incl-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="incl-h">What the price covers</h2></div>
+      <div class="scopeGrid">
+        <div>
+          <h3 class="scopeGrid__h">Included in every job</h3>
+          <ul class="ticks">{service.included.map((i) => <li>{i}</li>)}</ul>
+        </div>
+        <div>
+          <h3 class="scopeGrid__h">Costs extra — ask when you book</h3>
+          <ul class="ticks ticks--extra">{service.extra.map((i) => <li>{i}</li>)}</ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="items-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="items-h">What we assemble</h2>
+        <p class="lede section-intro">Not an exhaustive list. If it arrives flat in a box, ask us.</p>
+      </div>
+      <div class="segs--text">
+        {service.itemGroups.map((g) => (
+          <section>
+            <h3 class="seg__title">{g.group}</h3>
+            <ul class="seg__points">{g.examples.map((e) => <li>{e}</li>)}</ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {service.pricing === 'estimator' ? (
+    <section class="section section--paper" id="estimate" aria-labelledby="est-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="est-h">What will it cost?</h2>
+          <p class="lede section-intro">
+            Pick what you need built. A real range in about thirty seconds, and no contact details
+            asked for.
+          </p>
+        </div>
+        <Estimator client:visible />
+      </div>
+    </section>
+  ) : (
+    <section class="section section--paper" id="book" aria-labelledby="quote-h">
+      <div class="wrap cols-2">
+        <div>
+          <div class="section-head">
+            <h2 id="quote-h">Request a quote</h2>
+            <p class="lede section-intro">
+              Send the furniture schedule, a purchase order or a floor plan. You get a fixed project
+              price and the dates we can hold.
+            </p>
+          </div>
+          <dl class="kv">
+            {service.itemGroups.map((g) => (
+              <div><dt>{g.group}</dt><dd>{g.examples.join(' · ')}</dd></div>
+            ))}
+          </dl>
+        </div>
+        <div class="panel">
+          <BookingForm client:visible variant="commercial" heading="Tell us about the site" headingLevel="h3" />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <FaqBlock items={service.faqs} heading={`${service.name} questions`} id="faq" />
+
+  <section class="section section--paper" aria-labelledby="more-h">
+    <div class="wrap">
+      <h2 id="more-h">Other things we assemble</h2>
+      <ul class="rule-list rule-list--split" style="margin-top: var(--s-5)">
+        {others.map((s) => (
+          <li>
+            <a class="rule-row" href={`/services/${s.slug}`}>
+              <span>
+                <span class="rule-row__title">{s.name}</span>
+                <span class="rule-row__sub">{s.lede.split('.')[0]}.</span>
+              </span>
+              <svg class="rule-row__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="small svcAreas">
+        We cover {gtaCities.slice(0, 6).map((c) => c.name).join(', ')} and the rest of the GTA —
+        <a class="textlink" href="/service-areas">see every service area</a>.
+      </p>
+    </div>
+  </section>
+
+  <CtaBand
+    heading="Ready when you are"
+    body="Send the list and you will have a fixed price and a date back within two hours during working hours."
+    primary={{ label: service.ctaLabel, href: anchor }}
+  />
+</BaseLayout>
+
+<style>
+  .svcScope { margin-top: var(--s-8); }
+  /* A second setting on one page: the photo carries what the copy cannot. */
+  .svcFig { margin: 0; background: var(--ink); }
+  .svcFig :global(picture), .svcFig :global(img) { display: block; width: 100%; height: auto; }
+  .svcFig :global(img) { aspect-ratio: 3 / 2; object-fit: cover; }
+  .svcFig figcaption {
+    max-width: var(--prose);
+    margin-inline: auto;
+    padding: var(--s-4) var(--s-4) var(--s-6);
+    color: var(--paper);
+    font-size: var(--t-sm);
+    line-height: 1.5;
+  }
+  @media (min-width: 1024px) {
+    .svcFig :global(img) { aspect-ratio: 21 / 9; }
+  }
+  .svcAreas { margin-top: var(--s-8); max-width: var(--prose); }
+  .segs--text { display: grid; gap: var(--s-6); }
+  @media (min-width: 640px) { .segs--text { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1024px) { .segs--text { grid-template-columns: repeat(4, 1fr); gap: var(--s-8); } }
+</style>

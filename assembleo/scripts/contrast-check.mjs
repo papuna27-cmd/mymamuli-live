@@ -17,7 +17,7 @@ import { join, extname } from 'node:path';
 
 const ROUTES = [
   '/', '/services/home-furniture', '/services/gyms', '/commercial',
-  '/service-areas', '/service-areas/toronto', '/privacy',
+  '/service-areas', '/service-areas/toronto', '/privacy', '/thank-you', '/404',
 ];
 const PORT = 4393;
 const MIME = {

@@ -29,7 +29,7 @@ const server = createServer((req, res) => {
 });
 await new Promise((r) => server.listen(PORT, r));
 
-const ROUTES = ['/', '/services/home-furniture', '/services/gyms', '/services/clinics', '/services/hotels', '/commercial', '/service-areas', '/service-areas/toronto'];
+const ROUTES = ['/', '/services/home-furniture', '/services/gyms', '/services/clinics', '/services/hotels', '/commercial', '/service-areas', '/service-areas/toronto', '/privacy', '/thank-you', '/404'];
 const WIDTHS = [320, 360, 390, 430];
 
 mkdirSync('screenshots', { recursive: true });

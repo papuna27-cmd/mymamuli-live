@@ -40,6 +40,7 @@ const ORDER = [
   ['/privacy', 'Privacy', 'more'],
   ['/terms', 'Terms', 'more'],
   ['/thank-you', 'Thank you', 'more'],
+  ['/404', 'Not found', 'more'],
 ];
 
 /* Every built page, ordered: the listed ones first, cities after. */

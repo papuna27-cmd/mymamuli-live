@@ -8,7 +8,7 @@ const MIME={'.html':'text/html','.css':'text/css','.js':'text/javascript','.png'
 const server=createServer((req,res)=>{let p=decodeURIComponent((req.url||'/').split('?')[0]);let f=join(DIST,p);if(existsSync(f)&&statSync(f).isDirectory())f=join(f,'index.html');if(!existsSync(f))f=join(DIST,p+'.html');if(!existsSync(f)){res.writeHead(404);return res.end('404');}res.writeHead(200,{'Content-Type':MIME[extname(f)]||'application/octet-stream'});res.end(readFileSync(f));});
 await new Promise(r=>server.listen(PORT,r));
 
-const ROUTES = ['/', '/services/home-furniture', '/services/gyms', '/services/clinics', '/services/hotels', '/commercial', '/service-areas', '/service-areas/toronto'];
+const ROUTES = ['/', '/services/home-furniture', '/services/gyms', '/services/clinics', '/services/hotels', '/commercial', '/service-areas', '/service-areas/toronto', '/privacy', '/thank-you', '/404'];
 const problems=[];
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
 const ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});

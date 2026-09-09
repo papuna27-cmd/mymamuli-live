@@ -284,3 +284,56 @@ reports 2.34:1 and exits non-zero.
 
 Text over photography is listed, not graded. A ratio against a flat colour
 says nothing there, and pretending otherwise would be worse than silence.
+
+---
+
+## Revision three — symmetry, and a palette that is not everyone else's
+
+Two revisions in, the client's verdict on the desktop layout was that it had
+no symmetry. That was the correct diagnosis and I had been treating it as a
+matter of taste. It is not: every section put the heading on the left and the
+supporting copy on the right, every text block sat in a narrow column with the
+right half of the window empty, and no two cards in a row were the same
+height. The eye reads that as unfinished, whatever the type is doing.
+
+### The rule now
+
+A section is a **centred head over a grid of equal columns**, and every card in
+that grid is the **same height** whatever the copy length. Asymmetry has to
+earn its place, and on this site it never does. The three places that used to
+break this — the service page intro, the commercial quote block and the
+closing call to action — are all centred single columns now.
+
+Equal height is `.card { display: flex; flex-direction: column; height: 100% }`
+with `.card__foot { margin-top: auto }`. That is what puts "See what we build"
+on the same baseline in all six sector cards, which is the difference between
+a grid and six boxes that happen to be side by side.
+
+### Palette
+
+Navy and amber is what every trades company in Ontario already looks like, and
+it was inherited from the first brief rather than chosen. The site is now
+forest green, warm cream and terracotta: green and cream belong to wood and
+furniture, they read warm rather than corporate, and they leave terracotta
+free to mean one thing only — the button you are meant to press.
+
+Three findings from making the swap, all caught by `check:contrast` rather
+than by looking:
+
+- Terracotta is dark enough that the old rule (dark text on the accent) gives
+  3.3:1. Buttons and the skip link take white text now, at 4.9:1.
+- Terracotta *as text* misses AA on cream by a hair, at 4.33:1. Section
+  eyebrows use `--signal-ink` (5.6:1) on light and `--signal-lift` (6.2:1) on
+  the dark ground. A CSS `filter` was the first attempt and is invisible to
+  the checker as well as unreliable — a computed colour is neither.
+- `.section--ink h3 { color: var(--paper) }` painted the booking form's
+  heading paper-on-white, 1.13:1, inside the white panel that sits on the dark
+  section. `color: inherit` resolves against whichever ground actually
+  applies. This one would have shipped as a heading nobody could see.
+
+### The sectors lead
+
+"Who do you do this for" is the first question a commercial buyer asks, and it
+used to be answered three screens down. Six sectors — homes, offices, gyms,
+clinics and dental, hotels, and retail/schools/warehouses — now appear as a
+photo band directly under the hero and again as the first full section.

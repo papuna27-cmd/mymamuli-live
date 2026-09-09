@@ -44,19 +44,25 @@ import { site, telHref } from '../data/site';
     />
   </div>
 
-  <div class="wrap hero__inner">
+  <div class="wrap hero__inner phero2__inner">
     {eyebrow && <p class="hero__eyebrow">{eyebrow}</p>}
     <h1 class="phero2__title">{h1}</h1>
     <p class="hero__support">{lede}</p>
     <div class="hero__actions">
-      <a class="btn btn--signal btn--block" href={ctaHref}>{ctaLabel}</a>
-      <a class="btn btn--ghost btn--block" href={telHref}>Call {site.phoneDisplay}</a>
+      <a class="btn btn--signal" href={ctaHref}>{ctaLabel}</a>
+      <a class="btn btn--onink" href={telHref}>Call {site.phoneDisplay}</a>
     </div>
   </div>
 </section>
 
 <style>
-  .phero2 { padding-block: var(--s-10) var(--s-12, var(--s-14)); }
+  .phero2 { padding-block: var(--s-10) var(--s-12, var(--s-14)); text-align: center; }
+  .phero2__inner { max-width: 60rem; }
+  .phero2 :global(.hero__eyebrow) { justify-content: center; text-transform: uppercase; letter-spacing: 0.12em; font-size: var(--t-xs); }
+  .phero2 :global(.hero__eyebrow)::before { display: none; }
+  .phero2 :global(.hero__support) { max-width: 52ch; margin-inline: auto; }
+  .phero2 :global(.hero__actions) { justify-content: center; }
+  .phero2 :global(.hero__actions .btn) { min-width: 13rem; }
   .phero2__title {
     font-family: var(--font-display);
     font-weight: 800;
@@ -64,6 +70,7 @@ import { site, telHref } from '../data/site';
     line-height: 1.03;
     letter-spacing: -0.025em;
     max-width: 20ch;
+    margin-inline: auto;
   }
   @media (min-width: 768px) {
     .phero2 { padding-block: var(--s-24) var(--s-24); min-height: min(58vh, 520px); display: grid; align-content: center; }

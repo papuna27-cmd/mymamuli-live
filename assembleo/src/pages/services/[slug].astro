@@ -60,7 +60,7 @@ const crumbs = [
   />
 
   <section class="section section--surface" aria-labelledby="intro-h">
-    <div class="wrap svcIntro">
+    <div class="wrap wrap--mid svcIntro">
       <h2 id="intro-h" class="visually-hidden">About this service</h2>
       <div class="prose stack">{service.intro.map((p) => <p>{p}</p>)}</div>
       <div class="svcScope"><ScopeBlock title={service.scopeTitle} body={service.scope} /></div>
@@ -131,22 +131,16 @@ const crumbs = [
     </section>
   ) : (
     <section class="section section--paper" id="book" aria-labelledby="quote-h">
-      <div class="wrap cols-2">
-        <div>
-          <div class="section-head">
-            <h2 id="quote-h">Request a quote</h2>
-            <p class="lede section-intro">
-              Send the furniture schedule, a purchase order or a floor plan. You get a fixed project
-              price and the dates we can hold.
-            </p>
-          </div>
-          <dl class="kv">
-            {service.itemGroups.map((g) => (
-              <div><dt>{g.group}</dt><dd>{g.examples.join(' · ')}</dd></div>
-            ))}
-          </dl>
+      <div class="wrap wrap--mid">
+        <div class="section-head">
+          <p class="eyebrow">Commercial</p>
+          <h2 id="quote-h">Request a quote</h2>
+          <p class="lede">
+            Send the furniture schedule, a purchase order or a floor plan. You get a fixed project
+            price and the dates we can hold.
+          </p>
         </div>
-        <div class="panel">
+        <div class="panel quotePanel">
           <BookingForm client:visible variant="commercial" heading="Tell us about the site" headingLevel="h3" />
         </div>
       </div>
@@ -157,8 +151,8 @@ const crumbs = [
 
   <section class="section section--paper" aria-labelledby="more-h">
     <div class="wrap">
-      <h2 id="more-h">Other things we assemble</h2>
-      <ul class="rule-list rule-list--split" style="margin-top: var(--s-5)">
+      <div class="section-head"><p class="eyebrow">More</p><h2 id="more-h">Other things we assemble</h2></div>
+      <ul class="rule-list rule-list--split">
         {others.map((s) => (
           <li>
             <a class="rule-row" href={`/services/${s.slug}`}>
@@ -186,13 +180,12 @@ const crumbs = [
 </BaseLayout>
 
 <style>
-  /* Two columns, so a page of prose does not sit in a narrow strip with half
-     the window empty beside it. */
-  .svcIntro { display: grid; gap: var(--s-8); }
-  .svcScope { margin-top: 0; }
-  @media (min-width: 900px) {
-    .svcIntro { grid-template-columns: minmax(0, 1fr) minmax(0, 26rem); gap: var(--s-14); align-items: start; }
-  }
+  /* One centred column. The two-column version put the prose on the left and
+     the scope box on the right, which is exactly the asymmetry this design
+     exists to remove. */
+  .svcIntro { display: grid; gap: var(--s-8); justify-items: center; }
+  .svcIntro :global(.prose) { max-width: 62ch; }
+  .svcScope { margin-top: 0; width: 100%; max-width: 46rem; }
   /* A second setting on one page: the photo carries what the copy cannot. */
   .svcFig { margin: 0; background: var(--ink); }
   .svcFig :global(picture), .svcFig :global(img) { display: block; width: 100%; height: auto; }
@@ -208,7 +201,8 @@ const crumbs = [
   @media (min-width: 1024px) {
     .svcFig :global(img) { aspect-ratio: 21 / 9; }
   }
-  .svcAreas { margin-top: var(--s-8); max-width: var(--prose); }
+  .svcAreas { margin-top: var(--s-10); max-width: 60ch; margin-inline: auto; text-align: center; }
+  .quotePanel { max-width: 44rem; margin-inline: auto; border-radius: var(--r-lg); padding: clamp(var(--s-5), 3vw, var(--s-8)); }
   .segs--text { display: grid; gap: var(--s-6); }
   @media (min-width: 640px) { .segs--text { grid-template-columns: 1fr 1fr; } }
   @media (min-width: 1024px) { .segs--text { grid-template-columns: repeat(4, 1fr); gap: var(--s-8); } }

@@ -1,32 +1,36 @@
 ---
+/** Closing call to action. Centred, like every other block on the site. */
 import { site, telHref } from '../data/site';
 interface Props { heading: string; body: string; primary?: { label: string; href: string }; }
 const {
   heading,
   body,
-  primary = { label: 'Get a quote', href: '/contact' },
+  primary = { label: 'Get a quote', href: '/#book' },
 } = Astro.props;
 ---
 
-<section class="ctaband on-ink" aria-labelledby="ctaband-h">
+<section class="ctaband section--ink" aria-labelledby="ctaband-h">
   <div class="wrap ctaband__inner">
-    <div>
-      <h2 id="ctaband-h">{heading}</h2>
-      <p class="lede ctaband__body">{body}</p>
-    </div>
+    <h2 id="ctaband-h">{heading}</h2>
+    <p class="lede ctaband__body">{body}</p>
     <div class="ctaband__actions">
-      <a class="btn btn--signal btn--block btn--keep" href={primary.href}>{primary.label}</a>
-      <a class="btn btn--ghost btn--block btn--keep" href={telHref}>Call {site.phoneDisplay}</a>
+      <a class="btn btn--signal btn--keep" href={primary.href}>{primary.label}</a>
+      <a class="btn btn--onink btn--keep" href={telHref}>Call {site.phoneDisplay}</a>
     </div>
   </div>
 </section>
 
 <style>
-  .ctaband { padding-block: var(--s-14); }
-  .ctaband__body { margin-top: var(--s-3); }
-  .ctaband__actions { display: grid; gap: var(--s-3); margin-top: var(--s-6); }
-  @media (min-width: 768px) {
-    .ctaband__inner { display: grid; grid-template-columns: 1fr auto; gap: var(--s-10); align-items: center; }
-    .ctaband__actions { margin-top: 0; min-width: 260px; }
+  .ctaband { padding-block: clamp(var(--s-14), 6vw, var(--s-24)); text-align: center; }
+  .ctaband__inner { max-width: 52rem; }
+  .ctaband__body { margin: var(--s-4) auto 0; max-width: 52ch; }
+  .ctaband__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-3);
+    margin-top: var(--s-8);
   }
+  .ctaband__actions :global(.btn) { min-width: 13rem; }
+  @media (max-width: 479px) { .ctaband__actions :global(.btn) { flex: 1 1 100%; } }
 </style>

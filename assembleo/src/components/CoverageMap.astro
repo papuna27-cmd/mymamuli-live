@@ -116,10 +116,10 @@ const cityList = cities.map((c) => c.name).join(', ');
     />
 
     {mapShapes.filter((s) => s.kind === 'city').map((s) => (
-      <path d={s.d} fill="var(--signal-12)" stroke="var(--signal)" stroke-opacity="0.55" stroke-width="1" stroke-linejoin="round" />
+      <path d={s.d} fill="rgba(var(--signal-rgb), 0.16)" stroke="var(--signal)" stroke-opacity="0.7" stroke-width="1" stroke-linejoin="round" />
     ))}
     {mapShapes.filter((s) => s.kind === 'district').map((s) => (
-      <path d={s.d} fill="none" stroke="var(--signal)" stroke-opacity="0.28" stroke-width="1" stroke-dasharray="3 4" />
+      <path d={s.d} fill="none" stroke="var(--signal)" stroke-opacity="0.4" stroke-width="1" stroke-dasharray="3 4" />
     ))}
 
     <g class="covmap__labels covmap__labels--full">
@@ -219,7 +219,7 @@ const cityList = cities.map((c) => c.name).join(', ');
     flex: none;
   }
   .key--depot { background: var(--signal); border: 2px solid var(--ink); border-radius: 50%; }
-  .key--area { background: var(--signal-12); border: 1px solid rgba(224, 138, 0, 0.55); }
+  .key--area { background: rgba(var(--signal-rgb), 0.16); border: 1px solid rgba(var(--signal-rgb), 0.7); }
   .key--water { background: var(--water); border: 1px solid var(--line); }
 
   .covmap__cap { margin-top: var(--s-3); max-width: var(--prose); }

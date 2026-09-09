@@ -123,7 +123,7 @@ for (const width of WIDTHS) {
   const page = await ctx.newPage();
   await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' });
   const cta = await page.evaluate(() => {
-    const el = document.querySelector('.lede-hero .btn--signal, .hero .btn--signal');
+    const el = document.querySelector('.chero .btn--signal, .lede-hero .btn--signal, .hero .btn--signal');
     if (!el) return null;
     const r = el.getBoundingClientRect();
     return { bottom: Math.round(r.bottom), text: el.textContent.trim() };

@@ -41,7 +41,7 @@ const crumbs = [
   {regions.map((r) => (
     <section class="section section--tight section--paper" aria-labelledby={`r-${r.region.replace(/\W+/g, '')}`}>
       <div class="wrap">
-        <h2 id={`r-${r.region.replace(/\W+/g, '')}`}>{r.region}</h2>
+        <div class="section-head"><h2 id={`r-${r.region.replace(/\W+/g, '')}`}>{r.region}</h2></div>
         <ul class="rule-list rule-list--split" style="margin-top: var(--s-5)">
           {r.list.map((c) => (
             <li>
@@ -62,7 +62,7 @@ const crumbs = [
   {outside.length > 0 && (
     <section class="section section--tight section--surface" aria-labelledby="outside-h">
       <div class="wrap">
-        <h2 id="outside-h">Just outside the GTA</h2>
+        <div class="section-head"><h2 id="outside-h">Just outside the GTA</h2></div>
         <p class="lede section-intro">We serve these too, though the travel is longer and worth planning around.</p>
         <ul class="rule-list rule-list--split" style="margin-top: var(--s-5)">
           {outside.map((c) => (

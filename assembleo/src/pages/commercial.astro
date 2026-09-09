@@ -44,25 +44,27 @@ const crumbs = [
   <section class="section section--surface" aria-labelledby="seg-h">
     <div class="wrap">
       <div class="section-head">
+        <p class="eyebrow">Sectors</p>
         <h2 id="seg-h">Pick your kind of site</h2>
-        <p class="lede section-intro">Each one is scheduled and priced differently, so each has its own page.</p>
+        <p class="lede">Each one is scheduled and priced differently, so each has its own page.</p>
       </div>
-      <div class="segs">
+      <div class="grid grid--4">
         {commercialServices.map((s) => (
-          <article class="seg">
-            <a href={`/services/${s.slug}`} class="seg__link">
-              <Picture
-                src={PHOTOS[s.image]!}
-                alt={s.imageAlt}
-                widths={[380, 560, 760]}
-                sizes="(min-width: 1024px) 24vw, (min-width: 640px) 46vw, 92vw"
-                formats={['avif', 'webp']} fallbackFormat="jpg" quality={55}
-                loading="lazy" class="seg__img"
-              />
-              <h3 class="seg__title">{s.name}</h3>
-            </a>
-            <p class="seg__blurb">{s.lede}</p>
-          </article>
+          <a class="card card--link" href={`/services/${s.slug}`}>
+            <Picture
+              src={PHOTOS[s.image]!}
+              alt={s.imageAlt}
+              widths={[380, 560, 760]}
+              sizes="(min-width: 940px) 24vw, (min-width: 620px) 46vw, 92vw"
+              formats={['avif', 'webp']} fallbackFormat="jpg" quality={55}
+              loading="lazy" class="card__media"
+            />
+            <div class="card__body">
+              <h3 class="card__title">{s.name}</h3>
+              <p class="card__text">{s.lede}</p>
+              <span class="card__foot textlink">See what we build</span>
+            </div>
+          </a>
         ))}
       </div>
 
@@ -75,7 +77,10 @@ const crumbs = [
 
   <section class="section section--paper" aria-labelledby="why-h">
     <div class="wrap">
-      <div class="section-head"><h2 id="why-h">What you get that residential does not</h2></div>
+      <div class="section-head">
+        <p class="eyebrow">Commercial terms</p>
+        <h2 id="why-h">What you get that residential does not</h2>
+      </div>
       <dl class="kv">
         <div><dt>Scheduling</dt><dd>Evenings, overnight and weekends, so the floor stays open during business hours.</dd></div>
         <div><dt>Pricing</dt><dd>A fixed project price on unit count and site conditions — not an hourly rate that grows.</dd></div>
@@ -84,35 +89,36 @@ const crumbs = [
         <div><dt>Contact</dt><dd>One person who knows your job, from the quote to the completion list.</dd></div>
         <div><dt>Handover</dt><dd>A completion record with photos, per room or per unit.</dd></div>
       </dl>
-      <ul class="why">
+      <div class="grid grid--4 comWhy">
         {trustPoints.map((t) => (
-          <li class="why__item">
-            <h3 class="why__title">{t.title}</h3>
-            <p class="why__body">{t.body}</p>
-          </li>
+          <article class="card">
+            <div class="card__body">
+              <h3 class="card__title">{t.title}</h3>
+              <p class="card__text">{t.body}</p>
+            </div>
+          </article>
         ))}
-      </ul>
+      </div>
     </div>
   </section>
 
   <section class="section section--surface" id="book" aria-labelledby="quote-h">
-    <div class="wrap cols-2">
-      <div>
-        <div class="section-head">
-          <h2 id="quote-h">Request a quote</h2>
-          <p class="lede section-intro">
-            Tell us the site and roughly how many units. We come back with a fixed price and the
-            dates we can hold.
-          </p>
-        </div>
-        <p class="small">
-          We cover {gtaCities.slice(0, 8).map((c) => c.name).join(', ')} and the rest of the GTA —
-          <a class="textlink" href="/service-areas">see every area</a>.
+    <div class="wrap wrap--mid">
+      <div class="section-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="quote-h">Request a quote</h2>
+        <p class="lede">
+          Tell us the site and roughly how many units. We come back with a fixed price and the
+          dates we can hold.
         </p>
       </div>
-      <div class="panel">
+      <div class="panel quotePanel">
         <BookingForm client:visible variant="commercial" heading="Tell us about the site" headingLevel="h3" />
       </div>
+      <p class="small comAreas">
+        We cover {gtaCities.slice(0, 8).map((c) => c.name).join(', ')} and the rest of the GTA —
+        <a class="textlink" href="/service-areas">see every area</a>.
+      </p>
     </div>
   </section>
 
@@ -120,6 +126,9 @@ const crumbs = [
 </BaseLayout>
 
 <style>
+  .comWhy { margin-top: var(--s-10); }
+  .quotePanel { max-width: 44rem; margin-inline: auto; border-radius: var(--r-lg); padding: clamp(var(--s-5), 3vw, var(--s-8)); }
+  .comAreas { margin-top: var(--s-8); max-width: 60ch; margin-inline: auto; text-align: center; }
   .seg__link { text-decoration: none; color: inherit; display: block; }
   .seg__link:hover .seg__title { text-decoration: underline; text-decoration-color: var(--signal); text-decoration-thickness: 2px; text-underline-offset: 4px; }
   .why { margin-top: var(--s-10); }

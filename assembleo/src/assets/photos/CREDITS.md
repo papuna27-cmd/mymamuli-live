@@ -19,3 +19,4 @@ remove any question of implying that stock subjects are your staff.
 | `seg-hotel.jpg` | Juliana Morales Ramírez | https://unsplash.com/photos/GmW4hfTX0ns |
 | `seg-clinic.jpg` | Hush Naidoo Jade Photography | https://unsplash.com/photos/XwguHkKQqSA |
 | `seg-dental.jpg` | Sam Moghadam | https://unsplash.com/photos/I-kDEBUMAaQ |
+| `seg-retail.jpg` | Lance Chang | https://unsplash.com/photos/h3pVxOIpnzk |

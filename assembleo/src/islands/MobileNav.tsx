@@ -24,8 +24,33 @@ export default function MobileNav({ items, phone, phoneDisplay, path }: Props) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const scrollY = useRef(0);
+  /** Set when a link in the sheet points at an anchor on this same page. */
+  const pendingHash = useRef<string | null>(null);
 
   const close = useCallback(() => setOpen(false), []);
+
+  /**
+   * Every link in the sheet has to close it. Nothing did, and for a link that
+   * does not leave the page — "Price my job" is #estimate, and Contact is
+   * /#book while you are on the homepage — the browser never reloads, so the
+   * sheet stayed open and the body stayed position: fixed. The page could not
+   * be scrolled again for the rest of the visit.
+   */
+  const onSheetClick = useCallback((e: MouseEvent) => {
+    const link = (e.target as HTMLElement | null)?.closest?.('a[href]') as HTMLAnchorElement | null;
+    if (!link) return;
+    const href = link.getAttribute('href') ?? '';
+    if (href.startsWith('tel:') || href.startsWith('mailto:')) { setOpen(false); return; }
+
+    // Same document? Then closing is the only thing that will unlock the body,
+    // and the jump has to wait until it is unlocked or it scrolls a fixed page.
+    const url = new URL(href, location.href);
+    if (url.hash && url.pathname === location.pathname) {
+      e.preventDefault();
+      pendingHash.current = url.hash;
+    }
+    setOpen(false);
+  }, []);
 
   // Body scroll lock that survives iOS Safari's rubber-banding.
   useEffect(() => {
@@ -43,7 +68,16 @@ export default function MobileNav({ items, phone, phoneDisplay, path }: Props) {
         body.style.left = '';
         body.style.right = '';
         body.style.overflow = '';
-        window.scrollTo(0, scrollY.current);
+
+        const hash = pendingHash.current;
+        pendingHash.current = null;
+        const target = hash ? document.querySelector(hash) : null;
+        if (target) {
+          target.scrollIntoView();
+          try { history.replaceState(null, '', hash); } catch { /* file:// */ }
+        } else {
+          window.scrollTo(0, scrollY.current);
+        }
       };
     }
     return undefined;
@@ -122,7 +156,7 @@ export default function MobileNav({ items, phone, phoneDisplay, path }: Props) {
             tabIndex={-1}
             onClick={close}
           />
-          <div class="navsheet__panel" ref={sheetRef}>
+          <div class="navsheet__panel" ref={sheetRef} onClick={onSheetClick}>
             <nav aria-label="Site">
               <ul class="navsheet__list">
                 {flat.map((item) => {

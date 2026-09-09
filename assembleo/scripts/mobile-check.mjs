@@ -194,6 +194,40 @@ for (const width of WIDTHS) {
   await ctx.close();
 }
 
+// ---- 5b. every link in the sheet must release the scroll lock -------------
+// The original check only pressed Escape, so it never saw that tapping a link
+// left the body at position: fixed. On a link that does not leave the page —
+// "Price my job" is #estimate, Contact is /#book from the homepage — the site
+// could not be scrolled again for the rest of the visit.
+{
+  const cases = [
+    ['/', 'Price my job'],
+    ['/', 'Contact'],
+    ['/', 'Service areas'],
+    ['/services/home-furniture', 'Prices'],
+  ];
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const page = await ctx.newPage();
+  for (const [from, label] of cases) {
+    await page.goto(`http://localhost:${PORT}${from}`, { waitUntil: 'networkidle' });
+    await page.click('.navbtn');
+    await page.waitForSelector('.navsheet__panel');
+    await page.locator('.navsheet a', { hasText: label }).first().click();
+    await page.waitForTimeout(700);
+
+    if (await page.$('.navsheet__panel')) bad(`mobile nav: "${label}" left the sheet open`);
+    const pos = await page.evaluate(() => getComputedStyle(document.body).position);
+    if (pos === 'fixed') bad(`mobile nav: "${label}" left the body scroll-locked`);
+
+    const before = await page.evaluate(() => window.scrollY);
+    await page.mouse.wheel(0, 700);
+    await page.waitForTimeout(350);
+    const after = await page.evaluate(() => window.scrollY);
+    if (after === before) bad(`mobile nav: page cannot scroll after tapping "${label}"`);
+  }
+  await ctx.close();
+}
+
 // ---- 6. estimator: complete the flow one-handed --------------------------
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });

@@ -295,6 +295,12 @@ const routerJs = `
   var btns=[].slice.call(document.querySelectorAll('.pv-bar [data-go]'));
   var city=document.getElementById('pv-city');
   function show(path){
+    // The phone menu locks the body while it is open. A page switch here is
+    // not a real navigation, so clear the lock or the preview freezes.
+    var b=document.body;
+    if(b.style.position==='fixed'){
+      b.style.position=''; b.style.top=''; b.style.left=''; b.style.right=''; b.style.overflow='';
+    }
     var found=false;
     pages.forEach(function(el){
       var on=el.getAttribute('data-page')===path;

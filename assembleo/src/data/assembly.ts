@@ -33,14 +33,20 @@ export interface Retailer {
  * a search engine is usually the wrong version and is not licensed.
  */
 export const retailers: Retailer[] = [
+  // IKEA leads: it is the single most-asked-for brand in this trade, and the
+  // term people actually search is "IKEA assembly".
+  { slug: 'ikea', name: 'IKEA', brandAssets: 'https://www.ikea.com/ca/en/newsroom/' },
   { slug: 'costco', name: 'Costco', brandAssets: 'https://www.costco.com/media-centre.html' },
   { slug: 'walmart', name: 'Walmart', brandAssets: 'https://corporate.walmart.com/news/media-library' },
   { slug: 'canadian-tire', name: 'Canadian Tire', brandAssets: 'https://corp.canadiantire.ca/English/media/default.aspx' },
   { slug: 'home-depot', name: 'Home Depot', brandAssets: 'https://corporate.homedepot.com/news-room/media-resources' },
   { slug: 'staples', name: 'Staples', brandAssets: 'https://www.staples.ca/pages/about-us' },
-  { slug: 'ikea', name: 'IKEA', brandAssets: 'https://www.ikea.com/ca/en/newsroom/' },
+  { slug: 'the-brick', name: 'The Brick', brandAssets: 'https://www.thebrick.com/pages/about-us' },
+  { slug: 'leons', name: "Leon's", brandAssets: 'https://www.leons.ca/pages/about-us' },
+  { slug: 'jysk', name: 'JYSK', brandAssets: 'https://www.jysk.ca/customer-service/about-jysk' },
   { slug: 'wayfair', name: 'Wayfair', brandAssets: 'https://www.aboutwayfair.com/media-kit' },
   { slug: 'amazon', name: 'Amazon', brandAssets: 'https://press.aboutamazon.com/media-assets' },
+  { slug: 'rona', name: 'RONA', brandAssets: 'https://www.rona.ca/en/about-us' },
 ];
 
 /**

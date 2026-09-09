@@ -115,9 +115,11 @@ if (missing.length && import.meta.env.PROD) {
     line-height: 1.1;
   }
 
+  /* Twelve names, so the column counts all divide it: no row ever ends with
+     one logo stranded on its own. */
   @media (min-width: 560px) { .wall { grid-template-columns: repeat(4, 1fr); } }
   @media (min-width: 960px) {
-    .wall { grid-template-columns: repeat(8, 1fr); gap: var(--s-6); }
+    .wall { grid-template-columns: repeat(6, 1fr); gap: var(--s-6) var(--s-5); }
     .wall__tile { min-height: 72px; }
   }
 </style>

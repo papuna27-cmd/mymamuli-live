@@ -3,9 +3,13 @@
 Drop official logo files here, named after the `slug` in `src/data/assembly.ts`:
 
 ```
-costco.svg  walmart.svg  canadian-tire.svg  home-depot.svg
-staples.svg ikea.svg     wayfair.svg        amazon.svg
+ikea.svg     costco.svg  walmart.svg  canadian-tire.png
+home-depot.svg staples.svg the-brick.svg leons.png
+jysk.svg     wayfair.svg amazon.svg   rona.svg
 ```
+
+Twelve, because every column count in the wall (2, 4, 6) divides twelve and no
+row ends with a single logo stranded on its own.
 
 SVG is best (sharp at any size, tiny). PNG or WebP with a transparent
 background also works. The wall picks them up automatically — no code change.
@@ -31,3 +35,16 @@ claims, with very different requirements:
 
 The logos are rendered greyscale at a uniform height so the wall reads as one
 row of equals rather than as a set of endorsements.
+
+
+## Where these came from
+
+| File | Source |
+|---|---|
+| `jysk.svg`, `rona.svg` | Wikimedia Commons, marked public domain |
+| `the-brick.svg` | thebrick.com, the retailer's own asset |
+| `leons.png` | leons.ca, the retailer's own asset; the white background was keyed out so the ellipse sits on the page ground |
+
+Structube was tried and dropped: their only public logo is white type meant for
+a dark ground, and it disappears on bone. Best Buy is available on Commons if a
+thirteenth is ever wanted, but twelve keeps the grid even.

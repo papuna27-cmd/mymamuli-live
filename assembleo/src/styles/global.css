@@ -2011,3 +2011,26 @@ main { counter-reset: sect; }
   .chero .btn--signal:hover,
   .on-ink .btn--signal:hover { background: #FFFFFF; border-color: #FFFFFF; }
 }
+
+/* ---------- Estimator: the estimate is not a quote ------------------------ */
+
+/* Stated once above the picker and again under the total. A customer who
+   reads a number first and the caveat second has already anchored on it. */
+.est__notice {
+  margin-top: var(--s-5);
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--signal);
+  border-radius: var(--r);
+  background: var(--paper);
+}
+.est__noticeTitle {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--t-base);
+  color: var(--ink);
+}
+.est__noticeBody { margin-top: var(--s-3); color: var(--muted); }
+.est__emptyNote { margin-top: var(--s-5); }
+.section--surface .est__notice { background: var(--paper); }
+.section--paper .est__notice { background: var(--surface); }

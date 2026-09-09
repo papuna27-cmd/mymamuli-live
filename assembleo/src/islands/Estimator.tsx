@@ -11,7 +11,7 @@
 import { useMemo, useState } from 'preact/hooks';
 import {
   HOURLY_DEFAULT_HOURS, HOURLY_MIN_HOURS, HOURLY_RATE, HST, MINIMUM,
-  allItems, estimatorNote, hourlyNote, perItemNote, priceGroups,
+  allItems, estimatorNote, estimatorNotice, hourlyNote, perItemNote, priceGroups,
 } from '../data/pricing';
 
 const cad = (n: number) =>
@@ -113,6 +113,14 @@ export default function Estimator() {
 
         <p class="est__modeNote small">{mode === 'items' ? perItemNote : hourlyNote}</p>
 
+        {/* Above the picker, so it is read before a number exists to argue with. */}
+        <aside class="est__notice" role="note">
+          <p class="est__noticeTitle">{estimatorNotice.title}</p>
+          {estimatorNotice.body.map((line) => (
+            <p key={line} class="est__noticeBody small">{line}</p>
+          ))}
+        </aside>
+
         {mode === 'hourly' && (
           <div class="est__hours">
             <span class="est__hoursLabel" id="est-hours-label">How many hours?</span>
@@ -196,6 +204,7 @@ export default function Estimator() {
               Add what you need built and the price appears here. No contact details required to see a
               number.
             </p>
+            <p class="legal est__emptyNote">{estimatorNote}</p>
           </div>
         )}
 

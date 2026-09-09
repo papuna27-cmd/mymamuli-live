@@ -88,5 +88,19 @@ export const hourlyNote =
 export const perItemNote =
   'Best when you know what you have. The price is fixed per item before we start, so it does not grow while we work.';
 
+/**
+ * Shown above the estimator, before any number appears, and again under the
+ * total. The distinction matters commercially: the figure here is a guide, a
+ * fixed price needs the actual furniture in front of us, and the hourly rate
+ * is the option for anyone who does not want to wait for one.
+ */
+export const estimatorNotice = {
+  title: 'This is an estimate, not a fixed price.',
+  body: [
+    `The number here is a guide based on the models we see most often. A fixed price is confirmed once we see the actual furniture — the model, how many boxes, and the access at your address. Send the list and you have that price back within two hours during working hours.`,
+    `If you would rather not wait for a fixed price, book us by the hour instead: $${HOURLY_RATE} an hour plus HST, charged from arrival.`,
+  ],
+};
+
 export const estimatorNote =
-  'An estimate, not a binding quote. The final price is confirmed when you book, once we know the model and the access. Commercial work is quoted individually.';
+  `An estimate, not a fixed price. The exact figure is confirmed once we see the furniture itself. Prefer not to wait? Book by the hour at $${HOURLY_RATE} plus HST. Commercial work is quoted individually.`;

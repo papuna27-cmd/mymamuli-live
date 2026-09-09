@@ -337,3 +337,62 @@ than by looking:
 used to be answered three screens down. Six sectors — homes, offices, gyms,
 clinics and dental, hotels, and retail/schools/warehouses — now appear as a
 photo band directly under the hero and again as the first full section.
+
+---
+
+## Revision four — researched, and positioned against the competitor
+
+The client asked for two things this round: stop inventing, look at what the
+best sites actually do; and beat assemblyman.ca without anyone mistaking us
+for them.
+
+### What the research could and could not be
+
+Chromium cannot reach the internet from this environment, so screenshots of
+reference sites were not possible. What was possible was reading their code.
+The homepages of Floyd, Article, Taskrabbit and Thumbtack were fetched and
+their fonts, colour frequencies, radii and section order extracted. That is
+less than looking, and it is not nothing:
+
+| | ground | accent | radii |
+|---|---|---|---|
+| Floyd | `#F8F6ED` bone | `#FF5436` | 2–5px |
+| Article | `#F2F2F2` | `#FF6458` | 4–8px, pills |
+| Taskrabbit | white | `#0D7A5F` green | 4–16px, pills |
+| Thumbtack | white | `#009FD9` blue | — |
+
+Three things they share: a warm or neutral off-white rather than pure white,
+exactly one accent, and small radii. Softness is not what premium looks like
+in this category; precision is.
+
+What none of them do — and what belongs to this business rather than to any of
+them — is set every number in a monospace face. Assembleo's promise is a price
+that does not move. Prices, counts, drive times, step numbers and section
+labels are now IBM Plex Mono, tabular, on a ruled line, so the page reads like
+a job sheet wrapped in warm photography. Prose stays in the sans. One weight,
+15 KB.
+
+### The competitor
+
+`assemblyman.ca`: WordPress with Elementor and Divi, navy `#00274D` with
+orange `#F4511E`, 14 years, 685 reviews, thirty-three `<h3>`s of feature
+boxes, and a very good piece of positioning — the page is built on "IKEA
+assembly", which is the highest-volume term in the category.
+
+What they do well and we must match: fixed pricing stated plainly, a named
+guarantee, review counts on the page, and a simple numbered process.
+
+Where the opening is: a page-builder site is slow and template-shaped, navy
+and orange is the default palette of every contractor in the GTA, and thirty
+three feature boxes is a wall rather than an argument. They are also a
+residential IKEA business. Gyms, clinics, hotels, offices and warehouses are
+ours to take, which is why the six sectors lead the page.
+
+**This is why the accent changed from terracotta to deep green.** Terracotta
+`#D2461E` sits within twenty points of their `#F4511E`. On a bone ground with
+a dark ink, at a glance, we would have read as the same company. Green on bone
+is nobody's default in this category, and it clears white at 10:1 where the
+terracotta managed 6:1.
+
+On the dark ground the primary button inverts to bone-on-ink rather than
+green-on-near-black, which was a dark box pretending to be a call to action.

@@ -15,6 +15,18 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+2212;
 }
 
+/* One mono weight, 15 KB. It carries every number and label on the site: the
+   promise here is a price that does not move, and a spec face says that
+   before a word is read. Sans still carries all the prose. */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/plexmono-latin-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC, U+2122, U+2212;
+}
+
 @font-face {
   font-family: 'IBM Plex Sans';
   src: url('/fonts/plexsans-latin-var.woff2') format('woff2-variations');
@@ -32,25 +44,31 @@
      Ontario already looks like. Green and cream belong to wood and furniture,
      read warm rather than corporate, and leave terracotta free to mean one
      thing only: the button you are meant to press. */
-  --ink: #16241D;          /* near-black green — all body text, dark grounds */
-  --brand: #1F5138;        /* forest green — headings on light, brand marks   */
-  --slate: #55665C;        /* quiet text, 5.4:1 on cream                      */
-  --line: #DFDACE;         /* warm hairline                                   */
-  --paper: #F5F1E8;        /* warm sand — the page ground                     */
-  --surface: #FFFFFF;      /* cards and panels lift off the sand              */
-  --signal: #B4562A;       /* terracotta — one call to action per screen      */
+  --ink: #17201B;          /* near-black green — all body text, dark grounds */
+  --brand: #1F4A36;        /* same green; brand marks and step numerals       */
+  --slate: #63625A;        /* quiet text, 5.6:1 on bone                       */
+  --line: #DFD8C7;         /* warm hairline                                   */
+  --paper: #F6F2E9;        /* bone — the page ground                          */
+  --surface: #FFFDF8;      /* warm white; cards lift off the bone             */
+  /* Deep green, not orange. The competitor (assemblyman.ca) runs navy #00274D
+     with orange #F4511E, which is also the default palette of every other
+     contractor site in the GTA. An accent within twenty points of theirs would
+     have read as the same company at a glance. Green on bone is nobody's
+     default here, and it clears white at 10:1 rather than the 6:1 the
+     terracotta managed. */
+  --signal: #1F4A36;       /* one call to action per screen, 10:1 with white  */
   /* Terracotta as *text* misses AA by a hair on cream (4.33:1) and disappears
      on the dark ground. Two shifted versions, one per ground. */
-  --signal-ink: #9C4623;   /* 5.6:1 on cream, 6.3:1 on white                  */
-  --signal-lift: #E08C5A;  /* 6.2:1 on the dark ground                        */
+  --signal-ink: #1B4230;   /* the accent as text on bone, 9.6:1               */
+  --signal-lift: #86C5A1;  /* the accent as text on the dark ground, 7.9:1    */
   --verified: #1E7A4C;
   --alert: #A32318;
 
   /* Derived, still inside the palette */
   /* Channels, for the places that need the colour at an alpha. */
-  --ink-rgb: 22, 36, 29;
-  --paper-rgb: 245, 241, 232;
-  --signal-rgb: 180, 86, 42;
+  --ink-rgb: 23, 32, 27;
+  --paper-rgb: 246, 242, 233;
+  --signal-rgb: 31, 74, 54;
 
   --ink-80: rgba(22, 36, 29, 0.8);
   --ink-12: rgba(22, 36, 29, 0.12);
@@ -59,11 +77,12 @@
   --brand-8: rgba(31, 81, 56, 0.08);
   /* --ink-12 flattened onto --surface. Opaque so a shape can carry the same
      colour as fill and as stroke without the two compounding. */
-  --water: #E3E7E2;
+  --water: #E4E3DA;
 
   /* Type families */
   --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
   --font-text: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   /* Type scale — fluid. The old fixed scale topped out at 42px, so a 1440px
      screen got phone-sized headings and the page read as unfinished. Each step
@@ -99,8 +118,8 @@
   --pad-section-tight: clamp(40px, 4.4vw, 76px);
 
   /* Shape — a card radius and a control radius, nothing else */
-  --r: 6px;
-  --r-lg: 14px;
+  --r: 3px;
+  --r-lg: 4px;
   /* One shadow token, used on one element per page (the result panel) */
   --lift: 0 1px 2px rgba(22, 36, 29, 0.05), 0 10px 30px -14px rgba(22, 36, 29, 0.22);
 
@@ -290,8 +309,8 @@ h4 { font-family: var(--font-text); font-size: var(--t-md); font-weight: 600; }
 .on-ink .btn--ghost { color: var(--paper); border-color: rgba(var(--paper-rgb), 0.5); }
 
 @media (hover: hover) {
-  .btn--signal:hover { background: #c97b00; border-color: #c97b00; }
-  .btn--ink:hover { background: #0c1e2e; }
+  .btn--signal:hover { background: #163728; border-color: #163728; }
+  .btn--ink:hover { background: #0F1712; }
   .btn--ghost:hover { background: var(--ink-12); }
   .on-ink .btn--ghost:hover { background: rgba(var(--paper-rgb), 0.12); border-color: var(--paper); }
 }
@@ -1862,6 +1881,12 @@ body.quote-open .actionbar,
   border-block: 1px solid rgba(var(--paper-rgb), 0.22);
 }
 .bookFacts a { color: inherit; text-decoration: underline; text-decoration-color: var(--signal); text-underline-offset: 5px; }
+/* Label first, value under it, one size for all three, so the row keeps a
+   single baseline instead of the longest value pushing its neighbour down. */
+.bookFacts .stats__item { flex-direction: column-reverse; gap: var(--s-2); justify-content: flex-end; }
+.bookFacts .stats__n,
+.bookFacts .stats__n--sm { font-size: var(--t-base); letter-spacing: 0; }
+.bookFacts .stats__l { text-transform: uppercase; letter-spacing: 0.1em; font-size: var(--t-xs); font-family: var(--font-mono); }
 .stats__n--sm { font-size: var(--t-md); }
 @media (min-width: 720px) { .bookFacts { grid-template-columns: repeat(3, 1fr); } }
 
@@ -1875,4 +1900,114 @@ body.quote-open .actionbar,
 @media (min-width: 940px) {
   .revs__nav { display: flex; }
   .revs__head { justify-content: space-between; }
+}
+
+/* =========================================================================
+   24. The spec sheet
+   -------------------------------------------------------------------------
+   Read from the code of four sites that do this category well: Floyd, Article,
+   Taskrabbit and Thumbtack. What they share is a warm off-white ground, one
+   hot accent used sparingly, and tiny radii — precision, not softness. What
+   none of them do, and what belongs to this business specifically, is a
+   monospace face for every number and label.
+
+   The promise Assembleo makes is a price that does not move. A spec face says
+   that before a word is read: prices, counts, drive times, step numbers and
+   section labels are all set in it, tabular, so figures line up in a column.
+   Prose stays in the sans.
+   ========================================================================= */
+
+.mono,
+.eyebrow,
+.stats__n,
+.card__num,
+.badge,
+.proof__n,
+.covmap__meta,
+.est__price,
+.calc__total,
+.revs__num,
+.crumbs {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* Section labels are numbered, like items on a schedule. The counter runs on
+   <main> so each page numbers its own sections. */
+main { counter-reset: sect; }
+.section-head .eyebrow { counter-increment: sect; }
+.section-head .eyebrow::after {
+  content: '';
+}
+.section-head .eyebrow::before {
+  display: inline;
+  content: counter(sect, decimal-leading-zero) ' / ';
+  opacity: 0.55;
+  background: none;
+  width: auto;
+  height: auto;
+  margin: 0;
+}
+
+.eyebrow { letter-spacing: 0.08em; font-size: var(--t-xs); }
+
+/* Numerals carry weight, so they get room rather than bulk. */
+.stats__n { font-size: var(--t-xl); letter-spacing: -0.02em; }
+.card__num {
+  background: transparent;
+  color: var(--signal-ink);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  width: 56px;
+  height: 56px;
+  font-family: var(--font-mono);
+  font-size: var(--t-lg);
+}
+.section--ink .card--step .card__num {
+  background: transparent;
+  color: var(--signal-lift);
+  border-color: rgba(var(--paper-rgb), 0.3);
+}
+
+/* Hairlines instead of boxes wherever a box was only holding a list. */
+.card { box-shadow: none; }
+@media (hover: hover) {
+  .card--link:hover { border-color: var(--ink); transform: none; box-shadow: none; }
+  .card--link:hover .card__media { filter: brightness(1.04); }
+  .card--link:hover .card__title { color: var(--signal-ink); }
+}
+.card__media { transition: filter var(--dur) var(--ease); }
+
+/* The rule moves above the label and spans the container: each section opens
+   like a ruled line on a schedule, with its number sitting under it. Between
+   the heading and its own lede it only separated things that belong together. */
+.section-head h2::after { display: none; }
+.section-head,
+.section-head--split {
+  max-width: none;
+  border-top: 1px solid var(--line);
+  padding-top: clamp(var(--s-5), 2.4vw, var(--s-8));
+}
+.section-head > * { max-width: 60ch; margin-inline: auto; }
+.section-head .lede { max-width: 56ch; }
+.section--ink .section-head { border-top-color: rgba(var(--paper-rgb), 0.22); }
+
+.btn { border-radius: var(--r); letter-spacing: 0.01em; }
+
+/* Deep green on the near-black ground is a dark box, not a call to action.
+   On dark the primary inverts to bone-on-ink; the accent still appears once
+   per screen, it just changes which way round it is. */
+.section--ink .btn--signal,
+.chero .btn--signal,
+.on-ink .btn--signal {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--paper);
+}
+@media (hover: hover) {
+  .section--ink .btn--signal:hover,
+  .chero .btn--signal:hover,
+  .on-ink .btn--signal:hover { background: #FFFFFF; border-color: #FFFFFF; }
 }

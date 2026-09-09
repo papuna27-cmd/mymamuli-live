@@ -1,0 +1,63 @@
+---
+/**
+ * The Assembleo mark and wordmark.
+ *
+ * A hexagon with an A knocked out of it: the hex socket is the one piece of
+ * hardware in every flat-pack box, and it is also the letter. One path, filled
+ * with currentColor and cut with fill-rule="evenodd", so the counters show the
+ * ground through and the whole lockup inherits its colour — ink on bone in the
+ * header, bone on ink in the footer, no second file.
+ *
+ * The client has no logo of their own. Replace this with theirs when it
+ * exists; the component is the only place it is drawn.
+ */
+interface Props {
+  /** Hide the wordmark and show the mark alone (favicons, tight bars). */
+  markOnly?: boolean;
+  /** Rendered as a link when set. */
+  href?: string;
+  label?: string;
+  class?: string;
+}
+const { markOnly = false, href, label, class: cls } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag class:list={['logo', cls]} href={href} aria-label={label}>
+  <svg class="logo__mark" viewBox="0 0 34 34" aria-hidden="true" focusable="false">
+    <path
+      fill="currentColor"
+      fill-rule="evenodd"
+      d="M17 1.6 30.8 9.5v15.9L17 33.4 3.2 25.4V9.5zM17 9.4 24.2 25h-3.9l-1.1-2.6h-4.4L13.7 25H9.8zm0 6.6-1.6 3.7h3.2z"
+    />
+  </svg>
+  {!markOnly && <span class="logo__word"><slot /></span>}
+</Tag>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    color: currentColor;
+    text-decoration: none;
+    min-height: var(--tap);
+  }
+  .logo__mark {
+    width: 1.85em;
+    height: 1.85em;
+    flex: none;
+    display: block;
+  }
+  .logo__word {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--t-md);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  @media (min-width: 900px) {
+    .logo__word { font-size: var(--t-lg); }
+  }
+</style>

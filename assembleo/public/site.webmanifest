@@ -4,10 +4,20 @@
   "description": "Furniture assembly, delivery and moving across Mississauga and the GTA",
   "start_url": "/",
   "display": "browser",
-  "background_color": "#F4F6F8",
-  "theme_color": "#12283C",
+  "background_color": "#F6F2E9",
+  "theme_color": "#17201B",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }

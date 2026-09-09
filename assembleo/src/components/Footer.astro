@@ -1,4 +1,5 @@
 ---
+import Logo from './Logo.astro';
 import { site, footerNav, telHref } from '../data/site';
 import { cities } from '../data/cities';
 const year = new Date().getFullYear();
@@ -8,7 +9,7 @@ const year = new Date().getFullYear();
   <div class="wrap">
     <div class="site-footer__grid">
       <div class="site-footer__brand">
-        <p class="wordmark">{site.name}</p>
+        <Logo>{site.name}</Logo>
         <p class="site-footer__tag">{site.tagline}.</p>
         <p class="site-footer__contact">
           <a href={telHref}>{site.phoneDisplay}</a>

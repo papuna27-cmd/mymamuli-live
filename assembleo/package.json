@@ -10,6 +10,7 @@
     "check": "astro check",
     "deploy": "npm run build && npx wrangler pages deploy dist --project-name=assembleo",
     "og": "node scripts/og.mjs",
+    "brand": "node scripts/brand.mjs",
     "geo": "node scripts/geo.mjs",
     "audit": "node scripts/audit.mjs",
     "check:mobile": "node scripts/mobile-check.mjs",

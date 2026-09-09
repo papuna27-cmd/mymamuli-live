@@ -42,6 +42,9 @@
   --ink-12: rgba(18, 40, 60, 0.12);
   --paper-70: rgba(244, 246, 248, 0.7);
   --signal-12: rgba(224, 138, 0, 0.12);
+  /* --ink-12 flattened onto --surface. Opaque so a shape can carry the same
+     colour as fill and as stroke without the two compounding. */
+  --water: #E2E6EA;
 
   /* Type families */
   --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;

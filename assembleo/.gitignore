@@ -12,3 +12,4 @@ screenshots/
 .wrangler/
 preview/
 .preview-entry.jsx
+.geo-cache/

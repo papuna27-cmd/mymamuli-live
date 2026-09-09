@@ -1,0 +1,61 @@
+# Deploys assembleo/ to Cloudflare Pages on every push.
+#
+# This exists so the site can ship without anyone pasting an API token into a
+# chat window. Add two repository secrets once — Settings → Secrets and
+# variables → Actions:
+#
+#   CLOUDFLARE_API_TOKEN   a token with Account · Cloudflare Pages · Edit
+#   CLOUDFLARE_ACCOUNT_ID  the ID on the right of the Cloudflare dashboard
+#
+# After that every push to the branch below builds and deploys itself, and the
+# token stays in GitHub rather than being shared with anyone.
+name: Deploy Assembleo
+
+on:
+  push:
+    branches:
+      - main
+      - claude/assembleo-frontend-build-xv3wjy
+    paths:
+      - 'assembleo/**'
+      - '.github/workflows/deploy-assembleo.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: assembleo-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    defaults:
+      run:
+        working-directory: assembleo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: assembleo/package-lock.json
+
+      - run: npm ci
+
+      # The same checks that run locally. A red build must not reach the site.
+      - run: npm run build
+      - run: npm run check
+      - run: npm run check:functions
+      - run: npm run audit
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: assembleo
+          command: pages deploy dist --project-name=assembleo --branch=${{ github.ref_name }}

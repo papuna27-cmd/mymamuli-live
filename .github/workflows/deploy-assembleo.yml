@@ -31,6 +31,13 @@ jobs:
     permissions:
       contents: read
       deployments: write
+
+    # Job level, not step level: the audit checks canonicals against
+    # PUBLIC_SITE_URL, so build and audit have to agree on it or a correct
+    # build fails its own check.
+    env:
+      PUBLIC_API_MOCK: 'false'
+      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL || 'https://assembleo.pages.dev' }}
     defaults:
       run:
         working-directory: assembleo
@@ -47,6 +54,15 @@ jobs:
       - run: npm ci
 
       # The same checks that run locally. A red build must not reach the site.
+      #
+      # PUBLIC_API_MOCK matters: .env defaults it to true for local work, and a
+      # build that inherits that ships a site whose booking form talks to a
+      # mock and silently never reaches the backend.
+      #
+      # PUBLIC_SITE_URL points at pages.dev until a domain exists, because a
+      # canonical aimed at a domain that does not resolve is worse than one
+      # aimed at the address the site is actually served from. Set a repository
+      # variable of the same name to override it on the day the domain lands.
       - run: npm run build
       - run: npm run check
       - run: npm run check:functions
@@ -58,4 +74,9 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: assembleo
-          command: pages deploy dist --project-name=assembleo --branch=${{ github.ref_name }}
+          # Deployed as the project's production branch rather than under the
+          # git branch name, so the site lands on assembleo.pages.dev instead
+          # of a preview URL. The code lives on a claude/* branch and is not
+          # being merged into main, because main is the mymamuli-live deploy
+          # source and that site must not be disturbed.
+          command: pages deploy dist --project-name=assembleo --branch=main --commit-dirty=true

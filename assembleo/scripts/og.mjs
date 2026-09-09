@@ -8,6 +8,11 @@
 import sharp from 'sharp';
 import { mkdirSync } from 'node:fs';
 
+/** The domain shown on the card. One setting, same as everywhere else. */
+const SITE_HOST = (process.env.PUBLIC_SITE_URL || 'https://assembleo.ca')
+  .replace(/^https?:\/\//, '')
+  .replace(/\/$/, '');
+
 const W = 1200;
 const H = 630;
 const INK = '#17201B';
@@ -57,7 +62,7 @@ function card({ eyebrow, lines, sub }) {
 
   <line x1="72" y1="${H - 132}" x2="${W - 72}" y2="${H - 132}" stroke="#2B4157" stroke-width="1"/>
   <text x="72" y="${H - 88}" font-family="${TEXT}" font-size="26" fill="${SLATE}">${esc(sub)}</text>
-  <text x="72" y="${H - 46}" font-family="${MONO}" font-size="22" fill="${SLATE}">assembleo.ca</text>
+  <text x="72" y="${H - 46}" font-family="${MONO}" font-size="22" fill="${SLATE}">${SITE_HOST}</text>
 </svg>`;
 }
 

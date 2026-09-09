@@ -3,6 +3,8 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const DIST = 'dist';
+/** Canonicals are checked against the configured domain, not a hardcoded one. */
+const SITE_URL = (process.env.PUBLIC_SITE_URL || 'https://assembleo.ca').replace(/\/$/, '');
 const problems = [];
 const note = (page, msg) => problems.push(`${page}: ${msg}`);
 
@@ -46,7 +48,7 @@ for (const file of files) {
   const canon = (html.match(/<link rel="canonical" href="([^"]*)"/) || [])[1];
   if (!canon) note(route, 'missing canonical');
   else {
-    const expect = `https://assembleo.ca${route === '/' ? '/' : route}`;
+    const expect = `${SITE_URL}${route === '/' ? '/' : route}`;
     if (canon.replace(/\/$/, '') !== expect.replace(/\/$/, '')) note(route, `canonical ${canon} != ${expect}`);
   }
 

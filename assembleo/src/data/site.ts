@@ -16,7 +16,12 @@ export const site = {
   name: 'Assembleo',
   legalName: 'Assembleo',
   tagline: 'Furniture assembly for homes and commercial sites across Ontario',
-  url: 'https://assembleo.ca',
+  /**
+   * Set PUBLIC_SITE_URL and every canonical, the sitemap, robots.txt, the
+   * JSON-LD and the OG cards follow. It was written out in six files, so a
+   * domain change meant six edits and five chances to miss one.
+   */
+  url: (import.meta.env.PUBLIC_SITE_URL ?? 'https://assembleo.ca').replace(/\/$/, ''),
   locale: 'en-CA',
   founded: 2022,
 

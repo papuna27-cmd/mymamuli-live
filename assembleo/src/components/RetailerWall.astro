@@ -1,0 +1,123 @@
+---
+/**
+ * Retailer logo wall.
+ *
+ * Files live in src/assets/logos/<slug>.(svg|png|webp). Drop a new one in and
+ * it is picked up automatically — no code change. A retailer with no file
+ * falls back to a styled wordmark, so the wall never shows a gap.
+ *
+ * Intrinsic dimensions are read off the file at build time so every <img>
+ * ships width and height and the row cannot shift as logos load.
+ */
+import { readFileSync } from 'node:fs';
+import { join, basename } from 'node:path';
+import { retailers } from '../data/assembly';
+
+const urls = import.meta.glob<string>('../assets/logos/*.{svg,png,webp,jpg}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
+
+/**
+ * Wordmarks are wide, brand marks are square. One flat height makes the square
+ * ones unreadable, so squarer logos get more height and the row still reads as
+ * one line of equals.
+ */
+const H_WIDE = 34;
+const H_SQUARE = 48;
+const SQUARE_MAX_ASPECT = 1.6;
+
+/** viewBox for SVG, IHDR for PNG. Returns the logo's intrinsic aspect ratio. */
+function aspectOf(diskPath: string): number {
+  try {
+    const buf = readFileSync(diskPath);
+    if (buf.subarray(0, 8).toString('hex') === '89504e470d0a1a0a') {
+      return buf.readUInt32BE(16) / buf.readUInt32BE(20);
+    }
+    const head = buf.subarray(0, 2000).toString('utf8');
+    const vb = head.match(/viewBox\s*=\s*["']\s*[-\d.]+[,\s]+[-\d.]+[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
+    if (vb) return parseFloat(vb[1]!) / parseFloat(vb[2]!);
+    const w = head.match(/\bwidth\s*=\s*["']([\d.]+)/i);
+    const h = head.match(/\bheight\s*=\s*["']([\d.]+)/i);
+    if (w && h) return parseFloat(w[1]!) / parseFloat(h[1]!);
+  } catch {
+    /* fall through to the default below */
+  }
+  return 3.2; // sane default rather than a broken layout
+}
+
+const tiles = retailers.map((r) => {
+  const key = Object.keys(urls).find((p) => p.toLowerCase().includes(`/${r.slug}.`));
+  if (!key) return { ...r, src: null, w: 0, h: H_WIDE };
+  // Resolve from the project root: import.meta.url points at the compiled
+  // module in Vite's temp output, not at src/.
+  const disk = join(process.cwd(), 'src/assets/logos', basename(key));
+  const aspect = aspectOf(disk);
+  const h = aspect < SQUARE_MAX_ASPECT ? H_SQUARE : H_WIDE;
+  return { ...r, src: urls[key]!, w: Math.round(aspect * h), h };
+});
+
+const missing = tiles.filter((t) => !t.src);
+if (missing.length && import.meta.env.PROD) {
+  console.warn(`[logos] missing: ${missing.map((m) => m.slug).join(', ')} — showing wordmarks`);
+}
+---
+
+<ul class="wall">
+  {tiles.map((t) => (
+    <li class="wall__tile">
+      {t.src ? (
+        <img
+          class="wall__img"
+          src={t.src}
+          alt={`${t.name} logo`}
+          width={t.w}
+          height={t.h}
+          style={`max-height:${t.h}px`}
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <span class="wall__text">{t.name}</span>
+      )}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .wall {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s-3);
+  }
+  .wall__tile {
+    display: grid;
+    place-items: center;
+    min-height: 68px;
+    padding: var(--s-3) var(--s-4);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+  }
+  .wall__img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
+  .wall__text {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--t-base);
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  @media (min-width: 560px) { .wall { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 1024px) {
+    .wall { grid-template-columns: repeat(8, 1fr); gap: var(--s-4); }
+    .wall__tile { min-height: 82px; }
+  }
+</style>

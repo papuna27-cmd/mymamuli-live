@@ -9,7 +9,10 @@
  */
 
 import { useMemo, useState } from 'preact/hooks';
-import { HST, MINIMUM, allItems, estimatorNote, priceGroups } from '../data/pricing';
+import {
+  HOURLY_DEFAULT_HOURS, HOURLY_MIN_HOURS, HOURLY_RATE, HST, MINIMUM,
+  allItems, estimatorNote, hourlyNote, perItemNote, priceGroups,
+} from '../data/pricing';
 
 const cad = (n: number) =>
   new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 }).format(n);
@@ -17,7 +20,11 @@ const cad = (n: number) =>
 const cad2 = (n: number) =>
   new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD', minimumFractionDigits: 2 }).format(n);
 
+type Mode = 'items' | 'hourly';
+
 export default function Estimator() {
+  const [mode, setMode] = useState<Mode>('items');
+  const [hours, setHours] = useState(HOURLY_DEFAULT_HOURS);
   const [qty, setQty] = useState<Record<string, number>>({});
   const [openGroup, setOpenGroup] = useState<string>(priceGroups[0]!.group);
 
@@ -62,12 +69,21 @@ export default function Estimator() {
     };
   }, [qty]);
 
+  const hourly = useMemo(() => {
+    const sub = hours * HOURLY_RATE;
+    return { sub, tax: sub * HST, total: sub * (1 + HST) };
+  }, [hours]);
+
   const hasItems = result.count > 0;
+  const showResult = mode === 'hourly' || hasItems;
 
   function sendToForm() {
-    const summary = result.lines.map((l) => `${l.n} × ${l.name}`).join('\n');
     const text =
-      `${summary}\n\nEstimated ${cad(result.totMin)}–${cad(result.totMax)} including HST (from the website estimator).`;
+      mode === 'hourly'
+        ? `Hourly booking: ${hours} ${hours === 1 ? 'hour' : 'hours'} at ${cad(HOURLY_RATE)}/hr.\n` +
+          `Estimated ${cad2(hourly.total)} including HST (from the website estimator).`
+        : `${result.lines.map((l) => `${l.n} × ${l.name}`).join('\n')}\n\n` +
+          `Estimated ${cad(result.totMin)}–${cad(result.totMax)} including HST (from the website estimator).`;
     try {
       sessionStorage.setItem('assembleo:estimate', text);
     } catch {
@@ -80,7 +96,44 @@ export default function Estimator() {
   return (
     <div class="est">
       <div class="est__picker">
-        {priceGroups.map((g) => {
+        <div class="est__modes" role="tablist" aria-label="How to price the job">
+          {(['items', 'hourly'] as Mode[]).map((m) => (
+            <button
+              key={m}
+              type="button"
+              role="tab"
+              aria-selected={mode === m}
+              class="est__mode"
+              onClick={() => setMode(m)}
+            >
+              {m === 'items' ? 'Per item' : `By the hour · ${cad(HOURLY_RATE)}/hr`}
+            </button>
+          ))}
+        </div>
+
+        <p class="est__modeNote small">{mode === 'items' ? perItemNote : hourlyNote}</p>
+
+        {mode === 'hourly' && (
+          <div class="est__hours">
+            <span class="est__hoursLabel" id="est-hours-label">How many hours?</span>
+            <span class="est__stepper" aria-labelledby="est-hours-label">
+              <button
+                type="button"
+                onClick={() => setHours((h) => Math.max(HOURLY_MIN_HOURS, h - 1))}
+                disabled={hours <= HOURLY_MIN_HOURS}
+                aria-label="One hour fewer"
+              >−</button>
+              <span class="est__qty num" aria-live="polite">{hours}</span>
+              <button
+                type="button"
+                onClick={() => setHours((h) => Math.min(12, h + 1))}
+                aria-label="One hour more"
+              >+</button>
+            </span>
+          </div>
+        )}
+
+        {mode === 'items' && priceGroups.map((g) => {
           const open = openGroup === g.group;
           const inGroup = g.items.reduce((s, i) => s + (qty[i.id] ?? 0), 0);
           return (
@@ -136,7 +189,7 @@ export default function Estimator() {
       </div>
 
       <div class="est__panel panel">
-        {!hasItems && (
+        {!showResult && (
           <div class="est__empty">
             <p class="est__emptyTitle">Nothing picked yet</p>
             <p class="small">
@@ -146,7 +199,35 @@ export default function Estimator() {
           </div>
         )}
 
-        {hasItems && (
+        {mode === 'hourly' && (
+          <div class="est__result">
+            <p class="est__kicker">{hours} {hours === 1 ? 'hour' : 'hours'} at {cad(HOURLY_RATE)}/hr</p>
+            <dl class="est__totals num">
+              <div>
+                <dt>Labour</dt>
+                <dd>{cad2(hourly.sub)}</dd>
+              </div>
+              <div>
+                <dt>HST 13%</dt>
+                <dd>{cad2(hourly.tax)}</dd>
+              </div>
+            </dl>
+            <div class="est__total num">
+              <span>Estimated total</span>
+              <strong>{cad2(hourly.total)}</strong>
+            </div>
+            <p class="small est__min">
+              Not sure how long it will take? Send us the list anyway and we will tell you honestly
+              whether hourly or per item works out cheaper for you.
+            </p>
+            <button type="button" class="btn btn--signal btn--block btn--keep est__send" onClick={sendToForm}>
+              Book {hours} {hours === 1 ? 'hour' : 'hours'}
+            </button>
+            <p class="legal est__note">{estimatorNote}</p>
+          </div>
+        )}
+
+        {mode === 'items' && hasItems && (
           <div class="est__result">
             <p class="est__kicker">{result.count} {result.count === 1 ? 'item' : 'items'}</p>
 

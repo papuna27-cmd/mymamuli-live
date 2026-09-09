@@ -38,7 +38,8 @@ export function localBusiness() {
       streetAddress: site.address.street,
       addressLocality: site.address.city,
       addressRegion: site.address.region,
-      postalCode: site.address.postalCode,
+      // Omitted entirely rather than sent empty when we do not have it.
+      ...(site.address.postalCode ? { postalCode: site.address.postalCode } : {}),
       addressCountry: site.address.country,
     },
     geo: {

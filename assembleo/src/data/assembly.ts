@@ -14,19 +14,42 @@
  * partnership unless a written vendor agreement is in place, in which case
  * the retailer's brand team supplies both the assets and the wording.
  */
-export const retailers = [
-  'Costco',
-  'Walmart',
-  'Canadian Tire',
-  'Home Depot',
-  'Staples',
-  'IKEA',
-  'Wayfair',
-  'Amazon',
+export interface Retailer {
+  /** Matches the filename in src/assets/logos/<slug>.(svg|png|webp). */
+  slug: string;
+  name: string;
+  /** Where the official, permitted logo file comes from. */
+  brandAssets: string;
+}
+
+/**
+ * Stores whose furniture we assemble.
+ *
+ * ⚠ These are third-party registered trademarks. Drop the official logo files
+ * into src/assets/logos/<slug>.svg and the wall renders them automatically;
+ * until then it renders a styled wordmark, which needs no permission.
+ *
+ * Use each retailer's own brand/press page for the files — a logo grabbed off
+ * a search engine is usually the wrong version and is not licensed.
+ */
+export const retailers: Retailer[] = [
+  { slug: 'costco', name: 'Costco', brandAssets: 'https://www.costco.com/media-centre.html' },
+  { slug: 'walmart', name: 'Walmart', brandAssets: 'https://corporate.walmart.com/news/media-library' },
+  { slug: 'canadian-tire', name: 'Canadian Tire', brandAssets: 'https://corp.canadiantire.ca/English/media/default.aspx' },
+  { slug: 'home-depot', name: 'Home Depot', brandAssets: 'https://corporate.homedepot.com/news-room/media-resources' },
+  { slug: 'staples', name: 'Staples', brandAssets: 'https://www.staples.ca/pages/about-us' },
+  { slug: 'ikea', name: 'IKEA', brandAssets: 'https://www.ikea.com/ca/en/newsroom/' },
+  { slug: 'wayfair', name: 'Wayfair', brandAssets: 'https://www.aboutwayfair.com/media-kit' },
+  { slug: 'amazon', name: 'Amazon', brandAssets: 'https://press.aboutamazon.com/media-assets' },
 ];
 
+/**
+ * The claim made on the page. Saying "we assemble what you buy there" is a
+ * statement of fact about our own service and needs no permission. Wording it
+ * as a partnership or endorsement does, so do not change this without one.
+ */
 export const retailerNote =
-  'We assemble furniture bought from these retailers. Names are shown for identification only.';
+  'Brand names and logos are the property of their respective owners and are shown to identify the furniture we assemble.';
 
 /* ----------------------------------------------------------------- segments */
 

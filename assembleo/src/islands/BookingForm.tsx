@@ -347,7 +347,7 @@ export default function BookingForm({
       {field(
         'phone',
         'Phone',
-        <input class="input" type="tel" inputMode="tel" autocomplete="tel" value={phone} placeholder="(905) 555-0142"
+        <input class="input" type="tel" inputMode="tel" autocomplete="tel" value={phone} placeholder="(437) 779-8843"
           onInput={(e) => setPhone((e.currentTarget as HTMLInputElement).value)} {...aria('phone')} />,
         'We call about parking and access, not to sell you anything.',
       )}

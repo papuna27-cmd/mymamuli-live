@@ -2,6 +2,7 @@
 import { Picture } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Steps from '../components/Steps.astro';
+import RetailerWall from '../components/RetailerWall.astro';
 import FaqBlock from '../components/FaqBlock.astro';
 import Estimator from '../islands/Estimator';
 import BookingForm from '../islands/BookingForm';
@@ -9,7 +10,7 @@ import Reviews from '../islands/Reviews';
 
 import { site, telHref } from '../data/site';
 import {
-  alsoServe, commercialSegments, extras, included, retailerNote, retailers, steps, trustPoints,
+  alsoServe, commercialSegments, extras, included, retailerNote, steps, trustPoints,
 } from '../data/assembly';
 import { getReviews } from '../lib/api';
 import { faqs } from '../data/faqs';
@@ -75,9 +76,7 @@ const description =
   <section class="retail" aria-labelledby="retail-h">
     <div class="wrap">
       <h2 id="retail-h" class="retail__h">Bought it anywhere? We build it.</h2>
-      <ul class="retail__list">
-        {retailers.map((r) => <li class="retail__item">{r}</li>)}
-      </ul>
+      <RetailerWall />
       <p class="legal retail__note">{retailerNote}</p>
     </div>
   </section>

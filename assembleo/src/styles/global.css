@@ -1293,3 +1293,39 @@ body.quote-open .actionbar,
   .est { grid-template-columns: 1.25fr 1fr; gap: var(--s-10); align-items: start; }
   .est__panel { position: sticky; top: var(--s-8); }
 }
+
+/* Estimator: per-item vs hourly */
+.est__modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+  padding: 4px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+.est__mode {
+  min-height: var(--tap);
+  padding-inline: var(--s-2);
+  border-radius: 3px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-sm);
+  color: var(--slate);
+  cursor: pointer;
+}
+.est__mode[aria-selected='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 var(--signal);
+}
+.est__modeNote { margin-block: var(--s-3) var(--s-5); max-width: 52ch; }
+.est__hours {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-4) 0;
+  border-block: 1px solid var(--line);
+}
+.est__hoursLabel { font-size: var(--t-md); font-weight: 600; }

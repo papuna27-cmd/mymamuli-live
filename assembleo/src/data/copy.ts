@@ -238,7 +238,7 @@ export const legal = {
       {
         h2: 'Contact',
         body: [
-          `Privacy questions go to ${site.email}, or write to ${site.legalName}, ${site.address.street}, ${site.address.city}, ${site.address.region} ${site.address.postalCode}.`,
+          `Privacy questions go to ${site.email}, or write to ${site.legalName}, ${site.address.street}, ${site.address.city}, ${site.address.region}${site.address.postalCode ? ' ' + site.address.postalCode : ''}.`,
         ],
       },
     ],

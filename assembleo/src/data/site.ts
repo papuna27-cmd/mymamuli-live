@@ -14,28 +14,28 @@ export interface NavItem {
 
 export const site = {
   name: 'Assembleo',
-  legalName: 'Assembleo Inc.',
+  legalName: 'Assembleo',
   tagline: 'Furniture assembly for homes and commercial sites across Ontario',
   url: 'https://assembleo.ca',
   locale: 'en-CA',
   founded: 2022,
 
-  /** PLACEHOLDER — replace with the real business line. */
-  phone: '+19055550142',
-  phoneDisplay: '(905) 555-0142',
-  email: 'hello@assembleo.ca',
+  phone: '+14377798843',
+  phoneDisplay: '(437) 779-8843',
+  email: 'assembleo@gmail.com',
 
   address: {
-    /** PLACEHOLDER — replace with the registered address. */
-    street: '2255 Dundas Street West, Unit 12',
+    street: '2333 Truscott Dr',
     city: 'Mississauga',
     region: 'ON',
     regionName: 'Ontario',
-    postalCode: 'L5K 1R6',
+    /** TODO: confirm the postal code. Omitted rather than guessed. */
+    postalCode: '',
     country: 'CA',
   },
 
-  geo: { lat: 43.5789, lng: -79.6583 },
+  /** Approximate — Truscott Dr, Clarkson. Confirm before launch. */
+  geo: { lat: 43.5195, lng: -79.6255 },
 
   /** Used by LocalBusiness openingHoursSpecification and the contact page. */
   hours: [
@@ -47,7 +47,8 @@ export const site = {
   priceRange: '$$',
 
   social: {
-    facebook: 'https://www.facebook.com/assembleo',
+    facebook: 'https://www.facebook.com/assembleofurnitureassemblyserviceingta',
+    /** TODO: replace with the real Google Business Profile link. */
     google: 'https://maps.google.com/?cid=0000000000000000000',
   },
 

@@ -28,6 +28,15 @@ export const HST = 0.13;
 /** Minimum charge for a residential visit, before tax. */
 export const MINIMUM = 90;
 
+/**
+ * Hourly alternative. The customer picks whichever suits them — per item when
+ * they know exactly what they have, hourly when the job is vague or they want
+ * us for a block of time. Both are offered; neither is imposed.
+ */
+export const HOURLY_RATE = 130;
+export const HOURLY_MIN_HOURS = 1;
+export const HOURLY_DEFAULT_HOURS = 2;
+
 export const priceGroups: PriceGroup[] = [
   {
     group: 'Bedroom',
@@ -72,6 +81,12 @@ export const priceGroups: PriceGroup[] = [
 ];
 
 export const allItems: PriceItem[] = priceGroups.flatMap((g) => g.items);
+
+export const hourlyNote =
+  'One assembler, tools included. Charged from arrival, rounded to the nearest half hour. Best when you are not sure how much there is, or you want us for a block of time.';
+
+export const perItemNote =
+  'Best when you know what you have. The price is fixed per item before we start, so it does not grow while we work.';
 
 export const estimatorNote =
   'An estimate, not a binding quote. The final price is confirmed when you book, once we know the model and the access. Commercial work is quoted individually.';

@@ -115,9 +115,14 @@ for (const file of files) {
     if (!/\bwidth=/.test(tag) || !/\bheight=/.test(tag)) note(route, `img without width/height: ${tag.slice(0, 90)}`);
   }
 
-  // --- phone numbers must be tel: links
-  if (/\(905\)\s?555-0142/.test(html) && !html.includes('href="tel:+19055550142"')) {
-    note(route, 'phone number shown but no tel: link');
+  // --- any phone number shown must also be a tel: link
+  const shownPhone = html.match(/\(\d{3}\)\s?\d{3}-\d{4}/);
+  if (shownPhone && !/href="tel:\+\d{10,}"/.test(html)) {
+    note(route, `phone ${shownPhone[0]} shown but no tel: link`);
+  }
+  // --- the fictional placeholder must never reach production
+  if (/555-0142|2255 Dundas/.test(html)) {
+    note(route, 'placeholder contact details still present');
   }
 
   // --- viewport / lang / skip link

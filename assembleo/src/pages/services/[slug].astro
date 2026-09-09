@@ -60,7 +60,7 @@ const crumbs = [
   />
 
   <section class="section section--surface" aria-labelledby="intro-h">
-    <div class="wrap">
+    <div class="wrap svcIntro">
       <h2 id="intro-h" class="visually-hidden">About this service</h2>
       <div class="prose stack">{service.intro.map((p) => <p>{p}</p>)}</div>
       <div class="svcScope"><ScopeBlock title={service.scopeTitle} body={service.scope} /></div>
@@ -186,7 +186,13 @@ const crumbs = [
 </BaseLayout>
 
 <style>
-  .svcScope { margin-top: var(--s-8); }
+  /* Two columns, so a page of prose does not sit in a narrow strip with half
+     the window empty beside it. */
+  .svcIntro { display: grid; gap: var(--s-8); }
+  .svcScope { margin-top: 0; }
+  @media (min-width: 900px) {
+    .svcIntro { grid-template-columns: minmax(0, 1fr) minmax(0, 26rem); gap: var(--s-14); align-items: start; }
+  }
   /* A second setting on one page: the photo carries what the copy cannot. */
   .svcFig { margin: 0; background: var(--ink); }
   .svcFig :global(picture), .svcFig :global(img) { display: block; width: 100%; height: auto; }

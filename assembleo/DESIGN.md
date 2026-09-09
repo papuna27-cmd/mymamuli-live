@@ -238,3 +238,49 @@ Checked against the constraints, with the changes made:
 - **Not a SaaS landing page** — no gradient, no glass, no floating screenshot, no
   logo cloud styled as social proof (the brand list is set as plain text in the trust
   strip, because it is a factual list of what we assemble, not a customer roster).
+
+---
+
+## Revision two — the desktop pass
+
+The first build was reviewed on a phone and in a 1024px browser, and it showed.
+Opened on a laptop it read as unfinished, and the client was right to say so.
+Four things were wrong, and only one of them was taste.
+
+**The type scale had no top end.** Every step was a fixed rem value topping out
+at 42px, so a 1512px screen got phone-sized headings. The scale is now fluid:
+each step interpolates between a phone value and a desktop one, and the hero
+title runs 40px to 72px. Nothing else about the eight-step discipline changed.
+
+**Three blocks shipped with no CSS at all.** `.areaChips`, `.areaAll`, `.seg`
+and `.seg__link` were written in the markup and never styled, so the service
+area list rendered as a bare column of underlined links with two thirds of the
+window empty beside it. `npm run audit` now has no opinion about this; a
+grep for undefined class names during review does.
+
+**The reviews rail collapsed.** `grid-auto-columns: minmax(0, 360px)` let six
+cards divide one row into six 170px slivers — two words a line, with a word
+hyphen-breaking across cards. An intrinsic width was the whole fix.
+
+**Every ground was nearly white.** #FFFFFF alternating with #F4F6F8 is not
+alternation, it is one long pale scroll. The navy ground is now used three
+times on the homepage as punctuation, and each section leads with an eyebrow
+so the page reads as a document with chapters rather than a stack of blocks.
+
+The hero changed shape as a consequence of the second principle rather than
+for style. Text over a photograph needs a scrim heavy enough to hold AA, which
+left the photo murky and the type grey. Splitting it — solid navy for the
+words, the photograph at full contrast beside them — gives both halves their
+own job and removes the compromise.
+
+### What the redesign added to the checks
+
+`npm run check:contrast` walks every visible text node on seven routes at two
+widths, resolves the ground it actually sits on, and fails under WCAG AA.
+It was written after a whole section shipped with slate body copy on the navy
+ground at 1.9:1 — a bug that survived screenshot review because the text
+looked quiet rather than broken. Verified by reintroducing the bug: the check
+reports 2.34:1 and exits non-zero.
+
+Text over photography is listed, not graded. A ratio against a flat colour
+says nothing there, and pretending otherwise would be worse than silence.

@@ -16,7 +16,7 @@ import { getReviews } from '../lib/api';
 import { faqs } from '../data/faqs';
 import { faqPage } from '../lib/schema';
 
-import heroImg from '../assets/photos/hero-assembly.jpg';
+import heroImg from '../assets/photos/hero-room.jpg';
 import homeImg from '../assets/photos/home-bedroom.jpg';
 import segGym from '../assets/photos/seg-gym.jpg';
 import segClinic from '../assets/photos/seg-clinic.jpg';
@@ -37,38 +37,48 @@ const description =
 
 <BaseLayout title={title} description={description} path="/" schemas={[faqPage(faqs.general!)]}>
   <!-- ============================================================ hero -->
-  <section class="hero on-ink">
-    <div class="hero__media">
-      <Picture
-        src={heroImg}
-        alt="An assembler fixing a metal bracket to a flat-pack panel with a screwdriver"
-        widths={[640, 960, 1400, 2000]}
-        sizes="100vw"
-        formats={['avif', 'webp']}
-        fallbackFormat="jpg"
-        quality={52}
-        loading="eager"
-        fetchpriority="high"
-        class="hero__img"
-      />
+  {/* Split, not text-over-photo. The scrim version needed the picture dimmed
+      to keep the copy at AA, which left a murky photo and grey type. Solid
+      navy for the words, the photo at full contrast beside them. */}
+  <section class="lede-hero">
+    <div class="lede-hero__text">
+      <div class="lede-hero__col">
+        <p class="lede-hero__eyebrow">Ontario · {years} years · Insured</p>
+        <h1 class="hero-title">Furniture assembly, done properly.</h1>
+        <p class="lede-hero__support">
+          Homes, gyms, clinics, hotels and offices. Flat prices, insured crews, and the cardboard
+          leaves with us.
+        </p>
+        <div class="lede-hero__actions">
+          <a class="btn btn--signal" href="#estimate">Price my job</a>
+          <a class="btn btn--onink" href={telHref}>Call {site.phoneDisplay}</a>
+        </div>
+      </div>
     </div>
 
-    <div class="wrap hero__inner">
-      <p class="hero__eyebrow">Ontario · {years} years · Insured</p>
-      <h1 class="hero-title">Furniture assembly,<br />done properly.</h1>
-      <p class="hero__support">
-        Homes, gyms, clinics, hotels and offices. Flat prices, insured crews, and the cardboard
-        leaves with us.
-      </p>
-      <div class="hero__actions">
-        <a class="btn btn--signal btn--block" href="#estimate">Price my job</a>
-        <a class="btn btn--ghost btn--block" href={telHref}>Call {site.phoneDisplay}</a>
-      </div>
-      <ul class="hero__chips">
-        <li>{site.facts.liabilityCover} liability insured</li>
-        <li>WSIB covered</li>
-        <li>{site.facts.rating} ★ · {site.facts.reviewCount} reviews</li>
-      </ul>
+    <div class="lede-hero__media">
+      <Picture
+        src={heroImg}
+        alt="A finished bedroom with an assembled wardrobe, bed frame and bedside units"
+        widths={[640, 960, 1400, 2000]}
+        sizes="(min-width: 900px) 52vw, 100vw"
+        formats={['avif', 'webp']}
+        fallbackFormat="jpg"
+        quality={62}
+        loading="eager"
+        fetchpriority="high"
+        class="lede-hero__img"
+      />
+    </div>
+  </section>
+
+  <!-- ====================================================== proof strip -->
+  <section class="proof" aria-label="What we bring to every job">
+    <div class="wrap proof__grid">
+      <div class="proof__item"><span class="proof__n">{site.facts.jobsCompleted}</span><span class="proof__l">jobs completed</span></div>
+      <div class="proof__item"><span class="proof__n">{site.facts.rating} ★</span><span class="proof__l">{site.facts.reviewCount} reviews</span></div>
+      <div class="proof__item"><span class="proof__n">{site.facts.liabilityCover}</span><span class="proof__l">liability insured</span></div>
+      <div class="proof__item"><span class="proof__n">WSIB</span><span class="proof__l">covered crews</span></div>
     </div>
   </section>
 
@@ -84,9 +94,12 @@ const description =
   <!-- ======================================================== two paths -->
   <section class="section section--paper" id="what" aria-labelledby="what-h">
     <div class="wrap">
-      <div class="section-head">
-        <h2 id="what-h">Two kinds of job</h2>
-        <p class="lede section-intro">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">What we do</p>
+          <h2 id="what-h">Two kinds of job</h2>
+        </div>
+        <p class="lede">
           Same crew, same standard. The difference is how it is priced and when we turn up.
         </p>
       </div>
@@ -136,9 +149,12 @@ const description =
   <!-- ====================================================== commercial -->
   <section class="section section--surface" id="commercial" aria-labelledby="com-h">
     <div class="wrap">
-      <div class="section-head">
-        <h2 id="com-h">Commercial assembly</h2>
-        <p class="lede section-intro">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">Commercial</p>
+          <h2 id="com-h">Sites that cannot close</h2>
+        </div>
+        <p class="lede">
           Volume work for sites that cannot close. One contact, a fixed project price, and a crew
           that works evenings, weekends or overnight.
         </p>
@@ -179,9 +195,12 @@ const description =
   </section>
 
   <!-- =========================================================== steps -->
-  <section class="section section--paper" id="how" aria-labelledby="how-h">
+  <section class="section section--ink" id="how" aria-labelledby="how-h">
     <div class="wrap">
-      <div class="section-head"><h2 id="how-h">How it works</h2></div>
+      <div class="section-head">
+        <p class="eyebrow">Four steps</p>
+        <h2 id="how-h">How it works</h2>
+      </div>
       <Steps items={steps} />
     </div>
   </section>
@@ -189,9 +208,12 @@ const description =
   <!-- ======================================================= estimator -->
   <section class="section section--surface" id="estimate" aria-labelledby="est-h">
     <div class="wrap">
-      <div class="section-head">
-        <h2 id="est-h">What will it cost?</h2>
-        <p class="lede section-intro">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">Pricing</p>
+          <h2 id="est-h">What will it cost?</h2>
+        </div>
+        <p class="lede">
           Pick what you need built. You get a real range in about thirty seconds, with no contact
           details asked for.
         </p>
@@ -203,7 +225,10 @@ const description =
   <!-- =========================================================== scope -->
   <section class="section section--paper" aria-labelledby="scope-h">
     <div class="wrap">
-      <div class="section-head"><h2 id="scope-h">What the price covers</h2></div>
+      <div class="section-head">
+        <p class="eyebrow">No surprises</p>
+        <h2 id="scope-h">What the price covers</h2>
+      </div>
       <div class="scopeGrid">
         <div>
           <h3 class="scopeGrid__h">Included in every job</h3>
@@ -218,9 +243,10 @@ const description =
   </section>
 
   <!-- ============================================================= why -->
-  <section class="section section--surface" id="why" aria-labelledby="why-h">
+  <section class="section section--paper" id="why" aria-labelledby="why-h">
     <div class="wrap">
       <div class="section-head">
+        <p class="eyebrow">Why us</p>
         <h2 id="why-h">Why people book us twice</h2>
       </div>
       <ul class="why">
@@ -235,9 +261,12 @@ const description =
   </section>
 
   <!-- ========================================================= reviews -->
-  <section class="section section--paper" aria-labelledby="rev-h">
+  <section class="section section--surface" aria-labelledby="rev-h">
     <div class="wrap">
-      <div class="section-head"><h2 id="rev-h">What customers say</h2></div>
+      <div class="section-head">
+        <p class="eyebrow">{site.facts.reviewCount} reviews</p>
+        <h2 id="rev-h">What customers say</h2>
+      </div>
       <Reviews
         client:visible
         reviews={reviews.reviews}
@@ -249,11 +278,14 @@ const description =
   </section>
 
   <!-- =================================================== service areas -->
-  <section class="section section--paper" aria-labelledby="areas-h">
+  <section class="section section--surface" aria-labelledby="areas-h">
     <div class="wrap">
-      <div class="section-head">
-        <h2 id="areas-h">Where we work</h2>
-        <p class="lede section-intro">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">Service areas</p>
+          <h2 id="areas-h">Where we work</h2>
+        </div>
+        <p class="lede">
           The whole Greater Toronto Area, from our Mississauga depot. Each area has its own page
           with drive times and what we mostly get called for there.
         </p>
@@ -274,6 +306,7 @@ const description =
   <section class="section on-ink" id="book" aria-labelledby="book-h">
     <div class="wrap bookGrid">
       <div>
+        <p class="eyebrow">Contact</p>
         <h2 id="book-h">Get a fixed price</h2>
         <p class="lede bookGrid__lede">
           Send the list and you will have a price and a date back within two hours during working

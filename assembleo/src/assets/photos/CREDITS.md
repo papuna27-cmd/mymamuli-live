@@ -11,6 +11,7 @@ remove any question of implying that stock subjects are your staff.
 
 | File | Photographer | Source |
 |---|---|---|
+| `hero-room.jpg` | Backbone | https://unsplash.com/photos/4Ly61P3EWVY |
 | `hero-assembly.jpg` | Sleepline | https://unsplash.com/photos/nvY2UmZI_Vg |
 | `home-bedroom.jpg` | Di_An_h | https://unsplash.com/photos/g_8MrEZAvyE |
 | `seg-office.jpg` | Marc Wieland | https://unsplash.com/photos/56U797Gamac |

@@ -32,7 +32,20 @@ const {
 } = Astro.props;
 
 const canonical = abs(path);
+/**
+ * Analytics. Two ways in, because a container is worth setting up only when
+ * there is more than one tag to manage:
+ *   PUBLIC_GTM_ID  (GTM-XXXXXXX)   — Tag Manager, for when there are several
+ *   PUBLIC_GA_ID   (G-XXXXXXXXXX)  — GA4 on its own, one property, no container
+ * Set one. If both are set the container wins, since it would otherwise load
+ * GA4 twice and every visit would be counted twice.
+ *
+ * Neither is set by default, so an unconfigured build ships no tracking at all
+ * rather than a broken tag. Consent Mode below runs either way and denies
+ * storage until the visitor agrees.
+ */
 const gtmId = import.meta.env.PUBLIC_GTM_ID;
+const gaId = !gtmId ? import.meta.env.PUBLIC_GA_ID : undefined;
 const cfAnalyticsToken = import.meta.env.PUBLIC_CF_ANALYTICS_TOKEN;
 
 // Length budgets from the brief. Surfaced at build time, never to the user.
@@ -133,6 +146,21 @@ const allSchemas = [
             f.parentNode.insertBefore(j, f);
           })(window, document, 'script', 'dataLayer', gtmId);
         </script>
+      )
+    }
+
+    {
+      gaId && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+          <script is:inline define:vars={{ gaId }}>
+            // gtag() and dataLayer are already defined by the Consent Mode
+            // block above, which must run first — redefining them here would
+            // drop the denials it queued.
+            gtag('js', new Date());
+            gtag('config', gaId);
+          </script>
+        </>
       )
     }
 

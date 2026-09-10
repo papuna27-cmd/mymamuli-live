@@ -51,8 +51,12 @@ export const site = {
     city: 'Mississauga',
     region: 'ON',
     regionName: 'Ontario',
-    /** TODO: confirm the postal code. Omitted rather than guessed. */
-    postalCode: '',
+    /**
+     * Confirmed by the owner. It reaches the JSON-LD, the privacy policy and
+     * the terms; Google wants the full address before it will match the site
+     * to a Business Profile, and a partial one it silently discounts.
+     */
+    postalCode: 'L5J 4B7',
     country: 'CA',
   },
 

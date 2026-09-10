@@ -1264,7 +1264,10 @@ const I18N = {
 "— ან ჯერ არ იცი კოდი? მოძებნე მისამართით ქვემოთ, ან დასვი ნიშნული ხელით —": "— or don't know the code yet? Search by address below, or drop the pin by hand —",
 "მისამართის არჩევისას ნიშნული ავტომატურად დაისმება — შემდეგ გინდა და ხელით დააზუსტე.": "Picking an address places the pin automatically — you can fine-tune it by hand afterwards.",
 "სრული მისამართი — არჩევითი (მაგ. ი. ჭავჭავაძის გამზ. 15, თბილისი)": "Full address — optional (e.g. 15 I. Chavchavadze Ave, Tbilisi)",
-"საკადასტრო კოდით რეესტრიდან ავტომატურად ჩამოვწერთ მისამართს — არჩევითია.": "With the cadastral code we pull the address from the Registry automatically — optional."
+"საკადასტრო კოდით რეესტრიდან ავტომატურად ჩამოვწერთ მისამართს — არჩევითია.": "With the cadastral code we pull the address from the Registry automatically — optional.",
+
+/* 2026-09-10 — ფუტერის ახალი ბმული კატალოგზე (/listings). */
+"ყველა განცხადება": "All listings"
 };
 
 /* პარამეტრიანი ფრაზები (ციფრები შიგნით) */

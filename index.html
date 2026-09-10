@@ -95,12 +95,12 @@ addEventListener('load',()=>{
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.09.10-0707"></script>
+<script src="i18n.js?v=2026.09.10-0724"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.09.10-0707';
+window.MM_BUILD = '2026.09.10-0724';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1374,11 +1374,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.09.10-0707">
+<footer data-build="2026.09.10-0724">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.09.10-0707</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.09.10-0724</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -1386,6 +1386,14 @@ body.foot-min .fslim{display:flex}
     <a href="/how-it-works" data-modal="main">მთავარი</a>
     <a href="/how-it-works" data-modal="main">როგორ მუშაობს</a>
     <a href="#want" data-modal="want">ვეძებ</a>
+    <!-- ⚠️ 2026-09-10 — /listings: ყველა აქტიური განცხადების crawlable სია.
+         ეს ბმული განზრახ ხილულია (და არა .sr-only, როგორც ქვემოთა ქალაქების
+         ბლოკი): განცხადებების გვერდებზე (/g/…) აქამდე საიტიდან არც ერთი
+         <a href> არ მიდიოდა — მთავარი გვერდი SPA-ა და ბარათებს JS ხსნის —
+         ამიტომ Google-ისთვის ისინი „ობოლი" გვერდები იყვნენ და კითხვის
+         რიგში ბოლოში ეყარნენ („Discovered – currently not indexed").
+         ახლა ყოველ განცხადებამდე მთავარი გვერდიდან ერთი დაწკაპუნებაა. -->
+    <a href="/listings">ყველა განცხადება</a>
     <div class="sp">
       <a href="/terms" data-modal="terms">წესები</a>
       <a href="/privacy" data-modal="priv">კონფიდენციალურობა</a>
@@ -1417,6 +1425,7 @@ body.foot-min .fslim{display:flex}
       <a href="/how-it-works" data-modal="main">მთავარი</a>
       <a href="/how-it-works" data-modal="main">როგორ მუშაობს</a>
       <a href="#want" data-modal="want">ვეძებ<i class="fnew">ახალი</i></a>
+      <a href="/listings">ყველა განცხადება</a>
     </div>
     <!-- 2026-08-25: George-ის მოთხოვნით — ეს ბმულები აღარ ჩანს ვიზუალურად
          ფუტერში (მომხმარებელს ცარიელ „აქტიური განცხადება არ არის" გვერდზე

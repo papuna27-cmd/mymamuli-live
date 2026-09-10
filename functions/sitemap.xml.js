@@ -14,6 +14,7 @@
  * სტატუსის ჩანაწერები აქ არასდროს ხვდება — WHERE status='active'.
  */
 import { CITY_SLUGS } from './_cities.js';
+import { nearestCitySlug } from './_geocity.js';
 
 const SITE = 'https://mymamuli.ge';
 const iso = ms => new Date(ms || Date.now()).toISOString().slice(0, 10);
@@ -39,7 +40,7 @@ export async function onRequestGet({ env }) {
          ხვდება — საერთო რუკიდან დამალული ობიექტის URL საძიებო სისტემას
          არც უნდა შესთავაზო. */
       const r = await env.DB.prepare(
-        `SELECT id, cat, deal, loc, reg, created FROM lst WHERE status='active' AND visibility != 'private' ORDER BY created DESC LIMIT 5000`
+        `SELECT id, cat, deal, loc, reg, lat, lng, created FROM lst WHERE status='active' AND visibility != 'private' ORDER BY created DESC LIMIT 5000`
       ).all();
       rows = r.results || [];
     } catch (_) { /* ცარიელი sitemap ჯობია გატეხილს */ }
@@ -48,13 +49,24 @@ export async function onRequestGet({ env }) {
   /* ქალაქის/კატეგორიის ლენდინგები — მხოლოდ ის კომბინაცია ხვდება
      sitemap-ში, სადაც ნამდვილად არსებობს მინიმუმ ერთი აქტიური
      განცხადება (ცარიელი გვერდის ინდექსაცია არ გვინდა). */
+  /* ⚠️ 2026-09-10, ROOT CAUSE — იხ. functions/_geocity.js-ის თავსართი.
+     ეს ბლოკი ყოველთვის **0 URL-ს** აბრუნებდა: დამთხვევა მხოლოდ
+     ტექსტურ `loc`/`reg`-ზე მოწმდებოდა, ეს სვეტები კი ყველა აქტიურ
+     განცხადებაზე NULL-ია (ფორმა მათ არ აგზავნის). ანუ ქალაქის
+     ლენდინგები — საიტის ყველაზე საკვანძო-სიტყვიანი, ყველაზე
+     ინდექსირებადი გვერდები — sitemap-ში არასდროს მოხვედრილა.
+     ახლა ქალაქი კოორდინატებით დგინდება (იგივე „უახლოესი ქალაქი"
+     ლოგიკა, რასაც თავად ლენდინგის გვერდი იყენებს — ორივე ერთსა და
+     იმავე ჰელპერზეა, ამიტომ sitemap ვერასდროს დაპირდება URL-ს,
+     რომელიც გახსნისას ცარიელი აღმოჩნდება). */
   const landingUrls = [];
   for (const [slug, T] of Object.entries(TYPE_MAP)) {
     for (const [citySlug, cityKa] of CITY_SLUGS) {
       const match = rows.find(l =>
         (T.cat ? l.cat === T.cat : true) &&
         (T.deal ? l.deal === T.deal : true) &&
-        ((l.loc && l.loc.includes(cityKa)) || (l.reg && l.reg.includes(cityKa)))
+        ((l.loc && l.loc.includes(cityKa)) || (l.reg && l.reg.includes(cityKa)) ||
+         nearestCitySlug(l.lat, l.lng) === citySlug)
       );
       if (match) {
         landingUrls.push(
@@ -73,6 +85,8 @@ export async function onRequestGet({ env }) {
     `<url><loc>${SITE}/buy</loc><lastmod>${iso(Date.now())}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>`,
     `<url><loc>${SITE}/want</loc><lastmod>${iso(Date.now())}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>`,
     `<url><loc>${SITE}/faq</loc><lastmod>${iso(Date.now())}</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>`,
+    /* კატალოგი — ყველა აქტიური განცხადების crawlable სია (functions/listings.js) */
+    `<url><loc>${SITE}/listings</loc><lastmod>${iso(Date.now())}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>`,
     ...rows.map(l =>
       `<url><loc>${SITE}/g/${esc(l.id)}/</loc><lastmod>${iso(l.created)}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`
     ),

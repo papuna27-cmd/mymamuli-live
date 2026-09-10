@@ -19,6 +19,7 @@
  */
 import { CITY_SLUGS } from '../_cities.js';
 import { cityLocative } from '../_city_locative.js';
+import { nearestCitySlug, cityBox, placeLabel } from '../_geocity.js';
 
 const SITE = 'https://mymamuli.ge';
 const CATN = {
@@ -81,27 +82,47 @@ export async function onRequestGet({ params, request, env }) {
   const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10) || 1);
   const offset = (page - 1) * PAGE_SIZE;
 
-  /* loc/reg თავისუფალი ტექსტია (მომხმარებელი წერს/საკადასტრო რეესტრიდან
-     მოდის) — ზუსტი toString-შედარება ხშირად გამოტოვებდა ნამდვილ
-     ჩანაწერებს (მაგ. "თბილისი, საბურთალო"), ამიტომ LIKE-ით ვეძებთ. */
-  const like = `%${cityKa}%`;
-  const clauses = [`status='active'`, `(loc LIKE ?1 OR reg LIKE ?1)`];
-  const binds = [like];
-  if (T.cat) { clauses.push(`cat=?${binds.length + 1}`); binds.push(T.cat); }
-  if (T.deal) { clauses.push(`deal=?${binds.length + 1}`); binds.push(T.deal); }
-  const where = clauses.join(' AND ');
+  /* ⚠️ 2026-09-10, ROOT CAUSE — იხ. functions/_geocity.js-ის თავსართი.
+     აქამდე ეს ძებნა მხოლოდ ტექსტურ `loc`/`reg`-ზე იყო აგებული
+     (`LIKE '%თბილისი%'`), ეს ორი სვეტი კი ყველა აქტიურ განცხადებაზე
+     NULL-ია — ფორმა მათ საერთოდ არ აგზავნის. შედეგად ქალაქის ყველა
+     ლენდინგი ცარიელი იყო: სათაური იხატებოდა, განცხადება — არც ერთი.
+     ახლა ძირითადი კრიტერიუმი კოორდინატია (ნიშნული ფორმაში
+     სავალდებულოა, ანუ ყოველ განცხადებას აქვს): ჯერ SQL იაფი
+     ბოქსით ჭრის, მერე JS ტოვებს მხოლოდ იმას, ვისთვისაც ეს ქალაქი
+     ნამდვილად უახლოესია (რომ ერთი ნაკვეთი ორ ქალაქზე არ გაჩნდეს).
+     ტექსტური LIKE შენარჩუნებულია OR-ად — თუ `loc`/`reg` ოდესმე
+     შეივსება, ისიც იმუშავებს.
 
-  let total = 0, rows = [];
+     ⚠️ დაემატა `visibility != 'private'` — აქამდე აქ არ იყო, ანუ
+     საერთო რუკიდან განზრახ დამალული განცხადება ამ საჯარო გვერდზე
+     მაინც ჩანდა (და Google-საც ხვდებოდა). rukა და sitemap ამას
+     თავიდანვე ფილტრავდნენ — მხოლოდ ეს გვერდი იყო გამორჩენილი. */
+  const box = cityBox(C);
+  const like = `%${cityKa}%`;
+  const where = `status='active' AND visibility != 'private'
+      AND ( (loc LIKE ?1 OR reg LIKE ?1)
+         OR (lat BETWEEN ?2 AND ?3 AND lng BETWEEN ?4 AND ?5) )`
+    + (T.cat ? ` AND cat=?6` : '')
+    + (T.deal ? ` AND deal=?${T.cat ? 7 : 6}` : '');
+  const binds = [like, box.latMin, box.latMax, box.lngMin, box.lngMax];
+  if (T.cat) binds.push(T.cat);
+  if (T.deal) binds.push(T.deal);
+
+  let total = 0, rows = [], all = [];
   try {
-    const cnt = await env.DB.prepare(`SELECT COUNT(*) n FROM lst WHERE ${where}`).bind(...binds).first();
-    total = cnt ? cnt.n : 0;
-    if (total > 0) {
-      const r = await env.DB.prepare(
-        `SELECT id,cat,deal,loc,reg,area,price,ttl,photos,created FROM lst WHERE ${where}
-         ORDER BY created DESC LIMIT ${PAGE_SIZE} OFFSET ${offset}`
-      ).bind(...binds).all();
-      rows = r.results || [];
-    }
+    const r = await env.DB.prepare(
+      `SELECT id,cat,deal,loc,reg,lat,lng,area,price,ttl,photos,created FROM lst
+        WHERE ${where} ORDER BY created DESC LIMIT 500`
+    ).bind(...binds).all();
+    /* „უახლოესი ქალაქი ესაა?" — საბოლოო, ზუსტი გაფილტვრა.
+       ტექსტით დამთხვეული ჩანაწერი უპირობოდ რჩება. */
+    all = (r.results || []).filter(l => {
+      const byText = (l.loc && l.loc.includes(cityKa)) || (l.reg && l.reg.includes(cityKa));
+      return byText || nearestCitySlug(l.lat, l.lng) === citySlug;
+    });
+    total = all.length;
+    rows = all.slice(offset, offset + PAGE_SIZE);
   } catch (_) { /* ცარიელი სია გატეხილ გვერდზე ჯობია */ }
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -120,7 +141,7 @@ export async function onRequestGet({ params, request, env }) {
     return `<a class="card" href="/g/${esc(l.id)}/">
       <img src="${esc(cover)}" alt="${esc(l.ttl || cityKa)}" loading="lazy" width="320" height="200">
       <div class="cb"><b>${esc(priceTxt)}</b><span>${esc(l.ttl || (CATN[l.cat] || l.cat))}</span>
-      <small>${esc([l.loc, l.reg].filter(Boolean).join(', '))}${areaTxt ? ' · ' + esc(areaTxt) : ''}</small></div>
+      <small>${esc(placeLabel(l))}${areaTxt ? ' · ' + esc(areaTxt) : ''}</small></div>
     </a>`;
   }).join('');
 

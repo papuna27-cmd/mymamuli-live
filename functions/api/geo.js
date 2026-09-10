@@ -19,7 +19,42 @@ function days(created) {
   return Math.max(0, Math.floor((now() - created) / 86400e3));
 }
 
-export async function onRequestGet({ env }) {
+/* ⚠️ 2026-09-10 — edge-ქეში, D1-ის დღიური rows_read ლიმიტის დასაცავად.
+   index.html ყოველ 5 წამში ეკითხება ამ endpoint-ს (რომ დადასტურებული
+   განცხადება მაქსიმუმ 5 წამში გამოჩნდეს). აქამდე ყოველი ასეთი ზარი
+   ცალკე კითხულობდა D1-ს — ანუ 10 ერთდროული ვიზიტორი = 10 წაკითხვა
+   ყოველ 5 წამში. ორჯერ სწორედ ამან ამოწურა free-tier-ის 5M rows_read
+   და მთელი საიტი ჩააქრო.
+   ახლა პასუხი Cloudflare-ის edge-ქეშში 5 წამით ინახება: ერთი კოლოს
+   ყველა ვიზიტორი ერთსა და იმავე პასუხს იღებს და D1-მდე 5 წამში
+   მხოლოდ ერთი მოთხოვნა აღწევს. 5 წამი განზრახ ემთხვევა კლიენტის
+   პოლინგის ინტერვალს — ანუ „მაქსიმუმ 5 წამში გამოჩნდება" წესი
+   უცვლელი რჩება (უარეს შემთხვევაში 5-ის ნაცვლად ~10 წამი).
+   ქეშის ნებისმიერი შეცდომა უვნებელია — try/catch-ში ვართ და
+   ჩვეულებრივ, პირდაპირ D1-იდან წაკითხვაზე ვბრუნდებით. */
+const EDGE_TTL = 5;
+
+export async function onRequestGet(ctx) {
+  const { env, request, waitUntil } = ctx;
+  let cache = null, cacheKey = null;
+  try {
+    cache = caches.default;
+    /* query string მნიშვნელობა არ აქვს — feed ყველასთვის ერთია.
+       ქეშის გასაღები ნორმალიზებულია, რომ `?x=1`-ით ქეში არ აიცილონ. */
+    cacheKey = new Request(new URL(request.url).origin + '/api/geo', { method: 'GET' });
+    const hit = await cache.match(cacheKey);
+    if (hit) return hit;
+  } catch (_) { cache = null }
+
+  const res = await buildFeed(env);
+
+  if (cache && cacheKey && res.status === 200) {
+    try { waitUntil(cache.put(cacheKey, res.clone())) } catch (_) {}
+  }
+  return res;
+}
+
+async function buildFeed(env) {
   if (!env.DB) return J({ lst: [], req: [] });
 
   const [lstRows, reqRows] = await Promise.all([
@@ -94,5 +129,9 @@ export async function onRequestGet({ env }) {
     };
   });
 
-  return J({ lst, req });
+  /* J() ნაგულისხმევად `no-store`-ს სვამს — აქ ის განზრახ იცვლება,
+     თორემ არც edge-ქეში და არც ბრაუზერი პასუხს ვერ შეინახავს. */
+  return J({ lst, req }, 200, {
+    'cache-control': `public, max-age=${EDGE_TTL}`
+  });
 }

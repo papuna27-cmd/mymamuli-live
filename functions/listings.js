@@ -51,7 +51,7 @@ const EDGE_TTL = 600;              /* 10 წუთი */
    ახლა stamp-ის შეცვლა ავტომატურად ქმნის ახალ გასაღებს.
    ⚠️ ეს სტრიქონი იმავე `sed`-ით იცვლება, რაც index/form/cabinet-ს —
    იხ. CLAUDE.md → „Where the build stamp lives". */
-const BUILD = '2026.09.10-0730';
+const BUILD = '2026.09.10-0836';
 const MAX_ROWS = 1000;
 
 const esc = s => String(s == null ? '' : s)

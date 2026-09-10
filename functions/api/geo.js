@@ -10,9 +10,16 @@
  * ბაზიდან მოვა, როცა ეს ეტაპი აშენდება").
  */
 import { J, now } from './_util.js';
+import { nearestCity } from '../_geocity.js';
 
 function safeJson(t, dflt) {
   try { const v = JSON.parse(t); return v == null ? dflt : v } catch (_) { return dflt }
+}
+
+/* ცარიელი მდებარეობის შემვსები — მხოლოდ კოორდინატიდან. */
+function autoCity(l) {
+  const C = nearestCity(l.lat, l.lng);
+  return C ? C[1] : null;
 }
 
 function days(created) {
@@ -91,7 +98,19 @@ async function buildFeed(env) {
          რეალურად — ცალკე გამოსასწორებელია). */
       id: l.id, t: l.cat, deal: l.deal, period: l.period, k: l.cad || null,
       lat: l.lat, lng: l.lng, poly,
-      loc: l.loc, reg: l.reg, a: l.area, p: l.price,
+      /* ⚠️ 2026-09-10 — `loc`/`reg` ბაზაში ყველა აქტიურ განცხადებაზე
+         NULL-ია: submit.js მათ კლიენტიდან იღებდა, ფორმა კი არ აგზავნიდა
+         (იხ. functions/_geocity.js-ის თავსართი). შედეგად რუკის ბარათებზე
+         მდებარეობის ნაცვლად „მდებარეობა არ არის მითითებული" ეწერა, ხოლო
+         გაზიარების JSON-LD-ში `addressLocality` ცარიელი მიდიოდა.
+         აქ ცარიელ `loc`-ს ვავსებთ უახლოესი ქალაქის **ქართული** სახელით —
+         index.html მას ისედაც `T(o.loc)`-ით ატარებს, ეს სახელები კი
+         i18n.js-ის ლექსიკონში უკვე დევს (თბილისი→Tbilisi და ა.შ.),
+         ამიტომ EN რეჟიმში ავტომატურად ითარგმნება და index.html-ში
+         ვერცერთი ხაზის შეცვლა არ დასჭირდა.
+         ნამდვილ, ბაზაში ჩაწერილ `loc`-ს არ ვცვლით — მხოლოდ ცარიელს
+         ვავსებთ, ანუ არსებული ინფორმაცია არსად იკარგება. */
+      loc: l.loc || autoCity(l), reg: l.reg, a: l.area, p: l.price,
       ttl: l.ttl, desc: l.dsc, photos, img: photos[0] || null,
       attrs, tel: l.tel, own: l.contact_name || null, days: days(l.created),
       /* ⚠️ 2026-09-01, ავტომატური თარგმანი — George-ის მოთხოვნით.

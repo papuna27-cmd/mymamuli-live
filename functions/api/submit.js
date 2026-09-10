@@ -27,6 +27,7 @@ import {
 import { lookupCad, cadValid } from './_cad.js';
 import { flushMailQueue } from './_mail.js';
 import { detectLang, translateListing, translateNote } from './_translate.js';
+import { nearestCity } from '../_geocity.js';
 
 /* ---------- დასაშვები მნიშვნელობები ---------- */
 const CATS = ['land', 'invest', 'house', 'flat', 'cottage', 'villa', 'comm', 'office',
@@ -130,6 +131,22 @@ function clean(b, kind) {
     if (o.cad && !cadValid(o.cad)) e.push('საკადასტრო კოდის ფორმატი');
     o.loc = str(b.loc, 120) || null;
     o.reg = str(b.reg, 80) || null;
+    /* ⚠️ 2026-09-10 — ეს ორი ველი კლიენტიდან უნდა მოსულიყო, form.html კი
+       მათ არასდროს აგზავნიდა: შედეგად ბაზაში ყველა განცხადებას `loc`/`reg`
+       NULL ჰქონდა და ამაზე დაფუძნებული ყველაფერი ცარიელი იყო — ქალაქების
+       SEO ლენდინგები, sitemap-ის ლენდინგების ბლოკი, რუკის ბარათებზე
+       მდებარეობის ტექსტი და გაზიარების JSON-LD-ის `addressLocality`
+       (იხ. functions/_geocity.js-ის თავსართი).
+       ახლა, თუ კლიენტმა არაფერი გამოგზავნა, ქალაქს **სერვერზე** ვადგენთ
+       ნიშნულის კოორდინატიდან — იმავე ლოგიკით, რასაც ლენდინგები და
+       sitemap იყენებენ, ანუ სამივე ყოველთვის თანხმდება.
+       ⚠️ კლიენტის მნიშვნელობას არ ვაჭარბებთ — მხოლოდ ცარიელს ვავსებთ.
+       ეს ეხება მხოლოდ ახალ ჩანაწერებს; უკვე არსებულებს /api/geo
+       კითხვის დროს უვლის გვერდს, ბაზაში არაფრის შეცვლის გარეშე. */
+    if (!o.loc) {
+      const C = nearestCity(o.lat, o.lng);
+      if (C) o.loc = C[1];
+    }
 
     /* ⚠️ 2026-08-26, George-ის მოთხოვნით — გამყიდველს/გამქირავებელს
        შეუძლია განცხადება დამალოს საერთო რუკიდან და დატოვოს ხილული

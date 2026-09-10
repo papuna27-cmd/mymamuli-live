@@ -89,18 +89,17 @@ addEventListener('load',()=>{
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <link href="/vendor/maplibre-gl-4.7.1/maplibre-gl.css" rel="stylesheet" integrity="sha384-MinO0mNliZ3vwppuPOUnGa+iq619pfMhLVUXfC4LHwSCvF9H+6P/KO4Q7qBOYV5V">
-<script src="/vendor/maplibre-gl-4.7.1/maplibre-gl.js" integrity="sha384-SYKAG6cglRMN0RVvhNeBY0r3FYKNOJtznwA0v7B5Vp9tr31xAHsZC0DqkQ/pZDmj"></script>
 <!-- ⚠️ 2026-08-26: George-ის დეპლოის შემდეგ i18n.js-ის ახალი თარგმანები
      (FAQ ტაბი) ზოგ ბრაუზერში არ ჩანდა — root cause: ეს ფაილი ვერსიის
      query-პარამეტრის გარეშე იტვირთებოდა, ამიტომ ძველი, ქეშირებული ასლი
      რჩებოდა ხანგრძლივად, მაშინაც კი, როცა index.html ახლიდან იტვირთებოდა.
      ახლა build stamp-ზეა მიბმული — ყოველი დეპლოი ავტომატურად ამტვრევს ქეშს. -->
-<script src="i18n.js?v=2026.09.10-0730"></script>
+<script src="i18n.js?v=2026.09.10-0836"></script>
 <script>
 /* ვერსიის შემოწმება: გახსენი კონსოლი (F12) და ეს ციფრი დაინახავ.
    თუ ის იმას არ ემთხვევა, რაც ბოლოს ატვირთე — ბრაუზერს ქეში უჭირავს:
    Cmd+Shift+R (Mac) ან Ctrl+F5 (Windows). */
-window.MM_BUILD = '2026.09.10-0730';
+window.MM_BUILD = '2026.09.10-0836';
 console.log('%cMyMamuli.ge', 'font:700 13px system-ui;color:#0F6B4F',
             'ბილდი ' + window.MM_BUILD);
 </script>
@@ -1374,11 +1373,11 @@ body.foot-min .fslim{display:flex}
      ⚠️ საჭიროა იმიტომ, რომ ატვირთვის შემდეგ ხშირად ძველი ვერსია ჩანს
      (ბრაუზერის ან Cloudflare-ის ქეში) და გაუგებრობა იქმნება.
      ეკრანზე თითქმის უხილავია, კონსოლში კი ცხადად წერია. -->
-<footer data-build="2026.09.10-0730">
+<footer data-build="2026.09.10-0836">
   <button class="ftog" id="ftog" aria-expanded="true" title="ფუტერის ჩაკეცვა">
     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
     <span id="ftogt">ჩაკეცვა</span>
-    <span class="bstamp" data-noi18n title="ვერსია">2026.09.10-0730</span>
+    <span class="bstamp" data-noi18n title="ვერსია">2026.09.10-0836</span>
   </button>
   <div class="fslim">
     <span class="onl" id="lives"><span class="dt"></span><b>—</b> ონლაინ</span>
@@ -1493,6 +1492,24 @@ body.foot-min .fslim{display:flex}
   <div class="cbody" id="cb"></div>
 </div>
 
+<!-- ⚠️ 2026-09-10, Performance — maplibre-gl.js <head>-იდან აქ ჩამოვიდა.
+     Lighthouse (mobile): ეს ერთი ფაილი render-blocking-ის 2,400 მილიწამს
+     იჭერდა — ბრაუზერი მას ბოლომდე ტვირთავდა, სანამ გვერდის პირველ
+     პიქსელს დახატავდა. LCP ელემენტი კი რუკა საერთოდ არ არის (ლოგოს
+     ტექსტია), ანუ ეს ლოდინი წმინდა დანაკარგი იყო.
+     ახლა ბრაუზერი ჯერ ხატავს მთელ HTML-ს (ჰედერი, რუკის ჩარჩო,
+     ფუტერი — ხაზები 1305-1495), მერე იღებს maplibre-ს და მხოლოდ ამის
+     შემდეგ უშვებს ქვემოთა აპლიკაციის სკრიპტს.
+     ⚠️ რატომ არაა ეს სარისკო: სკრიპტების **შესრულების რიგი უცვლელია** —
+     maplibre კვლავ აპლიკაციამდე სრულდება, ანუ `new maplibregl.Map()`
+     ისევე ხვდება ბიბლიოთეკას ადგილზე, როგორც აქამდე. ერთადერთი, რაც
+     შეიცვალა, არის ჩატვირთვის მომენტი HTML-ის დახატვის მიმართ.
+     გადამოწმებულია: 1305-1495 ხაზებში არც ერთი სკრიპტი და არც ერთი
+     `maplibregl`-ის გამოძახება არ არის, ანუ ადრე ვერავინ დაეძებს.
+     ⚠️ i18n.js განზრახ დარჩა <head>-ში: ის EN რეჟიმში სტატიკურ ტექსტს
+     თარგმნის და თუ დაგვიანდება, ინგლისურ ვიზიტორს ერთი წამით ქართული
+     დაუელვარებს. 300 მილიწამი ამად ღირს. -->
+<script src="/vendor/maplibre-gl-4.7.1/maplibre-gl.js" integrity="sha384-SYKAG6cglRMN0RVvhNeBY0r3FYKNOJtznwA0v7B5Vp9tr31xAHsZC0DqkQ/pZDmj"></script>
 <script>
 /* =================================================================
    1. სურათების წესები

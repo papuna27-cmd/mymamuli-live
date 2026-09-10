@@ -48,13 +48,19 @@
 # ჩასმულ GA4 (gtag.js) tag-ს სჭირდება, თორემ ეს CSP-ი მას საკუთარ თავს
 # დაუბლოკავდა (script-src-ს gtag.js-ის ჩატვირთვაზე, connect-src-ს კი
 # ანალიტიკის მოვლენების გაგზავნაზე).
+# ⚠️ 2026-09-10: unpkg.com ამოღებულია script-src/style-src-იდან — maplibre
+# ახლა საკუთარი origin-იდან იტვირთება (/vendor/maplibre-gl-4.7.1/, იგივე
+# ფაილები: SRI ჰეშები ბაიტ-ბაიტ ემთხვევა unpkg-ის ვერსიას). ანუ CSP-ს
+# გაფართოება არ მომხდარა — პირიქით, ერთი გარე ჰოსტით ნაკლებია.
+# ⚠️ თუ ოდესმე maplibre ისევ CDN-იდან ჩაისმება, ეს ჰოსტი უკან უნდა
+# დაბრუნდეს, თორემ სკრიპტი ჩუმად დაიბლოკება.
 /*
   X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Permissions-Policy: geolocation=(self), camera=(), microphone=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://server.arcgisonline.com https://tile.openstreetmap.org https://basemaps.cartocdn.com https://gpv0.napr.gov.ge https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://maps.gov.ge https://gpv0.napr.gov.ge https://tile.openstreetmap.org https://server.arcgisonline.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://server.arcgisonline.com https://tile.openstreetmap.org https://basemaps.cartocdn.com https://gpv0.napr.gov.ge https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://maps.gov.ge https://gpv0.napr.gov.ge https://tile.openstreetmap.org https://server.arcgisonline.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'
 
 # ⚠️ 2026-08-27, George-ის მოთხოვნით (ტექნიკური აუდიტი) — სტატიკურ
 # ასეტებს (icons, favicon, სურათები) ცალკე cache-control არ ჰქონდათ,
@@ -106,3 +112,9 @@
   X-Robots-Tag: noindex, nofollow
 /cabinet.html
   X-Robots-Tag: noindex, nofollow
+
+# ⚠️ 2026-09-10 — self-host-ილი ბიბლიოთეკები (maplibre). ვერსია საქაღალდის
+# სახელშივეა (`maplibre-gl-4.7.1`), ანუ URL თავად იცვლება განახლებისას —
+# ამიტომ 1-წლიანი immutable აქ უსაფრთხოა, ისევე როგორც i18n.js-ის ?v=-ზე.
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable

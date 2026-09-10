@@ -27,7 +27,24 @@ export const site = {
 
   phone: '+14377798843',
   phoneDisplay: '(437) 779-8843',
-  email: 'assembleo@gmail.com',
+  /**
+   * The PUBLIC address, and empty on purpose. assembleo@gmail.com was printed
+   * here but the mailbox never existed (the name is taken), so every customer
+   * email would have bounced. Until assembleo.ca is registered there is no
+   * address worth printing, so the site offers the phone and the form.
+   *
+   * Nothing private goes in this file. `site` is imported by the booking
+   * island, so everything in it ships in the client bundle and is readable by
+   * anyone who opens the JS — putting the owner's inbox here published it just
+   * as surely as printing it in the footer. The address that receives leads is
+   * the NOTIFY_EMAIL secret on the Pages project, which never leaves the edge.
+   *
+   * When the domain lands: Cloudflare Email Routing gives info@assembleo.ca
+   * free, forwarding to that same inbox. Set it here, flip `emailPublic`, and
+   * the footer, contact block, privacy policy and JSON-LD all follow.
+   */
+  email: '',
+  emailPublic: false,
 
   address: {
     street: '2333 Truscott Dr',

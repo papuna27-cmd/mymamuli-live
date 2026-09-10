@@ -308,7 +308,16 @@ const description =
 
       <div class="stats bookFacts">
         <div class="stats__item"><span class="stats__n"><a href={telHref}>{site.phoneDisplay}</a></span><span class="stats__l">Phone</span></div>
-        <div class="stats__item"><span class="stats__n stats__n--sm"><a href={`mailto:${site.email}`}>{site.email}</a></span><span class="stats__l">Email</span></div>
+        {/* The row is three columns at ≥720px, so the middle cell always
+            carries something. While there is no address worth printing it
+            answers the last doubt before someone fills the form — do you
+            even come to me — and it goes back to the email on the day
+            info@assembleo.ca exists. */}
+        {site.emailPublic ? (
+          <div class="stats__item"><span class="stats__n stats__n--sm"><a href={`mailto:${site.email}`}>{site.email}</a></span><span class="stats__l">Email</span></div>
+        ) : (
+          <div class="stats__item"><span class="stats__n stats__n--sm">The whole GTA</span><span class="stats__l">Where we work</span></div>
+        )}
         <div class="stats__item"><span class="stats__n stats__n--sm">{site.hours[0]!.display}</span><span class="stats__l">Monday to Friday</span></div>
       </div>
 

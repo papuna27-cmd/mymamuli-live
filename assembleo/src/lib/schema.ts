@@ -28,7 +28,9 @@ export function localBusiness() {
     legalName: site.legalName,
     url: site.url,
     telephone: site.phone,
-    email: site.email,
+    // Omitted while there is no public mailbox. Publishing an address here
+    // that nobody reads is worse than publishing none: Google surfaces it.
+    ...(site.emailPublic ? { email: site.email } : {}),
     priceRange: site.priceRange,
     description: site.tagline,
     image: abs('/og/default.png'),

@@ -231,14 +231,20 @@ export const legal = {
       {
         h2: 'Your rights',
         body: [
-          'Under PIPEDA you can ask what personal information we hold about you, ask us to correct it, and ask us to delete anything we are not legally required to keep. Email ' + site.email + ' and we will respond within 30 days.',
+          // PIPEDA requires a route for access and correction requests. While
+          // there is no public mailbox that route is the phone, not an address
+          // that would bounce.
+          'Under PIPEDA you can ask what personal information we hold about you, ask us to correct it, and ask us to delete anything we are not legally required to keep. ' +
+            (site.emailPublic
+              ? `Email ${site.email} and we will respond within 30 days.`
+              : `Call ${site.phoneDisplay} and we will respond within 30 days.`),
           'If you are not satisfied with our answer you can complain to the Office of the Privacy Commissioner of Canada.',
         ],
       },
       {
         h2: 'Contact',
         body: [
-          `Privacy questions go to ${site.email}, or write to ${site.legalName}, ${site.address.street}, ${site.address.city}, ${site.address.region}${site.address.postalCode ? ' ' + site.address.postalCode : ''}.`,
+          `Privacy questions go to ${site.emailPublic ? site.email : site.phoneDisplay}, or write to ${site.legalName}, ${site.address.street}, ${site.address.city}, ${site.address.region}${site.address.postalCode ? ' ' + site.address.postalCode : ''}.`,
         ],
       },
     ],

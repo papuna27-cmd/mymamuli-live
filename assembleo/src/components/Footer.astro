@@ -13,7 +13,7 @@ const year = new Date().getFullYear();
         <p class="site-footer__tag">{site.tagline}.</p>
         <p class="site-footer__contact">
           <a href={telHref}>{site.phoneDisplay}</a>
-          <a href={`mailto:${site.email}`}>{site.email}</a>
+          {site.emailPublic && <a href={`mailto:${site.email}`}>{site.email}</a>}
         </p>
       </div>
 

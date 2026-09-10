@@ -28,23 +28,26 @@ export const site = {
   phone: '+14377798843',
   phoneDisplay: '(437) 779-8843',
   /**
-   * The PUBLIC address, and empty on purpose. assembleo@gmail.com was printed
-   * here but the mailbox never existed (the name is taken), so every customer
-   * email would have bounced. Until assembleo.ca is registered there is no
-   * address worth printing, so the site offers the phone and the form.
+   * The PUBLIC address. assembleo@gmail.com used to be printed here but the
+   * mailbox never existed (the name is taken), so every customer email would
+   * have bounced; the site ran on the phone and the form until there was an
+   * address worth printing. This one is real: Cloudflare Email Routing
+   * forwards it to the owner's inbox, verified live (MX on route1/2/3
+   * .mx.cloudflare.net, SPF include:_spf.mx.cloudflare.net).
    *
    * Nothing private goes in this file. `site` is imported by the booking
    * island, so everything in it ships in the client bundle and is readable by
-   * anyone who opens the JS — putting the owner's inbox here published it just
-   * as surely as printing it in the footer. The address that receives leads is
-   * the NOTIFY_EMAIL secret on the Pages project, which never leaves the edge.
+   * anyone who opens the JS — which is exactly why the address here is the
+   * forwarding one and not the inbox behind it. The address that receives
+   * leads is the NOTIFY_EMAIL secret on the Pages project, which never leaves
+   * the edge.
    *
-   * When the domain lands: Cloudflare Email Routing gives info@assembleo.ca
-   * free, forwarding to that same inbox. Set it here, flip `emailPublic`, and
-   * the footer, contact block, privacy policy and JSON-LD all follow.
+   * `emailPublic` gates every place it appears — footer, contact block,
+   * privacy policy, JSON-LD — so one flag hides it again if the forwarding
+   * ever breaks, rather than four edits under pressure.
    */
-  email: '',
-  emailPublic: false,
+  email: 'info@assembleo.ca',
+  emailPublic: true,
 
   address: {
     street: '2333 Truscott Dr',

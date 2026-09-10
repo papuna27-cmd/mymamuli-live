@@ -61,7 +61,14 @@ export function localBusiness() {
       opens: h.opens,
       closes: h.closes,
     })),
-    sameAs: [site.social.facebook, site.social.google],
+    // sameAs is how Google ties this markup to the same business elsewhere, so
+    // a profile that does not exist is worse than a short list: the Google
+    // Business Profile link is still the all-zero placeholder, and pointing
+    // Google at a dead cid undercuts the very match it is meant to make. Any
+    // entry that is still a placeholder drops out until it is real.
+    sameAs: [site.social.facebook, site.social.google].filter(
+      (u) => u && !/cid=0+$/.test(u),
+    ),
   };
 }
 

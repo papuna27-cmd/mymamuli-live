@@ -13,3 +13,4 @@ screenshots/
 preview/
 .preview-entry.jsx
 .geo-cache/
+wrangler.preview.jsonc

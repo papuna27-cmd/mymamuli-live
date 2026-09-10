@@ -50,11 +50,12 @@ already caused three separate "the new translation doesn't show up" bugs
 | `index.html` | 4 — `i18n.js?v=`, `window.MM_BUILD`, `<footer data-build>`, `.bstamp` text |
 | `form.html`  | 1 — `i18n.js?v=` |
 | `cabinet.html` | 1 — `i18n.js?v=` |
+| `functions/listings.js` | 1 — `const BUILD` (edge-ქეშის გასაღები; დეპლოი ქეშს თავისით არ წმენდს) |
 
-One-liner that does all six:
+One-liner that does all seven:
 
 ```
-sed -i '' "s/2026\.09\.10-0613/<NEW-STAMP>/g" index.html form.html cabinet.html
+sed -i '' "s/2026\.09\.10-0730/<NEW-STAMP>/g" index.html form.html cabinet.html functions/listings.js
 ```
 
 Verify after deploy: `curl -s https://mymamuli.ge/ | grep -o "i18n.js?v=[0-9.-]*"`

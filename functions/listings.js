@@ -43,6 +43,15 @@ import { nearestCity, nearestCitySlug, placeLabel } from './_geocity.js';
 
 const SITE = 'https://mymamuli.ge';
 const EDGE_TTL = 600;              /* 10 წუთი */
+/* ⚠️ 2026-09-10 — ქეშის გასაღები build stamp-ს შეიცავს.
+   რატომ: edge-ქეშს დეპლოი თავისით არ წმენდს, ამიტომ ახალი კოდის
+   ატვირთვის შემდეგაც ეს გვერდი 10 წუთამდე ძველ HTML-ს აბრუნებდა —
+   ერთხელ უკვე დამაბნეველი აღმოჩნდა გადამოწმებისას (ქალაქების
+   იარლიყები ძველი ლოგიკით ჩანდა, თუმცა ახალი უკვე დეპლოილი იყო).
+   ახლა stamp-ის შეცვლა ავტომატურად ქმნის ახალ გასაღებს.
+   ⚠️ ეს სტრიქონი იმავე `sed`-ით იცვლება, რაც index/form/cabinet-ს —
+   იხ. CLAUDE.md → „Where the build stamp lives". */
+const BUILD = '2026.09.10-0730';
 const MAX_ROWS = 1000;
 
 const esc = s => String(s == null ? '' : s)
@@ -300,7 +309,7 @@ export async function onRequestGet(ctx) {
   let cache = null, key = null;
   try {
     cache = caches.default;
-    key = new Request(`${url.origin}/listings?lang=${lang}`, { method: 'GET' });
+    key = new Request(`${url.origin}/listings?lang=${lang}&b=${BUILD}`, { method: 'GET' });
     const hit = await cache.match(key);
     if (hit) return hit;
   } catch (_) { cache = null }

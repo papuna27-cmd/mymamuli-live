@@ -211,7 +211,15 @@ async function build(env, lang) {
        რაც index.html-ის trPick()-ს აქვს: თარგმანს ვაჩვენებთ მხოლოდ
        მაშინ, თუ ორიგინალი სხვა ენაზეა და თარგმანი ნამდვილად არის). */
     const orig = l.orig_lang || 'ka';
-    const ttl = (lang !== orig && l.ttl_tr) ? l.ttl_tr : l.ttl;
+    let ttl = (lang !== orig && l.ttl_tr) ? l.ttl_tr : l.ttl;
+    /* ⚠️ თუ ავტომატური თარგმანი ჯერ არ გაკეთებულა (ძველი ჩანაწერები
+       `_translate.js`-ის დამატებამდე), EN რეჟიმში ქართული სათაური
+       დარჩებოდა — სწორედ ის, რასაც CLAUDE.md კრძალავს („EN რეჟიმში
+       ქართული არ უნდა დარჩეს"). ასეთ შემთხვევაში ორიგინალის ნაცვლად
+       ჩვენივე აწყობილ, აღწერით ინგლისურ სახელს ვაჩვენებთ — Google-ისთვის
+       ბმულის ტექსტი ისედაც ესაა მნიშვნელოვანი, ვიზიტორისთვის კი
+       გასაგები. ქართულ რეჟიმში ყველაფერი უცვლელია. */
+    if (lang === 'en' && ttl && /[ა-ჰ]/.test(ttl)) ttl = '';
     const cat = CATN[lang][l.cat] || l.cat;
     const deal = l.deal === 'rent' ? t.rent : t.sale;
     const place = placeLabel(l, lang);

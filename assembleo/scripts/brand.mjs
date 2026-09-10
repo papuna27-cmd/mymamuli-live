@@ -51,4 +51,54 @@ await png(tile(INK, BONE, 12), 512, 'public/icon-512.png');
 // Apple rounds the corners itself, so this one ships square and full bleed.
 await png(tile(GREEN, BONE, 0), 180, 'public/apple-touch-icon.png');
 
-console.log('brand: favicon.svg, icon-192, icon-512, apple-touch-icon');
+/**
+ * favicon.ico, still, in 2026.
+ *
+ * favicon.svg covers every current browser, but plenty of things never look at
+ * the <link> tag and just request /favicon.ico from the site root: Google's
+ * search results, link unfurlers in chat apps, RSS readers, older Safari. A
+ * 404 there is why a site with four perfectly good icons can still show a
+ * blank page in a search listing.
+ *
+ * An .ico is a tiny directory followed by the images, and since Vista each
+ * entry may hold a PNG rather than a BMP — so this is two PNGs and 38 bytes of
+ * header, no encoder needed. 16 and 32 px, because that is what asks.
+ */
+const icoEntry = (size, png, offset) => {
+  const e = Buffer.alloc(16);
+  e.writeUInt8(size < 256 ? size : 0, 0); // 0 means 256
+  e.writeUInt8(size < 256 ? size : 0, 1);
+  e.writeUInt8(0, 2); // palette size, 0 for truecolour
+  e.writeUInt8(0, 3); // reserved
+  e.writeUInt16LE(1, 4); // colour planes
+  e.writeUInt16LE(32, 6); // bits per pixel
+  e.writeUInt32LE(png.length, 8);
+  e.writeUInt32LE(offset, 12);
+  return e;
+};
+
+const icoSizes = [16, 32];
+const icoPngs = await Promise.all(
+  icoSizes.map((s) =>
+    sharp(Buffer.from(letterTile(INK, BONE, s === 16 ? 6 : 12)))
+      .resize(s, s)
+      .png({ compressionLevel: 9 })
+      .toBuffer(),
+  ),
+);
+
+const header = Buffer.alloc(6);
+header.writeUInt16LE(0, 0); // reserved
+header.writeUInt16LE(1, 2); // 1 = icon
+header.writeUInt16LE(icoSizes.length, 4);
+
+let offset = 6 + 16 * icoSizes.length;
+const entries = icoPngs.map((png, i) => {
+  const e = icoEntry(icoSizes[i], png, offset);
+  offset += png.length;
+  return e;
+});
+
+await writeFile('public/favicon.ico', Buffer.concat([header, ...entries, ...icoPngs]));
+
+console.log('brand: favicon.svg, favicon.ico, icon-192, icon-512, apple-touch-icon');

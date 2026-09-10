@@ -109,7 +109,10 @@ const allSchemas = [
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={abs(ogImage)} />
 
+    {/* SVG first for browsers that take it; the .ico is the fallback that
+        search results, link unfurlers and older Safari actually fetch. */}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 

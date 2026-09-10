@@ -8,6 +8,24 @@ import { authed, denied } from './_util.js';
 const TZ = 4 * 3600 * 1000;
 const dayKey = () => new Date(Date.now() + TZ).toISOString().slice(0, 10);
 
+/* ⚠️ 2026-09-10 — სერვერის მხარის დაცვა `ev` ცხრილის გაბერვისგან.
+   2026-09-02-ს კლიენტში გასწორდა ბაგი (ავტომატური `t: Date.now()`
+   გადაერქვა `ts`-ს), მაგრამ ბაზის შემოწმებამ აჩვენა, რომ ნაგავი
+   მწკრივები ფიქსის შემდეგაც აგრძელებდა დაგროვებას — დღეში 700–2900
+   ცალი, ყველა `ad_view`, გასაღებად ნედლი millisecond timestamp-ით
+   (ზუსტად 60 წამიანი ინტერვალით — ე.ი. რაღაც ავტომატური მონიტორი /
+   ძველი ქეშირებული გვერდი, რომელსაც ჩვენი ახალი კოდი არ აქვს).
+   კლიენტის გასწორება საკმარისი არ არის: ჩვენ ვერ ვაკონტროლებთ,
+   რა ვერსიის გვერდი უდგას ვიზიტორს ჩანართში.
+   ამიტომ გასაღები ახლა სერვერზევე ფილტრდება: ზუსტად 13-ციფრიანი
+   წმინდა რიცხვი = epoch-millisecond, არა სემანტიკური კატეგორია →
+   ცარიელდება, რომ მოვლენა ჩვეულებრივ დღიურ მწკრივში შეიკრიბოს.
+   რეალური გასაღებები (რეგიონი, `land`/`flat`, საკადასტრო კოდი
+   წერტილებით, ენა) არასდროსაა 13 ციფრი ზედიზედ, ამიტომ ცრუ
+   დადებითის რისკი არ არსებობს. იგივე პირობით იშლება ძველი ნაგავიც
+   (იხ. HANDOFF.md 9.1). */
+const isTimestampKey = s => /^\d{13}$/.test(s);
+
 export async function onRequestPost({ request, env }) {
   if (!env.DB) return new Response('{}', { headers: { 'content-type': 'application/json' } });
   let rows = [];
@@ -19,7 +37,8 @@ export async function onRequestPost({ request, env }) {
   const stmts = rows.slice(0, 60).map(e => {
     /* კლიენტი აგზავნის {e:'სახელი', …} — ძველი ვარიანტებიც მიიღება */
     const name = String((e && (e.e || e.ev || e.name)) || 'x').slice(0, 32);
-    const k = String((e && (e.reg || e.loc || e.t || e.l || e.k)) || '').slice(0, 48);
+    let k = String((e && (e.reg || e.loc || e.t || e.l || e.k)) || '').slice(0, 48);
+    if (isTimestampKey(k)) k = '';
     return env.DB.prepare(
       `INSERT INTO ev (day, name, k, n) VALUES (?1, ?2, ?3, 1)
        ON CONFLICT(day, name, k) DO UPDATE SET n = n + 1`

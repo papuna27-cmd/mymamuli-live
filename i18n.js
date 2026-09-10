@@ -1236,7 +1236,35 @@ const I18N = {
 "ვიზიტორი": "Visitor",
 "მდებარეობა არ არის მითითებული": "Location not specified",
 "ჩემი სახელის დამალვა": "Hide my name",
-"ბარათზე შენი სახელის ნაცვლად უბრალოდ „ვიზიტორი\" დაიწერება. ტელეფონი და დანარჩენი მონაცემები ამას არ ეხება.": "Instead of your name, the card will simply say \"Visitor.\" Your phone number and other details are unaffected."
+"ბარათზე შენი სახელის ნაცვლად უბრალოდ „ვიზიტორი\" დაიწერება. ტელეფონი და დანარჩენი მონაცემები ამას არ ეხება.": "Instead of your name, the card will simply say \"Visitor.\" Your phone number and other details are unaffected.",
+
+/* ⚠️ 2026-09-10 — EN რეჟიმის აუდიტი ცოცხალ საიტზე (რენდერილი DOM-ის
+   შემოწმება, არა სტატიკური წყაროსი). სამი ადგილი ქართულად რჩებოდა: */
+
+/* (1) ფუტერის სოც-ქსელის აიქონები. Facebook რეალურ გვერდზე მიდის,
+   დანარჩენ სამს ჯერ URL არ აქვს და title-ში „— მალე" ეწერა. */
+"Google — მალე": "Google — coming soon",
+"Instagram — მალე": "Instagram — coming soon",
+"LinkedIn — მალე": "LinkedIn — coming soon",
+
+/* (2) „ვეძებ"-ის 2-ბიჯიანი ნაკადი (2026-08-26-ს 4 ბიჯიდან 2-მდე
+   შემცირდა) — ლექსიკონში მხოლოდ „ბიჯი N / 4" ჩანაწერები იყო,
+   „/ 2" ვარიანტები არასდროს დამატებულა. */
+"ბიჯი 1 / 2": "Step 1 / 2",
+"ბიჯი 2 / 2": "Step 2 / 2",
+
+/* (3) form.html-ის მე-2 ბიჯი (მდებარეობა) გამყიდველის ნაკადში:
+   ეს ტექსტები `cadFirst`-ის ბრენჩშია (sell && deal!=='rent'),
+   რომელიც მოგვიანებით დაემატა — EN რეჟიმში მთელი ბიჯი ქართულად
+   იყო. „— არჩევითია" ორივე ადგილას (fcad ბლოკი ბიჯ 2-სა და 3-ზე)
+   ერთსა და იმავეს ნიშნავს, ამიტომ ერთი ჩანაწერი ჰყოფნის. */
+"დასვი ნიშნული რუკაზე ხელით, ან ქვემოთ მოძებნე მისამართით/საკადასტრო კოდით — ორივე არჩევითია.": "Drop the pin on the map by hand, or look it up below by address or cadastral code — both lookups are optional.",
+"— არჩევითია": "— optional",
+"თუ გინდა, რომ მყიდველმა ზუსტად ნახოს შენი უძრავი ქონება რუკაზე — ჩაწერე საკადასტრო კოდი, ნიშნული ავტომატურად დაისმება.": "If you want the buyer to see exactly where your property is on the map, enter the cadastral code and the pin will be placed automatically.",
+"— ან ჯერ არ იცი კოდი? მოძებნე მისამართით ქვემოთ, ან დასვი ნიშნული ხელით —": "— or don't know the code yet? Search by address below, or drop the pin by hand —",
+"მისამართის არჩევისას ნიშნული ავტომატურად დაისმება — შემდეგ გინდა და ხელით დააზუსტე.": "Picking an address places the pin automatically — you can fine-tune it by hand afterwards.",
+"სრული მისამართი — არჩევითი (მაგ. ი. ჭავჭავაძის გამზ. 15, თბილისი)": "Full address — optional (e.g. 15 I. Chavchavadze Ave, Tbilisi)",
+"საკადასტრო კოდით რეესტრიდან ავტომატურად ჩამოვწერთ მისამართს — არჩევითია.": "With the cadastral code we pull the address from the Registry automatically — optional."
 };
 
 /* პარამეტრიანი ფრაზები (ციფრები შიგნით) */

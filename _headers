@@ -88,3 +88,21 @@
   Cache-Control: public, max-age=604800
 /og/*
   Cache-Control: public, max-age=86400
+
+# ⚠️ 2026-09-10 — ადმინის/პირადი გვერდები საძიებო სისტემებისთვის.
+# robots.txt-ში „Allow: /" წერია (და Cloudflare-ის Managed robots.txt-იც
+# ზემოდან ემატება), ანუ ეს გვერდები პრინციპში ინდექსირებადია. თვითონ
+# მონაცემი დაცულია (ყველა API სესიას/ADMIN_KEY-ს ითხოვს), მაგრამ ცარიელი
+# ადმინ-ჩარჩოს Google-ის შედეგებში მოხვედრა არც საჭიროა და არც სასურველი —
+# ისედაც ახალი დომენის crawl-budget-ს ჭამს (იხ. HANDOFF §10.5).
+# X-Robots-Tag მხოლოდ ინდექსაციას კრძალავს, წვდომას არა — არაფერს ტეხს.
+/admin.html
+  X-Robots-Tag: noindex, nofollow
+/mod.html
+  X-Robots-Tag: noindex, nofollow
+/users.html
+  X-Robots-Tag: noindex, nofollow
+/devices.html
+  X-Robots-Tag: noindex, nofollow
+/cabinet.html
+  X-Robots-Tag: noindex, nofollow

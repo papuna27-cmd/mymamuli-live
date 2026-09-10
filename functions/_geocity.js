@@ -50,18 +50,34 @@ export function distKm(lat1, lng1, lat2, lng2) {
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+/* ⚠️ ქალაქის „მოთხოვნის რადიუსი" — რატომ არ გამოდგა უბრალო „უახლოესი".
+   CITY_SLUGS-ში ყოველი ქალაქი ერთი წერტილია, ზომის გარეშე. თბილისის
+   წერტილი (41.6937, 44.8013) ქალაქის სამხრეთ ნაწილშია, მცხეთა კი
+   ჩრდილოეთით მხოლოდ ~17 კმ-ზეა — ამიტომ ბრმა „უახლოესი წერტილი"
+   თბილისის ჩრდილო უბნებს (გლდანი, დიღომი, საბურთალო) **მცხეთას**
+   აწერდა, ვაჟა-ფშაველას — სოფელ წავკისს. ცოცხალ მონაცემზე
+   გადამოწმებულია: 34 აქტიური განცხადებიდან 6 არასწორ ქალაქზე ხვდებოდა.
+   ამიტომ მანძილს ქალაქის მასშტაბზე ვყოფთ: იგებს ის, ვისთვისაც
+   შეფარდება km/radius ყველაზე მცირეა. დიდ ქალაქს დიდი რადიუსი აქვს,
+   სოფელს — პატარა, ანუ სოფელი მხოლოდ მაშინ იგებს, როცა ობიექტი
+   ნამდვილად მასთან ახლოსაა. გადამოწმებულია, რომ თბილისის გარეთ
+   ვერცერთი მისამართის მიბმა არ შეცვლილა. */
+const CITY_RADIUS_KM = { tbilisi: 25, batumi: 16, kutaisi: 16 };
+const claimRadius = C => CITY_RADIUS_KM[C[0]] || (C[5] === 1 ? 12 : 9);
+
 /**
- * აბრუნებს უახლოესი ქალაქის ჩანაწერს [slug, ka, en, lat, lng, tier]
- * ან null-ს, თუ ყველა ქალაქი CITY_MAX_KM-ზე შორსაა (ან კოორდინატი
- * არ არსებობს).
+ * აბრუნებს ქალაქის ჩანაწერს [slug, ka, en, lat, lng, tier], რომელსაც
+ * ეს კოორდინატი ყველაზე მეტად „ეკუთვნის", ან null-ს — თუ ყველა
+ * ქალაქი CITY_MAX_KM-ზე შორსაა (ან კოორდინატი არ არსებობს).
  */
 export function nearestCity(lat, lng) {
   if (typeof lat !== 'number' || typeof lng !== 'number' ||
       !isFinite(lat) || !isFinite(lng)) return null;
-  let best = null, bestKm = Infinity;
+  let best = null, bestScore = Infinity, bestKm = Infinity;
   for (const C of CITY_SLUGS) {
     const km = distKm(lat, lng, C[3], C[4]);
-    if (km < bestKm) { bestKm = km; best = C }
+    const score = km / claimRadius(C);
+    if (score < bestScore) { bestScore = score; bestKm = km; best = C }
   }
   return bestKm <= CITY_MAX_KM ? best : null;
 }

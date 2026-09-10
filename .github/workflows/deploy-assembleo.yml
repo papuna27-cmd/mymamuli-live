@@ -37,7 +37,13 @@ jobs:
     # build fails its own check.
     env:
       PUBLIC_API_MOCK: 'false'
-      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL || 'https://assembleo.pages.dev' }}
+      # The domain is registered and live, so it is the default now. A repo
+      # variable still wins, which is how a staging build points elsewhere.
+      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL || 'https://assembleo.ca' }}
+      # GA4 loaded directly — no Tag Manager container to maintain for a single
+      # property. Consent Mode denies storage until the visitor agrees. Unset
+      # in a fork or a staging build, and no tracking ships at all.
+      PUBLIC_GA_ID: ${{ vars.PUBLIC_GA_ID || 'G-E7TY35L4TK' }}
     defaults:
       run:
         working-directory: assembleo

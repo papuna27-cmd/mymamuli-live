@@ -218,7 +218,11 @@ export const legal = {
       {
         h2: 'Analytics and consent',
         body: [
-          'We use Google Analytics through Google Tag Manager to understand which pages lead to bookings. Analytics and advertising storage are denied by default and are only enabled if you consent.',
+          // Keep this sentence true. It now describes GA4 loaded directly,
+          // because there is no Tag Manager container in front of it any more,
+          // and a privacy policy that describes the wrong mechanism is worse
+          // than a vague one.
+          'We use Google Analytics to understand which pages lead to bookings. Analytics and advertising storage are denied by default and are only enabled if you consent.',
           'You can decline without losing any functionality — the calculator, the forms and the phone number all work the same either way.',
         ],
       },

@@ -49,7 +49,32 @@ for (const width of WIDTHS) {
   });
   const page = await ctx.newPage();
   const consoleErrors = [];
-  page.on('console', (m) => { if (m.type() === 'error') consoleErrors.push(m.text()); });
+
+  /**
+   * This check is about the page: overflow, tap targets, whether the controls
+   * work at 320px. It is not a test of whether Google's CDN is reachable.
+   *
+   * The build ships an analytics tag, and this suite runs wherever it runs —
+   * a sandbox with no outbound network, a laptop on a train, CI behind a
+   * proxy. In all of those the browser reports the analytics script as a
+   * failed load, and a check that fails for that reason is a check people
+   * learn to ignore, which is worse than not having it.
+   *
+   * So a network failure is forgiven only for hosts the site deliberately
+   * loads from a third party, and only when it is a transport failure. A
+   * script that loads and then throws still fails, as does anything from our
+   * own origin — those are ours and they are real.
+   */
+  const THIRD_PARTY = /googletagmanager\.com|google-analytics\.com|challenges\.cloudflare\.com|cloudflareinsights\.com/;
+  const TRANSPORT = /Failed to load resource|net::ERR_|ERR_CONNECTION|ERR_NAME_NOT_RESOLVED/;
+  const isOfflineNoise = (text, location) =>
+    TRANSPORT.test(text) && THIRD_PARTY.test(`${text} ${location ?? ''}`);
+
+  page.on('console', (m) => {
+    if (m.type() !== 'error') return;
+    if (isOfflineNoise(m.text(), m.location()?.url)) return;
+    consoleErrors.push(m.text());
+  });
   page.on('pageerror', (e) => consoleErrors.push(String(e)));
 
   for (const route of ROUTES) {

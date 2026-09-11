@@ -1,0 +1,329 @@
+---
+/**
+ * Homepage, second design.
+ *
+ * The first two attempts put the heading on the left and the supporting copy
+ * on the right, and stacked blocks of different heights. On a laptop that read
+ * as unfinished. This one is symmetric by construction: every section is a
+ * centred head over a grid of equal columns, and every card in a grid is the
+ * same height whatever the copy length.
+ *
+ * The sectors we work in lead the page rather than sitting three screens down,
+ * because "who do you do this for" is the first thing a commercial buyer asks.
+ */
+import { Image, Picture } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RetailerWall from '../components/RetailerWall.astro';
+import FaqBlock from '../components/FaqBlock.astro';
+import Estimator from '../islands/Estimator';
+import BookingForm from '../islands/BookingForm';
+import Reviews from '../islands/Reviews';
+
+import { site, telHref } from '../data/site';
+import { extras, included, retailerNote, steps, trustPoints } from '../data/assembly';
+import { gtaCities } from '../data/cities';
+import { getReviews } from '../lib/api';
+import { faqs } from '../data/faqs';
+import { faqPage } from '../lib/schema';
+
+import homeImg from '../assets/photos/home-bedroom.jpg';
+import officeImg from '../assets/photos/seg-office.jpg';
+import gymImg from '../assets/photos/seg-gym.jpg';
+import clinicImg from '../assets/photos/seg-dental.jpg';
+import hotelImg from '../assets/photos/seg-hotel.jpg';
+import retailImg from '../assets/photos/seg-retail.jpg';
+
+/**
+ * The sectors, in the order a Canadian buyer meets them: their own home first,
+ * then the places that hire crews.
+ */
+const sectors = [
+  {
+    href: '/services/home-furniture',
+    name: 'Homes and condos',
+    img: homeImg,
+    alt: 'A finished bedroom with an assembled wardrobe, bed frame and nightstand',
+    text: 'Wardrobes, beds, dressers, desks, patio sets and home gyms. Priced per item before we arrive.',
+  },
+  {
+    href: '/services/offices',
+    name: 'Offices and workplaces',
+    img: officeImg,
+    alt: 'An open-plan office fitted out with rows of assembled desks and task chairs',
+    text: 'Desking, task chairs, meeting tables and storage walls, installed to your floor plan.',
+  },
+  {
+    href: '/services/gyms',
+    name: 'Gyms and fitness studios',
+    img: gymImg,
+    alt: 'A gym floor of assembled racks, benches and dumbbell stands',
+    text: 'Racks, rigs, platforms, cardio and selectorised machines, anchored and levelled.',
+  },
+  {
+    href: '/services/clinics',
+    name: 'Clinics and dental offices',
+    img: clinicImg,
+    alt: 'A dental operatory with the chair, delivery unit and cabinetry installed',
+    text: 'Reception desks, waiting room seating and treatment room casework, between patient days.',
+  },
+  {
+    href: '/services/hotels',
+    name: 'Hotels and short stay',
+    img: hotelImg,
+    alt: 'A hotel guest room with two assembled beds, a couch and case goods',
+    text: 'Guest rooms floor by floor, lobby and lounge furniture, back-of-house shelving.',
+  },
+  {
+    href: '/commercial',
+    name: 'Retail, schools, warehouses',
+    img: retailImg,
+    alt: 'Warehouse shelving and racking installed along an aisle',
+    text: 'Shelving, lockers, classroom furniture and racking. Quoted per project, worked around your hours.',
+  },
+];
+
+const reviews = await getReviews();
+const years = site.facts.yearsActive;
+
+const title = 'Furniture Assembly Ontario | Homes & Commercial | Assembleo';
+const description =
+  `Furniture assembly across the GTA: homes, offices, gyms, clinics, hotels, retail. ${years} years, insured and WSIB-covered crews. Price your job in 30 seconds.`;
+---
+
+<BaseLayout title={title} description={description} path="/" schemas={[faqPage(faqs.general!)]}>
+  <!-- ============================================================ hero -->
+  <section class="chero">
+    <div class="wrap chero__inner">
+      <p class="chero__eyebrow">Serving the GTA and Ontario · {years} years</p>
+      <h1>Furniture assembly, done properly.</h1>
+      <p class="chero__support">
+        One insured crew for homes, offices, gyms, clinics, hotels and retail. Flat prices agreed
+        before we start, and the cardboard leaves with us.
+      </p>
+      <div class="chero__actions">
+        <a class="btn btn--signal" href="#estimate">Price my job</a>
+        <a class="btn btn--onink" href={telHref}>Call {site.phoneDisplay}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- The sectors, before a word is read. -->
+  <div class="hband">
+    {sectors.map((s) => (
+      <figure class="hband__cell">
+        <Image
+          src={s.img} alt={s.alt}
+          widths={[260, 420, 640]} sizes="(min-width: 1100px) 17vw, (min-width: 720px) 33vw, 50vw"
+          format="webp" quality={58} loading="eager"
+        />
+        <figcaption class="hband__cap">{s.name.split(' and ')[0]!.split(',')[0]}</figcaption>
+      </figure>
+    ))}
+  </div>
+
+  <!-- =========================================================== stats -->
+  <section class="section section--tight section--paper" aria-label="Assembleo in numbers">
+    <div class="wrap">
+      <div class="stats">
+        <div class="stats__item"><span class="stats__n">{site.facts.jobsCompleted}</span><span class="stats__l">jobs completed</span></div>
+        <div class="stats__item"><span class="stats__n">{site.facts.rating} ★</span><span class="stats__l">{site.facts.reviewCount} reviews</span></div>
+        <div class="stats__item"><span class="stats__n">{site.facts.liabilityCover}</span><span class="stats__l">liability insured</span></div>
+        <div class="stats__item"><span class="stats__n">WSIB</span><span class="stats__l">covered crews</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= sectors -->
+  <section class="section section--surface" id="sectors" aria-labelledby="sect-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Sectors</p>
+        <h2 id="sect-h">Who we build for</h2>
+        <p class="lede">
+          Same crew and same standard in all six. Homes are priced per item; everything else is
+          quoted per project and scheduled around your opening hours.
+        </p>
+      </div>
+
+      <div class="grid grid--3">
+        {sectors.map((s) => (
+          <a class="card card--link" href={s.href}>
+            <Picture
+              src={s.img} alt={s.alt}
+              widths={[400, 600, 820]} sizes="(min-width: 940px) 33vw, (min-width: 620px) 50vw, 92vw"
+              formats={['avif', 'webp']} fallbackFormat="jpg" quality={58}
+              loading="lazy" class="card__media"
+            />
+            <div class="card__body">
+              <h3 class="card__title">{s.name}</h3>
+              <p class="card__text">{s.text}</p>
+              <span class="card__foot textlink">See what we build</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================= retailers -->
+  <section class="retail section--paper" aria-labelledby="retail-h">
+    <div class="wrap">
+      <h2 id="retail-h" class="retail__h">Bought it anywhere? We build it.</h2>
+      <RetailerWall />
+      <p class="legal retail__note">{retailerNote}</p>
+    </div>
+  </section>
+
+  <!-- =========================================================== steps -->
+  <section class="section section--ink" id="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">How it works</p>
+        <h2 id="how-h">Three steps, no surprises</h2>
+      </div>
+      <div class="grid grid--3">
+        {steps.map((s, i) => (
+          <article class="card card--step">
+            <div class="card__body">
+              <span class="card__num" aria-hidden="true">{i + 1}</span>
+              <h3 class="card__title">{s.title}</h3>
+              <p class="card__text">{s.body}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================= estimator -->
+  <section class="section section--surface" id="estimate" aria-labelledby="est-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Pricing</p>
+        <h2 id="est-h">What will it cost?</h2>
+        <p class="lede">
+          Pick what you need built and get a real range in about thirty seconds, with no contact
+          details asked for. A fixed price follows once we have seen what the job actually is.
+        </p>
+      </div>
+      <Estimator client:visible />
+    </div>
+  </section>
+
+  <!-- =========================================================== scope -->
+  <section class="section section--paper" aria-labelledby="scope-h">
+    <div class="wrap wrap--mid">
+      <div class="section-head">
+        <p class="eyebrow">No surprises</p>
+        <h2 id="scope-h">What the price covers</h2>
+      </div>
+      <div class="grid grid--2">
+        <div class="card">
+          <div class="card__body card__body--start">
+            <h3 class="card__title">Included in every job</h3>
+            <ul class="ticks">{included.map((i) => <li>{i}</li>)}</ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card__body card__body--start">
+            <h3 class="card__title">Costs extra — ask when you book</h3>
+            <ul class="ticks ticks--extra">{extras.map((i) => <li>{i}</li>)}</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= why -->
+  <section class="section section--surface" id="why" aria-labelledby="why-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Why us</p>
+        <h2 id="why-h">Why people book us twice</h2>
+      </div>
+      <div class="grid grid--4">
+        {trustPoints.map((t) => (
+          <article class="card card--plain">
+            <div class="card__body">
+              <h3 class="card__title">{t.title}</h3>
+              <p class="card__text">{t.body}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= reviews -->
+  <section class="section section--paper" aria-labelledby="rev-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">{site.facts.reviewCount} reviews</p>
+        <h2 id="rev-h">What customers say</h2>
+      </div>
+      <Reviews
+        client:visible
+        reviews={reviews.reviews}
+        rating={reviews.rating}
+        count={reviews.count}
+        profileUrl={reviews.profileUrl}
+      />
+    </div>
+  </section>
+
+  <!-- =================================================== service areas -->
+  <section class="section section--surface" aria-labelledby="areas-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Service areas</p>
+        <h2 id="areas-h">Where we work</h2>
+        <p class="lede">
+          The whole Greater Toronto Area from our {site.address.city} depot, and as far west as
+          Hamilton. Every area has its own page with drive times.
+        </p>
+      </div>
+      <ul class="areaChips">
+        {gtaCities.map((c) => (
+          <li><a href={`/service-areas/${c.slug}`}>{c.name}</a></li>
+        ))}
+      </ul>
+      <p class="areaAll prose--center"><a class="textlink" href="/service-areas">See the coverage map</a></p>
+    </div>
+  </section>
+
+  <!-- ============================================================= faq -->
+  <FaqBlock items={faqs.general!} heading="Questions people ask" id="faq" />
+
+  <!-- ============================================================ book -->
+  <section class="section section--ink" id="book" aria-labelledby="book-h">
+    <div class="wrap wrap--mid">
+      <div class="section-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="book-h">Get a fixed price</h2>
+        <p class="lede">
+          Send the list and you will have a price and a date back within two hours during working
+          hours. Nothing is charged before the job is done.
+        </p>
+      </div>
+
+      <div class="stats bookFacts">
+        <div class="stats__item"><span class="stats__n"><a href={telHref}>{site.phoneDisplay}</a></span><span class="stats__l">Phone</span></div>
+        {/* The row is three columns at ≥720px, so the middle cell always
+            carries something. While there is no address worth printing it
+            answers the last doubt before someone fills the form — do you
+            even come to me — and it goes back to the email on the day
+            info@assembleo.ca exists. */}
+        {site.emailPublic ? (
+          <div class="stats__item"><span class="stats__n stats__n--sm"><a href={`mailto:${site.email}`}>{site.email}</a></span><span class="stats__l">Email</span></div>
+        ) : (
+          <div class="stats__item"><span class="stats__n stats__n--sm">The whole GTA</span><span class="stats__l">Where we work</span></div>
+        )}
+        <div class="stats__item"><span class="stats__n stats__n--sm">{site.hours[0]!.display}</span><span class="stats__l">Monday to Friday</span></div>
+      </div>
+
+      <div class="panel bookPanel">
+        <BookingForm client:visible variant="residential" heading="Tell us about the job" headingLevel="h3" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

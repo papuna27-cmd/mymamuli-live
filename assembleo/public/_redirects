@@ -1,0 +1,5 @@
+# @astrojs/sitemap emits sitemap-index.xml; keep the conventional path working.
+/sitemap.xml   /sitemap-index.xml   301
+/services      /services/assembly   301
+/quote         /calculator          301
+/book          /contact             301

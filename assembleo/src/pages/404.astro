@@ -1,0 +1,81 @@
+---
+/**
+ * Not found. Cloudflare Pages serves dist/404.html for any unmatched path, so
+ * this page has to work as a destination, not an apology: the six sectors and
+ * the phone number, in the same system as everything else.
+ */
+import { Picture } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { notFound } from '../data/copy';
+import { site, telHref } from '../data/site';
+import { servicePages } from '../data/service-pages';
+import { gtaCities } from '../data/cities';
+
+import homeImg from '../assets/photos/home-bedroom.jpg';
+import officeImg from '../assets/photos/seg-office.jpg';
+import gymImg from '../assets/photos/seg-gym.jpg';
+import clinicImg from '../assets/photos/seg-dental.jpg';
+import hotelImg from '../assets/photos/seg-hotel.jpg';
+
+const PHOTOS: Record<string, ImageMetadata> = {
+  home: homeImg, office: officeImg, gym: gymImg, clinic: clinicImg, hotel: hotelImg,
+};
+---
+
+<BaseLayout title={notFound.title} description={notFound.metaDescription} path="/404" noindex>
+  <section class="chero nf">
+    <div class="wrap chero__inner">
+      <p class="chero__eyebrow">Error 404</p>
+      <h1>{notFound.h1}</h1>
+      <p class="chero__support">{notFound.lede}</p>
+      <div class="chero__actions">
+        <a class="btn btn--signal" href="/">Back to the homepage</a>
+        <a class="btn btn--onink" href={telHref}>Call {site.phoneDisplay}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="nf-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Sectors</p>
+        <h2 id="nf-h">What we assemble</h2>
+      </div>
+      <div class="grid grid--3">
+        {servicePages.map((s) => (
+          <a class="card card--link" href={`/services/${s.slug}`}>
+            <Picture
+              src={PHOTOS[s.image]!} alt={s.imageAlt}
+              widths={[400, 600, 820]} sizes="(min-width: 940px) 33vw, (min-width: 620px) 50vw, 92vw"
+              formats={['avif', 'webp']} fallbackFormat="jpg" quality={58}
+              loading="lazy" class="card__media"
+            />
+            <div class="card__body">
+              <h3 class="card__title">{s.name}</h3>
+              <p class="card__text">{s.lede.split('.')[0]}.</p>
+              <span class="card__foot textlink">See what we build</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="nfa-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Service areas</p>
+        <h2 id="nfa-h">Where we work</h2>
+      </div>
+      <ul class="areaChips">
+        {gtaCities.map((c) => (
+          <li><a href={`/service-areas/${c.slug}`}>{c.name}</a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf { padding-block: clamp(var(--s-14), 7vw, var(--s-24)); }
+</style>

@@ -1,0 +1,9 @@
+---
+interface Props { title: string; body: string[]; }
+const { title, body } = Astro.props;
+---
+
+<div class="scope">
+  <p class="scope__title">{title}</p>
+  <div class="stack">{body.map((p) => <p>{p}</p>)}</div>
+</div>

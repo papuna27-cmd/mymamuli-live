@@ -1,0 +1,24 @@
+---
+interface Props { h1: string; lede: string; badge?: string; }
+const { h1, lede, badge } = Astro.props;
+---
+
+<section class="phero">
+  <div class="wrap">
+    {badge && <p class="phero__badge"><span class="badge badge--limit">{badge}</span></p>}
+    <h1>{h1}</h1>
+    <p class="lede phero__lede">{lede}</p>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .phero {
+    padding-block: clamp(var(--s-10), 5vw, var(--s-18)) clamp(var(--s-8), 4vw, var(--s-14));
+    background: var(--paper);
+    text-align: center;
+  }
+  .phero h1 { max-width: 20ch; margin-inline: auto; }
+  .phero__badge { margin-bottom: var(--s-4); }
+  .phero__lede { margin: var(--s-5) auto 0; max-width: 56ch; }
+</style>

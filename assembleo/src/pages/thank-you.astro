@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { thankYou } from '../data/copy';
+import { site, telHref } from '../data/site';
+---
+
+<BaseLayout
+  title={thankYou.title}
+  description={thankYou.metaDescription}
+  path="/thank-you"
+  noindex
+>
+  <PageHero h1={thankYou.h1} lede={thankYou.lede} />
+
+  <section class="section section--surface" aria-labelledby="next-h">
+    <div class="wrap wrap--mid">
+      <div class="section-head">
+        <p class="eyebrow">Next</p>
+        <h2 id="next-h">What happens next</h2>
+      </div>
+
+      <div class="grid grid--3">
+        {thankYou.next.map((s, i) => (
+          <article class="card card--step">
+            <div class="card__body">
+              <span class="card__num" aria-hidden="true">{i + 1}</span>
+              <p class="card__text">{s}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="panel ty__urgent">
+        <p class="ty__urgentTitle">In a hurry?</p>
+        <p class="ty__urgentBody">{thankYou.urgent}</p>
+        <p class="ty__actions">
+          <a class="btn btn--signal" href={telHref}>Call {site.phoneDisplay}</a>
+        </p>
+      </div>
+
+      <p class="ty__back">
+        <a class="textlink" href="/">Back to the homepage</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ty__urgent {
+    margin: clamp(var(--s-10), 4vw, var(--s-14)) auto 0;
+    max-width: 44rem;
+    padding: clamp(var(--s-6), 3vw, var(--s-10));
+    border-radius: var(--r-lg);
+    text-align: center;
+  }
+  .ty__urgentTitle { font-family: var(--font-display); font-weight: 800; font-size: var(--t-lg); }
+  .ty__urgentBody { margin-top: var(--s-3); color: var(--muted); max-width: 48ch; margin-inline: auto; }
+  .ty__actions { margin-top: var(--s-6); }
+  .ty__back { margin-top: var(--s-8); text-align: center; }
+</style>

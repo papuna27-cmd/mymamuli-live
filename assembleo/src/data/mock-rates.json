@@ -1,0 +1,15 @@
+{
+  "_comment": "LOCAL DEVELOPMENT FIXTURES ONLY. The Worker is the source of truth for pricing. These values exist so the UI can be built and tested before the API is deployed, and are tree-shaken out of production builds.",
+  "taxRate": 0.13,
+  "currency": "CAD",
+  "distanceRate": 5,
+  "services": {
+    "delivery": { "baseFee": 90, "minimum": 150 },
+    "moving": { "baseFee": 70, "minimum": 130 }
+  },
+  "serviceAreaKeywords": [
+    "mississauga", "toronto", "brampton", "oakville", "etobicoke", "vaughan",
+    "hamilton", "burlington", "milton", "markham", "richmond hill", "scarborough",
+    "north york", "york", "halton", "peel", "ontario", "on"
+  ]
+}

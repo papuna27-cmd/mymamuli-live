@@ -1,0 +1,53 @@
+---
+interface Props { included: string[]; extra: string[]; notIncluded: string[]; }
+const { included, extra, notIncluded } = Astro.props;
+const groups = [
+  { title: 'Included in the price', items: included, kind: 'yes' },
+  { title: 'Costs extra — ask when you book', items: extra, kind: 'extra' },
+  { title: 'We do not do these', items: notIncluded, kind: 'no' },
+];
+---
+
+<div class="incl">
+  {groups.map((g) => (
+    <section class="incl__group" data-kind={g.kind}>
+      <h3 class="incl__h">{g.title}</h3>
+      <ul class="incl__list">{g.items.map((i) => <li>{i}</li>)}</ul>
+    </section>
+  ))}
+</div>
+
+<style>
+  .incl { display: grid; gap: var(--s-8); }
+  .incl__h { font-size: var(--t-md); font-weight: 600; padding-bottom: var(--s-3); border-bottom: 2px solid var(--ink); }
+  .incl__list { margin-top: var(--s-4); display: grid; gap: var(--s-3); }
+  .incl__list li { position: relative; padding-left: 26px; font-size: var(--t-sm); }
+  .incl__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.42em;
+    width: 12px;
+    height: 12px;
+  }
+  [data-kind='yes'] .incl__list li::before {
+    border-left: 2px solid var(--verified);
+    border-bottom: 2px solid var(--verified);
+    transform: rotate(-45deg) translate(1px, -2px);
+    height: 7px;
+  }
+  [data-kind='extra'] .incl__list li::before {
+    background: var(--signal);
+    height: 2px;
+    top: 0.72em;
+  }
+  [data-kind='no'] .incl__list li::before {
+    background: var(--slate);
+    height: 2px;
+    top: 0.72em;
+    opacity: 0.6;
+  }
+  @media (min-width: 768px) {
+    .incl { grid-template-columns: repeat(3, 1fr); gap: var(--s-8); }
+  }
+</style>

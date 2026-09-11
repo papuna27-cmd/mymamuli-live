@@ -1,0 +1,78 @@
+---
+/**
+ * Page hero with a photograph behind it. Same construction as the homepage
+ * hero: the image sits behind a scrim tuned so paper text stays well above
+ * 4.5:1 even over the lightest part of the photo.
+ */
+import { Picture } from 'astro:assets';
+
+interface Props {
+  image: ImageMetadata;
+  alt: string;
+  eyebrow?: string;
+  h1: string;
+  lede: string;
+  ctaLabel: string;
+  ctaHref: string;
+  /** Eager for the first hero a visitor sees. */
+  priority?: boolean;
+  /**
+   * 'strong' suits a bright photo. 'soft' is for an already-dark image, where
+   * the full scrim would flatten it to black; contrast stays well clear of AA
+   * either way because the photo itself is doing the darkening.
+   */
+  scrim?: 'strong' | 'soft';
+}
+const {
+  image, alt, eyebrow, h1, lede, ctaLabel, ctaHref, priority = true, scrim = 'strong',
+} = Astro.props;
+import { site, telHref } from '../data/site';
+---
+
+<section class:list={['hero', 'on-ink', 'phero2', scrim === 'soft' && 'hero--soft']}>
+  <div class="hero__media">
+    <Picture
+      src={image}
+      alt={alt}
+      widths={[640, 960, 1400, 2000]}
+      sizes="100vw"
+      formats={['avif', 'webp']}
+      fallbackFormat="jpg"
+      quality={52}
+      loading={priority ? 'eager' : 'lazy'}
+      class="hero__img"
+    />
+  </div>
+
+  <div class="wrap hero__inner phero2__inner">
+    {eyebrow && <p class="hero__eyebrow">{eyebrow}</p>}
+    <h1 class="phero2__title">{h1}</h1>
+    <p class="hero__support">{lede}</p>
+    <div class="hero__actions">
+      <a class="btn btn--signal" href={ctaHref}>{ctaLabel}</a>
+      <a class="btn btn--onink" href={telHref}>Call {site.phoneDisplay}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .phero2 { padding-block: var(--s-10) var(--s-12, var(--s-14)); text-align: center; }
+  .phero2__inner { max-width: 60rem; }
+  .phero2 :global(.hero__eyebrow) { justify-content: center; text-transform: uppercase; letter-spacing: 0.12em; font-size: var(--t-xs); }
+  .phero2 :global(.hero__eyebrow)::before { display: none; }
+  .phero2 :global(.hero__support) { max-width: 52ch; margin-inline: auto; }
+  .phero2 :global(.hero__actions) { justify-content: center; }
+  .phero2 :global(.hero__actions .btn) { min-width: 13rem; }
+  .phero2__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--t-3xl);
+    line-height: 1.03;
+    letter-spacing: -0.025em;
+    max-width: 20ch;
+    margin-inline: auto;
+  }
+  @media (min-width: 768px) {
+    .phero2 { padding-block: var(--s-24) var(--s-24); min-height: min(58vh, 520px); display: grid; align-content: center; }
+  }
+</style>

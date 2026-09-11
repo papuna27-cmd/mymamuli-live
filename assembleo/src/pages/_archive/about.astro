@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import CoverageMap from '../components/CoverageMap.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { about } from '../data/copy';
+import { cities } from '../data/cities';
+
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+];
+---
+
+<BaseLayout
+  title={about.title}
+  description={about.metaDescription}
+  path="/about"
+  crumbs={crumbs}
+>
+  <PageHero h1={about.h1} lede={about.lede} />
+
+  <section class="section section--surface" aria-labelledby="story-h">
+    <div class="wrap">
+      <h2 id="story-h" class="visually-hidden">About the company</h2>
+      <div class="about__body">
+        {about.sections.map((s) => (
+          <section class="about__section">
+            <h3>{s.h2}</h3>
+            <div class="prose stack">{s.body.map((p) => <p>{p}</p>)}</div>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper" aria-labelledby="facts-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="facts-h">{about.facts.h2}</h2></div>
+      <dl class="kv">
+        {about.facts.rows.map((r) => (
+          <div><dt>{r.k}</dt><dd>{r.v}</dd></div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="areas-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="areas-h">{about.areas.h2}</h2>
+        <p class="lede section-intro">{about.areas.intro}</p>
+      </div>
+      <CoverageMap />
+      <ul class="rule-list areas__list">
+        {cities.map((c) => (
+          <li>
+            <a class="rule-row" href={`/service-areas/${c.slug}`}>
+              <span>
+                <span class="rule-row__title">{c.name}</span>
+                <span class="rule-row__sub">{c.driveTime}</span>
+              </span>
+              <svg class="rule-row__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <RelatedLinks current="none" />
+  <CtaBand
+    heading="Need a hand with something?"
+    body="Send us the job. If we are not the right people for it, we will tell you who is."
+    primary={{ label: 'Book a job', href: '/contact' }}
+  />
+</BaseLayout>
+
+<style>
+  .about__body { display: grid; gap: var(--s-10); }
+  .about__section h3 { margin-bottom: var(--s-3); }
+  .areas__list { margin-top: var(--s-8); }
+  @media (min-width: 1024px) {
+    .about__body { grid-template-columns: repeat(3, 1fr); gap: var(--s-8); }
+  }
+</style>

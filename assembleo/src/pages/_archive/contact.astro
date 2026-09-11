@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import CoverageMap from '../components/CoverageMap.astro';
+import BookingForm from '../islands/BookingForm';
+import { contact } from '../data/copy';
+import { site, telHref } from '../data/site';
+import { cities } from '../data/cities';
+import type { BookingService } from '../lib/types';
+
+const q = Astro.url.searchParams.get('service');
+const valid: BookingService[] = ['assembly', 'delivery', 'moving', 'other'];
+const defaultService = valid.includes(q as BookingService) ? (q as BookingService) : undefined;
+
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Contact', href: '/contact' },
+];
+---
+
+<BaseLayout
+  title={contact.title}
+  description={contact.metaDescription}
+  path="/contact"
+  crumbs={crumbs}
+>
+  <PageHero h1={contact.h1} lede={contact.lede} />
+
+  <section class="section section--surface" aria-labelledby="form-h">
+    <div class="wrap cols-2 cols-2--sticky">
+      <div class="panel" id="book">
+        <h2 id="form-h" class="visually-hidden">{contact.formHeading}</h2>
+        <BookingForm
+          client:visible
+          variant="residential"
+          heading={contact.formHeading}
+          headingLevel="h3"
+          defaultService={defaultService}
+        />
+      </div>
+
+      <div class="contact__aside stack-8">
+        <section>
+          <h2 class="contact__h">{contact.directHeading}</h2>
+          <dl class="kv">
+            <div><dt>Phone</dt><dd><a class="contact__link" href={telHref}>{site.phoneDisplay}</a></dd></div>
+            <div><dt>Email</dt><dd><a class="contact__link" href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+            <div>
+              <dt>Depot</dt>
+              <dd>
+                <address class="contact__addr">
+                  {site.address.street}<br />
+                  {site.address.city}, {site.address.region} {site.address.postalCode}
+                </address>
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <section>
+          <h2 class="contact__h">{contact.hoursHeading}</h2>
+          <dl class="kv">
+            {site.hours.map((h) => (
+              <div><dt>{h.label}</dt><dd class="num">{h.display}</dd></div>
+            ))}
+          </dl>
+        </section>
+
+        <section>
+          <h2 class="contact__h">{contact.areaHeading}</h2>
+          <p class="small contact__cities">
+            {cities.map((c) => c.name).join(', ')}, and most places between them.
+          </p>
+          <CoverageMap />
+        </section>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact__h { font-size: var(--t-lg); font-family: var(--font-text); font-weight: 600; margin-bottom: var(--s-3); }
+  .contact__aside { margin-top: var(--s-10); }
+  .contact__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+  .contact__addr { font-style: normal; }
+  .contact__cities { margin-bottom: var(--s-4); max-width: var(--prose); }
+  @media (min-width: 1024px) {
+    .contact__aside { margin-top: 0; }
+  }
+</style>

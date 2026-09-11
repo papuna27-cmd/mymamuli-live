@@ -1,0 +1,179 @@
+/** Static audit of the built HTML. Run after `npm run build`. */
+import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { join, relative } from 'node:path';
+
+const DIST = 'dist';
+/** Canonicals are checked against the configured domain, not a hardcoded one. */
+const SITE_URL = (process.env.PUBLIC_SITE_URL || 'https://assembleo.ca').replace(/\/$/, '');
+const problems = [];
+const note = (page, msg) => problems.push(`${page}: ${msg}`);
+
+function walk(dir, out = []) {
+  for (const e of readdirSync(dir)) {
+    const p = join(dir, e);
+    if (statSync(p).isDirectory()) walk(p, out);
+    else if (e.endsWith('.html')) out.push(p);
+  }
+  return out;
+}
+
+const files = walk(DIST);
+const routes = new Set(
+  files.map((f) => {
+    const r = '/' + relative(DIST, f).replace(/index\.html$/, '').replace(/\.html$/, '');
+    return r.replace(/\/$/, '') || '/';
+  }),
+);
+
+let checked = 0;
+
+for (const file of files) {
+  const html = readFileSync(file, 'utf8');
+  const route = ('/' + relative(DIST, file).replace(/index\.html$/, '').replace(/\.html$/, '')).replace(/\/$/, '') || '/';
+  checked++;
+
+  // --- title / description budgets
+  // Measure the decoded text, not the escaped markup — "&amp;" is one character.
+  const decode = (s) =>
+    s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#8217;/g, '\u2019');
+  const title = decode((html.match(/<title>([^<]*)<\/title>/) || [])[1] ?? '');
+  const desc = decode((html.match(/<meta name="description" content="([^"]*)"/) || [])[1] ?? '');
+  if (!title) note(route, 'missing <title>');
+  else if (title.length > 60) note(route, `title ${title.length} chars > 60`);
+  if (!desc) note(route, 'missing meta description');
+  else if (desc.length > 155) note(route, `description ${desc.length} chars > 155`);
+
+  // --- canonical, self-referencing, character for character
+  //
+  // This used to strip the trailing slash off both sides before comparing,
+  // which meant it could not see the one difference that mattered: the build
+  // emits directories, so /commercial/ is what the server returns and
+  // /commercial gets a 308 to it, while every canonical pointed at the
+  // unslashed form. Google was handed two candidate URLs per page — the
+  // sitemap's and the canonical's — and had to reconcile them before indexing
+  // anything. A check that normalises away the failure is not a check.
+  const canon = (html.match(/<link rel="canonical" href="([^"]*)"/) || [])[1];
+  if (!canon) note(route, 'missing canonical');
+  else {
+    const expect = `${SITE_URL}${route === '/' ? '/' : route + '/'}`;
+    if (canon !== expect) note(route, `canonical ${canon} != ${expect}`);
+  }
+
+  // --- headings: exactly one h1, no level skips
+  const h1s = html.match(/<h1[\s>]/g) || [];
+  if (h1s.length !== 1) note(route, `${h1s.length} h1 elements (expected 1)`);
+  const levels = [...html.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]));
+  let prev = 0;
+  for (const l of levels) {
+    if (prev && l > prev + 1) { note(route, `heading skip h${prev} -> h${l}`); break; }
+    prev = l;
+  }
+
+  // --- Open Graph
+  for (const p of ['og:title', 'og:description', 'og:url', 'og:image', 'twitter:card']) {
+    if (!html.includes(`"${p}"`)) note(route, `missing ${p}`);
+  }
+  const ogImg = (html.match(/property="og:image" content="https:\/\/assembleo\.ca([^"]*)"/) || [])[1];
+  if (ogImg && !existsSync(join('public', ogImg))) note(route, `og:image missing on disk: ${ogImg}`);
+
+  // --- structured data
+  const ldBlocks = [...html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+  if (ldBlocks.length === 0) note(route, 'no JSON-LD');
+  for (const [, raw] of ldBlocks) {
+    let parsed;
+    try { parsed = JSON.parse(raw); } catch (e) { note(route, `invalid JSON-LD: ${e.message}`); continue; }
+    const arr = Array.isArray(parsed) ? parsed : [parsed];
+    const types = arr.map((o) => o['@type']);
+    // LocalBusiness subtype used sitewide. Assembly work, so not MovingCompany.
+    if (!types.includes('HomeAndConstructionBusiness')) {
+      note(route, 'no LocalBusiness/HomeAndConstructionBusiness schema');
+    }
+    // Reviews come from Google — AggregateRating must never be emitted.
+    if (raw.includes('AggregateRating') || raw.includes('aggregateRating')) {
+      note(route, 'AggregateRating emitted for third-party reviews');
+    }
+    const isHome = route === '/';
+    if (!isHome && !types.includes('BreadcrumbList') && !/\/(404|thank-you)$/.test(route)) {
+      note(route, 'missing BreadcrumbList');
+    }
+  }
+
+  // --- FAQPage markup must match visible content (Google policy)
+  if (html.includes('"FAQPage"')) {
+    const qs = [...html.matchAll(/"@type":"Question","name":"([^"]{5,120})"/g)].map((m) => m[1]);
+    const visible = html.replace(/<script[\s\S]*?<\/script>/g, '');
+    const missing = qs.filter((q) => {
+      const probe = q.replace(/&#39;|&quot;|&amp;/g, '').slice(0, 25);
+      return !visible.includes(probe);
+    });
+    if (missing.length) note(route, `FAQPage question not visible on the page: "${missing[0]}"`);
+  }
+
+  // --- internal links resolve
+  for (const m of html.matchAll(/href="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
+    const href = m[1].replace(/\/$/, '') || '/';
+    if (/\.(png|svg|xml|txt|webmanifest|woff2|ico|json|css|js|jpg|webp|avif)$/.test(href)) continue;
+    if (href.startsWith('/_astro/')) continue;
+    if (!routes.has(href)) note(route, `dead internal link: ${m[1]}`);
+  }
+
+  // --- images have alt and explicit dimensions
+  for (const m of html.matchAll(/<img\b[^>]*>/g)) {
+    const tag = m[0];
+    if (!/\balt=/.test(tag)) note(route, `img without alt: ${tag.slice(0, 90)}`);
+    if (!/\bwidth=/.test(tag) || !/\bheight=/.test(tag)) note(route, `img without width/height: ${tag.slice(0, 90)}`);
+  }
+
+  // --- any phone number shown must also be a tel: link
+  const shownPhone = html.match(/\(\d{3}\)\s?\d{3}-\d{4}/);
+  if (shownPhone && !/href="tel:\+\d{10,}"/.test(html)) {
+    note(route, `phone ${shownPhone[0]} shown but no tel: link`);
+  }
+  // --- the fictional placeholder must never reach production
+  if (/555-0142|2255 Dundas/.test(html)) {
+    note(route, 'placeholder contact details still present');
+  }
+
+  // --- viewport / lang / skip link
+  if (!html.includes('viewport-fit=cover')) note(route, 'viewport missing viewport-fit=cover');
+  if (!html.includes('lang="en-CA"')) note(route, 'missing lang');
+  if (!html.includes('class="skip-link"')) note(route, 'missing skip link');
+  if (!/<main id="main"/.test(html)) note(route, 'missing <main id="main">');
+}
+
+/**
+ * The sitemap and the canonicals have to name the same URLs.
+ *
+ * They are produced by different things — the sitemap by the Astro
+ * integration, the canonical by our own code — so nothing forces them to
+ * agree, and when they disagree Google gets two candidates per page and picks
+ * one itself. Comparing the two sets catches that the moment it happens,
+ * rather than weeks later when the pages have not been indexed.
+ */
+const sitemapFile = join(DIST, 'sitemap-0.xml');
+if (!existsSync(sitemapFile)) {
+  note('sitemap', 'sitemap-0.xml missing from the build');
+} else {
+  const xml = readFileSync(sitemapFile, 'utf8');
+  const listed = new Set([...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]));
+
+  const canonicals = new Set(
+    files
+      .map((f) => (readFileSync(f, 'utf8').match(/<link rel="canonical" href="([^"]*)"/) || [])[1])
+      .filter(Boolean),
+  );
+
+  for (const loc of listed) {
+    if (!canonicals.has(loc)) note('sitemap', `lists ${loc}, but no page claims it as its canonical`);
+  }
+}
+
+console.log(`Audited ${checked} pages, ${routes.size} routes.`);
+if (problems.length === 0) {
+  console.log('PASS — no issues.');
+} else {
+  console.log(`\nFAIL — ${problems.length} issue(s):`);
+  for (const p of problems) console.log('  • ' + p);
+  process.exitCode = 1;
+}

@@ -1,0 +1,65 @@
+---
+/**
+ * Privacy and Terms. Same system as every other page: a centred hero, and
+ * sections that open on a ruled line with a numbered mono label. Legal copy
+ * still reads left — a paragraph of policy is not a headline — but the block
+ * is centred in the page rather than pinned to the left edge with half the
+ * window empty beside it.
+ */
+interface Doc {
+  h1: string;
+  lede: string;
+  updated: string;
+  sections: Array<{ h2: string; body: string[] }>;
+}
+interface Props { doc: Doc; }
+const { doc } = Astro.props;
+const updated = new Date(doc.updated).toLocaleDateString('en-CA', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+---
+
+<section class="phero">
+  <div class="wrap">
+    <h1>{doc.h1}</h1>
+    <p class="lede phero__lede">{doc.lede}</p>
+    <p class="small legal__updated mono">
+      Last updated <time datetime={doc.updated}>{updated}</time>
+    </p>
+  </div>
+</section>
+
+<section class="section section--surface">
+  <div class="wrap wrap--mid legal__body">
+    {doc.sections.map((s, i) => (
+      <section class="legal__section">
+        <p class="eyebrow legal__label">{String(i + 1).padStart(2, '0')}</p>
+        <h2 class="legal__h">{s.h2}</h2>
+        <div class="prose stack">{s.body.map((p) => <p>{p}</p>)}</div>
+      </section>
+    ))}
+  </div>
+</section>
+
+<style>
+  .phero { text-align: center; }
+  .legal__updated { margin-top: var(--s-4); }
+  .legal__body { display: grid; gap: clamp(var(--s-10), 4vw, var(--s-18)); }
+  .legal__section {
+    border-top: 1px solid var(--line);
+    padding-top: clamp(var(--s-5), 2.4vw, var(--s-8));
+    max-width: 68ch;
+    margin-inline: auto;
+    width: 100%;
+  }
+  /* The counter on .section-head does not reach here, so the number is written
+     into the label and the shared ::before is switched off. */
+  .legal__label { justify-content: flex-start; }
+  .legal__label::before { content: none; }
+  .legal__h {
+    font-size: var(--t-xl);
+    font-family: var(--font-display);
+    font-weight: 800;
+    margin: var(--s-3) 0 var(--s-5);
+  }
+</style>

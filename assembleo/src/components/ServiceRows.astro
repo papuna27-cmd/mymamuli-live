@@ -1,0 +1,25 @@
+---
+import { services } from '../data/services';
+interface Props { exclude?: string; split?: boolean; }
+const { exclude, split = true } = Astro.props;
+const rows = services.filter((s) => s.slug !== exclude);
+---
+
+<ul class:list={['rule-list', split && 'rule-list--split']}>
+  {rows.map((s) => (
+    <li>
+      <a class="rule-row" href={s.href}>
+        <span>
+          <span class="rule-row__title">
+            {s.name}
+            {s.limit && <span class="badge badge--limit">{s.limit}</span>}
+          </span>
+          <span class="rule-row__sub">{s.short}</span>
+        </span>
+        <svg class="rule-row__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </a>
+    </li>
+  ))}
+</ul>

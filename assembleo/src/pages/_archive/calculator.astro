@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import FaqBlock from '../components/FaqBlock.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Calculator from '../islands/Calculator';
+import { calculatorPage } from '../data/copy';
+import { faqs } from '../data/faqs';
+import { faqPage } from '../lib/schema';
+import type { ServiceKind } from '../lib/types';
+
+const requested = Astro.url.searchParams.get('service');
+const initial: ServiceKind = requested === 'moving' ? 'moving' : 'delivery';
+
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Price calculator', href: '/calculator' },
+];
+---
+
+<BaseLayout
+  title={calculatorPage.title}
+  description={calculatorPage.metaDescription}
+  path="/calculator"
+  ogImage="/og/calculator.png"
+  crumbs={crumbs}
+  schemas={[faqPage(faqs.general!)]}
+>
+  <PageHero h1={calculatorPage.h1} lede={calculatorPage.lede} />
+
+  <section class="section section--tight section--paper" aria-labelledby="calc-h">
+    <div class="wrap">
+      <h2 id="calc-h" class="visually-hidden">Calculator</h2>
+      <Calculator client:load services={['delivery', 'moving']} initial={initial} heading="Estimate a job" />
+      <p class="small calcnote">{calculatorPage.note}</p>
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="how-h">How the price is worked out</h2></div>
+      <dl class="kv prose">
+        <div><dt>Base service fee</dt><dd>A flat fee per job that covers the crew and the van turning up.</dd></div>
+        <div><dt>Distance charge</dt><dd>A per-kilometre rate applied to the one-way driving distance between your two addresses.</dd></div>
+        <div><dt>Minimum charge</dt><dd>Short local jobs land on a minimum rather than the distance rate, so a 3 km job and a 10 km job cost the same.</dd></div>
+        <div><dt>HST</dt><dd>13%, shown as its own line so you can see exactly what is tax.</dd></div>
+        <div><dt>What moves the price after booking</dt><dd>Only a change to the job: extra items, a different address, or access nobody mentioned. Never a fee we did not tell you about.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <FaqBlock items={faqs.general!} heading="Before you book" id="faq" />
+  <RelatedLinks current="none" />
+  <CtaBand
+    heading="Happy with the number?"
+    body="Send it through with your details and we will confirm the price and hold a slot."
+    primary={{ label: 'Book a job', href: '/contact' }}
+  />
+</BaseLayout>
+
+<style>
+  .calcnote { margin-top: var(--s-5); max-width: var(--prose); }
+</style>

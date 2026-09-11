@@ -1,0 +1,42 @@
+{
+  "name": "assembleo-site",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=assembleo",
+    "og": "node scripts/og.mjs",
+    "brand": "node scripts/brand.mjs",
+    "geo": "node scripts/geo.mjs",
+    "audit": "node scripts/audit.mjs",
+    "check:mobile": "node scripts/mobile-check.mjs",
+    "check:amber": "node scripts/amber-check.mjs",
+    "check:contrast": "node scripts/contrast-check.mjs",
+    "shots": "node scripts/shots.mjs",
+    "preview:build": "node --experimental-strip-types scripts/preview.mjs",
+    "verify": "npm run build && npm run check && npm run check:functions && npm run audit && npm run check:mobile && npm run check:amber && npm run check:contrast",
+    "dev:api": "npm run build && wrangler pages dev dist --persist-to=.wrangler/local",
+    "db:init:local": "wrangler d1 execute assembleo --local --file=schema.sql --persist-to=.wrangler/local",
+    "db:init": "wrangler d1 execute assembleo --remote --file=schema.sql",
+    "db:leads": "wrangler d1 execute assembleo --remote --command=\"SELECT created_at,type,name,phone,email,status FROM bookings ORDER BY created_at DESC LIMIT 25;\"",
+    "check:functions": "tsc -p functions/tsconfig.json",
+    "e2e": "node scripts/e2e.mjs"
+  },
+  "dependencies": {
+    "@astrojs/preact": "^6.0.5",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.1",
+    "preact": "^10.29.8"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@cloudflare/workers-types": "^5.20260908.1",
+    "playwright": "^1.62.1",
+    "typescript": "^5.9.2",
+    "wrangler": "^4.130.0"
+  }
+}

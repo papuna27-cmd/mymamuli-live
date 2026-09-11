@@ -1,0 +1,88 @@
+# Deploys assembleo/ to Cloudflare Pages on every push.
+#
+# This exists so the site can ship without anyone pasting an API token into a
+# chat window. Add two repository secrets once — Settings → Secrets and
+# variables → Actions:
+#
+#   CLOUDFLARE_API_TOKEN   a token with Account · Cloudflare Pages · Edit
+#   CLOUDFLARE_ACCOUNT_ID  the ID on the right of the Cloudflare dashboard
+#
+# After that every push to the branch below builds and deploys itself, and the
+# token stays in GitHub rather than being shared with anyone.
+name: Deploy Assembleo
+
+on:
+  push:
+    branches:
+      - main
+      - claude/assembleo-frontend-build-xv3wjy
+    paths:
+      - 'assembleo/**'
+      - '.github/workflows/deploy-assembleo.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: assembleo-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    # Job level, not step level: the audit checks canonicals against
+    # PUBLIC_SITE_URL, so build and audit have to agree on it or a correct
+    # build fails its own check.
+    env:
+      PUBLIC_API_MOCK: 'false'
+      # The domain is registered and live, so it is the default now. A repo
+      # variable still wins, which is how a staging build points elsewhere.
+      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL || 'https://assembleo.ca' }}
+      # GA4 loaded directly — no Tag Manager container to maintain for a single
+      # property. Consent Mode denies storage until the visitor agrees. Unset
+      # in a fork or a staging build, and no tracking ships at all.
+      PUBLIC_GA_ID: ${{ vars.PUBLIC_GA_ID || 'G-E7TY35L4TK' }}
+    defaults:
+      run:
+        working-directory: assembleo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: assembleo/package-lock.json
+
+      - run: npm ci
+
+      # The same checks that run locally. A red build must not reach the site.
+      #
+      # PUBLIC_API_MOCK matters: .env defaults it to true for local work, and a
+      # build that inherits that ships a site whose booking form talks to a
+      # mock and silently never reaches the backend.
+      #
+      # PUBLIC_SITE_URL points at pages.dev until a domain exists, because a
+      # canonical aimed at a domain that does not resolve is worse than one
+      # aimed at the address the site is actually served from. Set a repository
+      # variable of the same name to override it on the day the domain lands.
+      - run: npm run build
+      - run: npm run check
+      - run: npm run check:functions
+      - run: npm run audit
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: assembleo
+          # Deployed as the project's production branch rather than under the
+          # git branch name, so the site lands on assembleo.pages.dev instead
+          # of a preview URL. The code lives on a claude/* branch and is not
+          # being merged into main, because main is the mymamuli-live deploy
+          # source and that site must not be disturbed.
+          command: pages deploy dist --project-name=assembleo --branch=main --commit-dirty=true

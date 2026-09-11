@@ -1,0 +1,226 @@
+---
+/**
+ * Coverage map.
+ *
+ * Real geography, not a diagram: municipal boundaries from OpenStreetMap and
+ * the Lake Ontario shoreline from Natural Earth, projected to Web Mercator at
+ * build time by scripts/geo.mjs. Inline SVG, no tiles, no JS, no image request.
+ *
+ * Labels are placed by a greedy solver that tries eight positions around each
+ * marker and falls back to a pushed position with a leader line. It runs twice:
+ * a full set for tablet and desktop, and a six-name set for phones, because a
+ * 360px-wide map cannot carry twenty-one labels at a readable size. That is a
+ * cartographic decision, not a compromise — the full list of cities is on the
+ * page below the map.
+ */
+import { cities } from '../data/cities';
+import { site } from '../data/site';
+import { mapShapes, mapFrame, lakePath, projectPoint, kmPerPx } from '../data/geo';
+
+const { width: W, height: H } = mapFrame;
+
+/** Names kept on phones: the four corners of the coverage plus the depot. */
+const KEY = new Set(['toronto', 'mississauga', 'hamilton', 'oshawa', 'newmarket', 'brampton']);
+
+const points = cities.map((c) => ({
+  slug: c.slug,
+  name: c.name,
+  district: !!mapShapes.find((s) => s.slug === c.slug && s.kind === 'district'),
+  ...projectPoint(c.lng, c.lat),
+}));
+
+interface Box { x: number; y: number; w: number; h: number; }
+const hits = (a: Box, b: Box) =>
+  a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+
+/** Eight positions at two radii, then a pushed ring that earns a leader line. */
+const DIRS = [
+  [1, 0], [-1, 0], [0, -1], [0, 1],
+  [0.75, -0.75], [-0.75, -0.75], [0.75, 0.75], [-0.75, 0.75],
+];
+
+function place(list: typeof points, fontSize: number) {
+  const charW = fontSize * 0.55;
+  const lh = fontSize * 1.05;
+  const gap = fontSize * 0.55;
+  const taken: Box[] = list.map((p) => ({ x: p.x - 6, y: p.y - 6, w: 12, h: 12 }));
+
+  // Crowded markers choose first; the last one placed takes what is left, and
+  // in the Toronto cluster that must not be Toronto.
+  const order = [...list].sort((a, b) => {
+    const near = (p: typeof a) =>
+      list.filter((q) => q !== p && Math.hypot(q.x - p.x, q.y - p.y) < 90).length;
+    return near(b) - near(a);
+  });
+
+  const out = new Map<string, { tx: number; ty: number; anchor: 'start' | 'end' | 'middle'; leader: boolean }>();
+  for (const p of order) {
+    const w = p.name.length * charW;
+    let best: { tx: number; ty: number; anchor: 'start' | 'end' | 'middle'; leader: boolean } | null = null;
+
+    outer: for (const [ring, leader] of [[9, false], [13, false], [30, true]] as const) {
+      for (const [dx, dy] of DIRS) {
+        const anchor = dx > 0.1 ? 'start' : dx < -0.1 ? 'end' : 'middle';
+        const tx = p.x + dx * (ring + gap);
+        const ty = p.y + dy * (ring + gap) + fontSize * 0.34;
+        const lx = anchor === 'start' ? tx : anchor === 'end' ? tx - w : tx - w / 2;
+        const box = { x: lx - 2, y: ty - fontSize * 0.8, w: w + 4, h: lh };
+        if (box.x < 2 || box.x + box.w > W - 2 || box.y < 2 || box.y + box.h > H - 2) continue;
+        if (taken.some((t) => hits(box, t))) continue;
+        taken.push(box);
+        best = { tx, ty, anchor, leader };
+        break outer;
+      }
+    }
+    // Nothing fits: sit on the marker rather than drop the name.
+    if (!best) best = { tx: p.x, ty: p.y - 10, anchor: 'middle', leader: false };
+    out.set(p.slug, best);
+  }
+  return list.map((p) => ({ ...p, ...out.get(p.slug)! }));
+}
+
+const full = place(points, 15);
+const keyOnly = place(points.filter((p) => KEY.has(p.slug)), 26);
+
+const depot = projectPoint(site.geo.lng, site.geo.lat);
+
+// Scale bar: a round number of kilometres, drawn bottom left.
+const BAR_KM = 10;
+const barPx = BAR_KM / kmPerPx;
+const barX = 18;
+const barY = H - 22;
+
+const cityList = cities.map((c) => c.name).join(', ');
+---
+
+<figure class="covmap">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="covmap-t covmap-d" class="covmap__svg">
+    <title id="covmap-t">Where Assembleo works across the Greater Toronto Area</title>
+    <desc id="covmap-d">
+      A map of the Greater Toronto Area from Hamilton in the south west to Oshawa in the east and
+      Newmarket in the north, with Lake Ontario along the bottom. The municipalities we cover are
+      shaded: {cityList}. Our depot is in {site.address.city}.
+    </desc>
+
+    <rect width={W} height={H} fill="var(--surface)" />
+
+    {/* Water first, slightly overgrown: the shoreline and the municipal
+        boundaries are separate OSM ways and leave a hairline between them.
+        The municipalities drawn on top trim it back to the real coast. */}
+    <path
+      d={lakePath}
+      fill="var(--water)"
+      stroke="var(--water)"
+      stroke-width="6"
+      stroke-linejoin="round"
+    />
+
+    {mapShapes.filter((s) => s.kind === 'city').map((s) => (
+      <path d={s.d} fill="rgba(var(--signal-rgb), 0.16)" stroke="var(--signal)" stroke-opacity="0.7" stroke-width="1" stroke-linejoin="round" />
+    ))}
+    {mapShapes.filter((s) => s.kind === 'district').map((s) => (
+      <path d={s.d} fill="none" stroke="var(--signal)" stroke-opacity="0.4" stroke-width="1" stroke-dasharray="3 4" />
+    ))}
+
+    <g class="covmap__labels covmap__labels--full">
+      {full.map((p) => [
+        p.leader && <line x1={p.x} y1={p.y} x2={p.tx} y2={p.ty - 5} stroke="var(--slate)" stroke-width="1" stroke-opacity="0.5" />,
+        <circle cx={p.x} cy={p.y} r={p.district ? 2.6 : 3.6} fill="var(--ink)" />,
+        <text x={p.tx} y={p.ty} text-anchor={p.anchor} class={p.district ? 'covmap__name covmap__name--sub' : 'covmap__name'}>{p.name}</text>,
+      ])}
+    </g>
+
+    <g class="covmap__labels covmap__labels--key">
+      {keyOnly.map((p) => [
+        p.leader && <line x1={p.x} y1={p.y} x2={p.tx} y2={p.ty - 8} stroke="var(--slate)" stroke-width="1.6" stroke-opacity="0.5" />,
+        <text x={p.tx} y={p.ty} text-anchor={p.anchor} class="covmap__name covmap__name--key">{p.name}</text>,
+      ])}
+      {points.map((p) => (
+        <circle cx={p.x} cy={p.y} r={p.district ? 3.5 : 5} fill="var(--ink)" />
+      ))}
+    </g>
+
+    <circle class="covmap__depot covmap__depot--full" cx={depot.x} cy={depot.y} r="9" fill="var(--signal)" stroke="var(--ink)" stroke-width="2.5" />
+    <circle class="covmap__depot covmap__depot--key" cx={depot.x} cy={depot.y} r="15" fill="var(--signal)" stroke="var(--ink)" stroke-width="4" />
+
+    <g class="covmap__scale">
+      <line x1={barX} y1={barY} x2={barX + barPx} y2={barY} />
+      <line x1={barX} y1={barY - 6} x2={barX} y2={barY + 6} />
+      <line x1={barX + barPx} y1={barY - 6} x2={barX + barPx} y2={barY + 6} />
+      <text x={barX} y={barY - 12} class="covmap__meta">{BAR_KM} km</text>
+    </g>
+  </svg>
+
+  <ul class="covmap__legend small">
+    <li><span class="key key--depot"></span>{site.address.city} depot</li>
+    <li><span class="key key--area"></span>Municipalities we cover</li>
+    <li><span class="key key--water"></span>Lake Ontario</li>
+  </ul>
+
+  <figcaption class="small covmap__cap">
+    Municipal boundaries and the Lake Ontario shoreline are &copy; OpenStreetMap contributors.
+    Jobs are priced on the driving distance between your two addresses, not on distance from our
+    depot.
+  </figcaption>
+</figure>
+
+<style>
+  .covmap { margin: 0; }
+  .covmap__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--surface);
+  }
+  .covmap__name {
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 600;
+    fill: var(--ink);
+    paint-order: stroke;
+    stroke: var(--surface);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+  }
+  .covmap__name--sub { font-size: 13px; font-weight: 500; fill: var(--slate); }
+  .covmap__name--key { font-size: 26px; stroke-width: 5px; }
+  .covmap__meta { font-family: var(--font-text); font-size: 24px; fill: var(--slate); }
+  .covmap__scale line { stroke: var(--slate); stroke-width: 3; }
+
+  /* Twenty-one names do not fit on a phone at a readable size, and everything
+     drawn in viewBox units has to grow to stay legible when the map shrinks. */
+  .covmap__labels--full,
+  .covmap__depot--full { display: none; }
+  @media (min-width: 700px) {
+    .covmap__labels--key,
+    .covmap__depot--key { display: none; }
+    .covmap__labels--full,
+    .covmap__depot--full { display: block; }
+    .covmap__meta { font-size: 12px; }
+    .covmap__scale line { stroke-width: 1.5; }
+  }
+
+  .covmap__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-5);
+    margin: var(--s-4) 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--slate);
+  }
+  .covmap__legend li { display: flex; align-items: center; gap: var(--s-2); }
+  .key {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    flex: none;
+  }
+  .key--depot { background: var(--signal); border: 2px solid var(--ink); border-radius: 50%; }
+  .key--area { background: rgba(var(--signal-rgb), 0.16); border: 1px solid rgba(var(--signal-rgb), 0.7); }
+  .key--water { background: var(--water); border: 1px solid var(--line); }
+
+  .covmap__cap { margin-top: var(--s-3); max-width: var(--prose); }
+</style>

@@ -15,8 +15,32 @@ import { MINIMUM, HOURLY_RATE } from '../data/pricing';
 
 const BUSINESS_ID = `${site.url}/#business`;
 
+/**
+ * Absolute URL, in the exact shape the server actually serves.
+ *
+ * The build emits directories, so /commercial/index.html is served at
+ * /commercial/ and a request for /commercial gets a 308 to it. The sitemap
+ * lists the slashed form. Canonicals were built straight from the route path,
+ * which has no slash — so every page but the home page told Google its
+ * canonical was a URL that immediately redirects, while the sitemap offered a
+ * different one. Google has to reconcile two candidates per page before it can
+ * index anything, on a domain with no crawl budget to spare.
+ *
+ * So: add the slash, but only to page paths. A path with a file extension is
+ * an asset (/og/default.png, /icon-512.png) and a slash there would 404. The
+ * URL object keeps query and hash where they belong — /prices#estimate has to
+ * become /prices/#estimate, not /prices#estimate/.
+ */
 export function abs(path: string): string {
-  return new URL(path, site.url).href;
+  const url = new URL(path, site.url);
+  const last = url.pathname.split('/').pop() ?? '';
+  const isAsset = last.includes('.');
+
+  if (!isAsset && !url.pathname.endsWith('/')) {
+    url.pathname += '/';
+  }
+
+  return url.href;
 }
 
 export function localBusiness() {

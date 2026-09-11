@@ -44,12 +44,20 @@ for (const file of files) {
   if (!desc) note(route, 'missing meta description');
   else if (desc.length > 155) note(route, `description ${desc.length} chars > 155`);
 
-  // --- canonical, self-referencing
+  // --- canonical, self-referencing, character for character
+  //
+  // This used to strip the trailing slash off both sides before comparing,
+  // which meant it could not see the one difference that mattered: the build
+  // emits directories, so /commercial/ is what the server returns and
+  // /commercial gets a 308 to it, while every canonical pointed at the
+  // unslashed form. Google was handed two candidate URLs per page — the
+  // sitemap's and the canonical's — and had to reconcile them before indexing
+  // anything. A check that normalises away the failure is not a check.
   const canon = (html.match(/<link rel="canonical" href="([^"]*)"/) || [])[1];
   if (!canon) note(route, 'missing canonical');
   else {
-    const expect = `${SITE_URL}${route === '/' ? '/' : route}`;
-    if (canon.replace(/\/$/, '') !== expect.replace(/\/$/, '')) note(route, `canonical ${canon} != ${expect}`);
+    const expect = `${SITE_URL}${route === '/' ? '/' : route + '/'}`;
+    if (canon !== expect) note(route, `canonical ${canon} != ${expect}`);
   }
 
   // --- headings: exactly one h1, no level skips
@@ -132,6 +140,33 @@ for (const file of files) {
   if (!html.includes('lang="en-CA"')) note(route, 'missing lang');
   if (!html.includes('class="skip-link"')) note(route, 'missing skip link');
   if (!/<main id="main"/.test(html)) note(route, 'missing <main id="main">');
+}
+
+/**
+ * The sitemap and the canonicals have to name the same URLs.
+ *
+ * They are produced by different things — the sitemap by the Astro
+ * integration, the canonical by our own code — so nothing forces them to
+ * agree, and when they disagree Google gets two candidates per page and picks
+ * one itself. Comparing the two sets catches that the moment it happens,
+ * rather than weeks later when the pages have not been indexed.
+ */
+const sitemapFile = join(DIST, 'sitemap-0.xml');
+if (!existsSync(sitemapFile)) {
+  note('sitemap', 'sitemap-0.xml missing from the build');
+} else {
+  const xml = readFileSync(sitemapFile, 'utf8');
+  const listed = new Set([...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]));
+
+  const canonicals = new Set(
+    files
+      .map((f) => (readFileSync(f, 'utf8').match(/<link rel="canonical" href="([^"]*)"/) || [])[1])
+      .filter(Boolean),
+  );
+
+  for (const loc of listed) {
+    if (!canonicals.has(loc)) note('sitemap', `lists ${loc}, but no page claims it as its canonical`);
+  }
 }
 
 console.log(`Audited ${checked} pages, ${routes.size} routes.`);
